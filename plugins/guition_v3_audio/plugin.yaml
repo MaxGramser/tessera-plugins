@@ -19,6 +19,7 @@ microphone:
   - platform: i2s_audio
     id: es8311_microphone
     i2s_audio_id: i2s_input
+    i2s_mode: secondary           # slave to the mic bus's clock
     i2s_din_pin: GPIO11
     adc_type: external
     bits_per_sample: 16bit
@@ -32,7 +33,6 @@ speaker:
     audio_dac: es8311_dac
     dac_type: external
     channel: mono                 # ES8311 is a mono codec
-    i2s_mode: secondary           # slave to the mic bus's clock
     bits_per_sample: 16bit
     sample_rate: 16000
     buffer_duration: 100ms
