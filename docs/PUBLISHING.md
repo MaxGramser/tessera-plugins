@@ -61,8 +61,9 @@ What a community plugin needs:
 
 Tessera does not review community plugins or their releases: the app says so before anyone adds one, and asks them to
 trust the maker. What it can do is stop a version: `blocked.yaml` (below) refuses it in every app, and a plugin that
-breaks the rules leaves the list. The plugin API is 0.x while it settles: a change that breaks a plugin raises its
-major, and the app refuses a plugin written for another major instead of building it.
+breaks the rules leaves the list. The plugin API is 0.x while it settles: a minor may still change a name or a
+signature, and Tessera's own plugins move with it. From 1.0 on only a break raises the major, and the app refuses a
+plugin written for another major instead of building it.
 
 ## Labels in the app
 
