@@ -1,4 +1,6 @@
 {
  "format": 1,
- "likes": {}
+ "likes": {
+  "ov_departures": 1
+ }
 }
