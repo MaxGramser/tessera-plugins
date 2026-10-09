@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Write index.json: every plugin the Tessera app can offer, with its manifest, texts and README at a fixed commit.
+"""Write index.json: every plugin the Tessera app can offer, with its manifest, texts, README and changelog at a fixed
+commit.
 
     python3 tools/build_index.py            # writes index.json
     python3 tools/build_index.py --check    # fails when index.json is not what it would write
@@ -79,7 +80,7 @@ def repo_id(repo):
 
 
 def own_plugin(folder, own_id):
-    manifest, translations, readme = check_folder(folder)
+    manifest, translations, readme, changelog = check_folder(folder)
     sha = git('log', '-1', '--format=%H', '--', str(folder.relative_to(ROOT)))
     date = git('log', '-1', '--format=%cs', '--', str(folder.relative_to(ROOT)))
     if not sha:
@@ -87,7 +88,7 @@ def own_plugin(folder, own_id):
     return {
         'id': manifest['id'], 'repo': REPO, 'repo_id': own_id, 'path': normal_path(folder.relative_to(ROOT)),
         'label': 'tessera', 'status': 'ok', 'release': {'version': manifest['version'], 'sha': sha, 'date': date},
-        'manifest': manifest, 'translations': translations, 'readme': readme,
+        'manifest': manifest, 'translations': translations, 'readme': readme, 'changelog': changelog,
     }
 
 
@@ -107,7 +108,7 @@ def community_plugin(path):
             date = subprocess.run(['git', '-C', tmp, 'log', '-1', '--format=%cs'], check=True, capture_output=True,
                                   text=True).stdout.strip()
             folder = Path(tmp) / entry.get('path', '.')
-            manifest, translations, readme = check_folder(folder)
+            manifest, translations, readme, changelog = check_folder(folder)
     except (SystemExit, subprocess.SubprocessError, OSError, ValueError, KeyError) as error:
         print(f'{path.stem}: left out ({error})', file=sys.stderr)
         return None
@@ -117,7 +118,7 @@ def community_plugin(path):
     return {
         'id': manifest['id'], 'repo': repo, 'repo_id': number, 'path': normal_path(entry.get('path', '.')),
         'label': 'community', 'status': 'ok', 'release': {'version': manifest['version'], 'sha': sha, 'date': date, 'tag': tag},
-        'manifest': manifest, 'translations': translations, 'readme': readme,
+        'manifest': manifest, 'translations': translations, 'readme': readme, 'changelog': changelog,
     }
 
 

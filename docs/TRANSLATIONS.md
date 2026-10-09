@@ -41,10 +41,11 @@ A plugin's words live in `translations/<language>.json`, in two parts, like Tess
 - **Short on the screen.** A tile's second line on a 2.8-inch screen holds about 14 characters. Test the longest
   language on the smallest tile size.
 
-## The README
+## The README and the changelog
 
 `README.md` is English. `README.nl.md`, `README.de.md` and so on are optional; the editor shows the one in its language,
-else the English one.
+else the English one. `CHANGELOG.md` works the same way: `CHANGELOG.nl.md` beside it, with the same version headings
+(it may lack the newest ones).
 
 ## Translating someone's plugin
 

@@ -55,7 +55,8 @@ python3 tools/check.py plugins/my_idea       # the same check the app does
 ```
 
 Then read [docs/MAKING_A_PLUGIN.md](docs/MAKING_A_PLUGIN.md). It goes through every file, how to try the plugin on
-your own screen before anyone else sees it, and how it gets into the list.
+your own screen before anyone else sees it, and how it gets into the list. Every version gets a few lines in the
+plugin's `CHANGELOG.md`: the app shows them when it offers the update.
 
 A plugin can also live in a repository of your own. To try it, push it and add the repository's link in the app: a
 repository without a release is a test of its default branch. To share it, list it once with a pull request that adds a

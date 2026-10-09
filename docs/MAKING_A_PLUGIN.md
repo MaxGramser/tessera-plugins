@@ -35,6 +35,8 @@ plugins/my_idea/
     nl.json                    more languages, optional
   README.md                    what it does and how to set it up; the app shows it
   README.nl.md                 optional, per language
+  CHANGELOG.md                 what each version changed; the app shows it with an update
+  CHANGELOG.nl.md              optional, per language
 ```
 
 Every file has a counterpart in [`template/`](../template); read it next to this page.
@@ -167,10 +169,43 @@ Add it to a screen; the app writes the screen's plugins file and builds the scre
 settings, inputs and parts are in its details on the screen's Plugins tab. [TESTING.md](TESTING.md) has both ways step
 by step, and a build on your own computer.
 
-### 8. Publish it
+### 8. Write the changelog
+
+Every version that reaches screens gets a few lines in `CHANGELOG.md` (below, "The changelog"). Write them with the
+version, before you publish it.
+
+### 9. Publish it
 
 See [PUBLISHING.md](PUBLISHING.md): a plugin in this repository through a pull request, or in a repository of your own,
 added with a link or listed in the index.
+
+## The changelog
+
+`CHANGELOG.md` says, per version, what a person notices. When the app offers an update of a plugin, it shows the lines
+of every version after the one the screen runs, up to the new one, so someone can see what they get before one tap
+builds it. Write a line for every release:
+
+```markdown
+# Changelog
+
+## 1.1.0 - 2026-10-09
+- A departure that runs late says by how much.
+- New in the inspector: **Show delays**, on by default.
+
+## 1.0.0 - 2026-10-07
+- First version: the next departures from your stop.
+```
+
+- One `## <version>` heading per version, the version exactly as in `tessera-plugin.yaml` (three numbers), optionally
+  followed by ` - <date>` as `YYYY-MM-DD`. The newest version first; the first heading is the version in the manifest.
+- Under each heading a few short bullet lines (`- `; a long one goes on, indented by two spaces) of what a person
+  notices: what came, what changed, what went, and what they must do ("fill in the stop code again"). Not how the
+  code changed.
+- An optional `# Changelog` title on the first line; nothing else outside the versions.
+- `CHANGELOG.nl.md`, `CHANGELOG.de.md` and so on are optional, as for the README. A translation may lag behind, but
+  names only versions the English one has.
+
+`tools/check.py` checks all of it. The app reads at most 64 KB of it, as of a README.
 
 ## How the pieces meet
 

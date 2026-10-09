@@ -7,7 +7,7 @@ plugin is done.
 ## What a plugin is, in five sentences
 
 1. A plugin is a folder: a manifest (`tessera-plugin.yaml`), an ESPHome package (`plugin.yaml`), an ESPHome component
-   in C++ (`components/<id>/`), texts (`translations/<language>.json`) and a `README.md`.
+   in C++ (`components/<id>/`), texts (`translations/<language>.json`), a `README.md` and a `CHANGELOG.md`.
 2. The screen builds the component into its firmware; the component registers tile types with the core through
    `tessera::Plugin` (`esphome/components/smart_display/plugin_api.h` in the Tessera repository).
 3. The Tessera app (in Home Assistant) reads only the manifest: it shows the plugin, its options and its README, and
@@ -87,6 +87,9 @@ on every tap, settings with tests).
 - **Home Assistant is the backend.** No plugin code runs in the Tessera app. What needs a server goes into Home
   Assistant: an existing integration, or one of your own.
 - **Plain English in READMEs**, with a `## Set up` section of numbered steps a person can follow in the Tessera app.
+- **A changelog line for every version.** Raise `version` and add its `## <version>` heading at the top of
+  `CHANGELOG.md`, with a few bullet lines of what a person notices and what they must do. The app shows them when it
+  offers the update (docs/MAKING_A_PLUGIN.md, "The changelog").
 
 ## When you are done
 

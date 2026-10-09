@@ -36,7 +36,7 @@ origin says which of them a screen runs.
 ## The index
 
 The app reads one file for the list: `index.json` in this repository (on `main`). It lists every plugin with its
-manifest, its texts and its README at one commit, the plugin versions that are blocked, the plugins Tessera recommends,
+manifest, its texts, its README and its changelog at one commit, the plugin versions that are blocked, the plugins Tessera recommends,
 and whose each id is. `tools/build_index.py` writes it; nobody edits it by hand. The app reads it with a conditional
 request and keeps the last one for when the internet is away. Beside it, `likes.json` has how many people like each
 plugin (below).
@@ -48,7 +48,8 @@ its folder, so a change elsewhere in this repository never makes a screen build 
 
 To change one:
 
-1. Change the plugin and raise its `version` in `tessera-plugin.yaml`.
+1. Change the plugin, raise its `version` in `tessera-plugin.yaml`, and write what a person notices under a heading
+   of that version at the top of its `CHANGELOG.md` (and its translations, when it has them).
 2. `python3 tools/check.py plugins/<id>` and a build on a real screen ([TESTING.md](TESTING.md)).
 3. Commit, then `python3 tools/build_index.py` and commit `index.json` (CI does the second step after a merge too).
 
@@ -161,6 +162,10 @@ reason in its Plugins tab, and its next build leaves the plugin out.
 
 - `version` in the manifest: three numbers. Raise the last for a fix, the middle for something new, the first when a
   tile's options change in a way that loses what people set.
+- `CHANGELOG.md`: a heading for every version, newest first, the first one the manifest's. When the app offers an
+  update it shows the lines of every version between the one a screen runs and the new one, so say there what a person
+  notices and what they must do ([MAKING_A_PLUGIN.md](MAKING_A_PLUGIN.md#the-changelog)). The index carries it as
+  `changelog`, one text per language, beside `readme`.
 - `api`: the plugin API the plugin was written for. It builds on every core with the same major and at least that
   minor; a core with an older API refuses it and says why. While the API is 0.x a minor may still change a name or a
   signature, and Tessera's own plugins move with it. From 1.0 on only a break raises the major.

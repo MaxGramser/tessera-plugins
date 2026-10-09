@@ -8,7 +8,7 @@ Start with AGENTS.md (rules for AI assistants), then docs/MAKING_A_PLUGIN.md.
 
 ## Docs
 - [AGENTS.md](AGENTS.md): rules, the reading order, what "done" means
-- [docs/MAKING_A_PLUGIN.md](docs/MAKING_A_PLUGIN.md): files, steps, how the pieces meet, common mistakes
+- [docs/MAKING_A_PLUGIN.md](docs/MAKING_A_PLUGIN.md): files, steps, the changelog (CHANGELOG.md, a heading per version, shown with an update), how the pieces meet, common mistakes
 - [docs/MANIFEST.md](docs/MANIFEST.md): every field of tessera-plugin.yaml (topics, features, what it needs), limits
 - [docs/FIRMWARE_API.md](docs/FIRMWARE_API.md): tessera::Plugin, tessera::Tile, drawing helpers, rules
 - [docs/FETCH.md](docs/FETCH.md): data from a web service, the map language
@@ -25,7 +25,7 @@ Start with AGENTS.md (rules for AI assistants), then docs/MAKING_A_PLUGIN.md.
 
 ## Tools
 - tools/new_plugin.py <id>: copy the template under a new id
-- tools/check.py [folder]: the app's manifest check plus folder, translation, README, code and plugin.yaml rules, and what a plugin needs from the index
+- tools/check.py [folder]: the app's manifest check plus folder, translation, README, CHANGELOG.md, code and plugin.yaml rules, and what a plugin needs from the index
 - tools/build_index.py: write index.json
 - tools/build_likes.py: write likes.json
 

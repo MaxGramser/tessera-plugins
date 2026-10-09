@@ -9,7 +9,8 @@ python3 tools/check.py plugins/my_idea
 ```
 
 It runs the Tessera app's own manifest check (`plugin_manifest.py`, downloaded from the Tessera repository into
-`tools/.cache/`) and the rules the app cannot see: the files, the translations, the README and the code rules of
+`tools/.cache/`) and the rules the app cannot see: the files, the translations, the README, the `CHANGELOG.md` (its first
+heading is the manifest's version) and the code rules of
 [FIRMWARE_API.md](FIRMWARE_API.md). It also checks `plugin.yaml` ([LIMITS.md](LIMITS.md), "plugin.yaml"), and that
 what the plugin needs is in the index: the plugins of `requires.plugins`, and a plugin or a board for every feature it
 needs (the boards from Tessera's `boards.json`). Working on Tessera itself? Point it at your checkout:

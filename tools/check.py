@@ -8,13 +8,14 @@ It runs the app's own manifest check: plugin_manifest.py from the Tessera reposi
 screen_manager/app/plugin_manifest.py), fetched into tools/.cache/ and fetched again when it is an hour old (offline,
 the copy there serves). The same file decides in the app whether a
 plugin is shown, so a plugin that passes here is read the same way there. Then the rules the manifest check cannot see:
-the folder layout, the translations (English complete), the README, the licence, the drawing rules for the firmware
+the folder layout, the translations (English complete), the README and the changelog, the licence, the drawing rules for the firmware
 code (docs/FIRMWARE_API.md, "Rules"), what plugin.yaml may set (docs/LIMITS.md, "plugin.yaml"), and, across the index,
 that every plugin and feature a plugin needs is there (docs/MANIFEST.md, "What it needs and brings").
 
 TESSERA_MANIFEST=/path/to/plugin_manifest.py uses a local copy instead (a checkout of the Tessera repository), and
 TESSERA_BOARDS=/path/to/boards.json the boards a local checkout knows (screen_manager/app/boards.json).
 """
+import datetime
 import importlib.util
 import json
 import os
@@ -122,8 +123,14 @@ DOC_FILES = ('README.md', 'AGENTS.md', 'llms.txt', 'docs/FIRMWARE_API.md', 'docs
 CURRENT_API = re.compile(r'plugin API (?:is )?(\d+\.\d+)')
 
 
+# Where the docs list a plugin's files or say what a new version takes: each names the changelog.
+CHANGELOG_DOCS = ('README.md', 'AGENTS.md', 'llms.txt', 'docs/MAKING_A_PLUGIN.md', 'docs/MANIFEST.md',
+                  'docs/PUBLISHING.md', 'docs/TESTING.md', 'docs/TRANSLATIONS.md')
+
+
 def check_docs():
-    """Every doc that names the plugin API the core offers names the one the manifest check knows."""
+    """Every doc that names the plugin API the core offers names the one the manifest check knows, and every doc that
+    lists a plugin's files or says what a new version takes names the changelog."""
     wanted = plugin_api()
     for name in DOC_FILES:
         text = (ROOT / name).read_text(encoding='utf-8')
@@ -133,10 +140,101 @@ def check_docs():
         stale = sorted(set(found) - {wanted})
         if stale:
             fail(name, f'says plugin API {", ".join(stale)}; the core offers {wanted}')
+    for name in CHANGELOG_DOCS:
+        if 'CHANGELOG.md' not in (ROOT / name).read_text(encoding='utf-8'):
+            fail(name, 'names no CHANGELOG.md; every plugin has one (docs/MAKING_A_PLUGIN.md, "The changelog")')
 
 
 def fail(folder, message):
     raise SystemExit(f'{folder}: {message}')
+
+
+# ---- The README and the changelog: texts the app shows, per language ----
+
+# The app reads at most this much of each (screen_manager/app/plugins.py), so a longer one fails here instead.
+TEXT_LIMIT = 64 * 1024
+
+
+def texts(folder, name, stem):
+    """{language: text} of a plugin's <stem>.md (English) and <stem>.<language>.md, named as the app reads them
+    (README.nl.md, CHANGELOG.pt-BR.md). SystemExit when one is longer than the app reads."""
+    pattern = re.compile(rf'{stem}(?:\.([a-z]{{2}}(?:-[A-Za-z]{{2}})?))?\.md')
+    out = {}
+    for path in sorted(Path(folder).iterdir()):
+        match = pattern.fullmatch(path.name)
+        if not match or not path.is_file():
+            continue
+        text = path.read_text(encoding='utf-8')
+        if len(text) > TEXT_LIMIT:
+            fail(name, f'{path.name} is longer than the {TEXT_LIMIT // 1024} KB the app reads')
+        out[match.group(1) or 'en'] = text
+    return out
+
+
+CHANGELOG_HEADING = re.compile(r'## (\S+?)(?: - (\S+))?')
+
+
+def real_date(text):
+    """Whether a text is a day of the calendar written YYYY-MM-DD."""
+    try:
+        return bool(re.fullmatch(r'\d{4}-\d{2}-\d{2}', text)) and bool(datetime.date.fromisoformat(text))
+    except ValueError:
+        return False
+
+
+def changelog_versions(name, file, text):
+    """The versions of a changelog, newest first, or SystemExit with what is wrong. One `## <version>` heading per
+    version, optionally ` - <YYYY-MM-DD>`, newest first; under each, bullet lines (`- `, a longer one goes on indented
+    by two spaces). An optional `# ` title before the first version, nothing else."""
+    versions, bullets = [], 0
+    for number, line in enumerate(text.splitlines(), 1):
+        where = f'{file}:{number}'
+        if not line.strip():
+            continue
+        if line.startswith('#'):
+            if line.startswith('# ') and not versions and number == 1:
+                continue
+            match = CHANGELOG_HEADING.fullmatch(line.rstrip())
+            if not match or not pm().VERSION.match(match.group(1)):
+                fail(name, f'{where}: a heading is "## <version>" (three numbers), optionally " - <YYYY-MM-DD>"')
+            if match.group(2) and not real_date(match.group(2)):
+                fail(name, f'{where}: the date is YYYY-MM-DD, such as 2026-10-09')
+            version = tuple(int(n) for n in match.group(1).split('.'))
+            if versions and not version < versions[-1][0]:
+                fail(name, f'{where}: {match.group(1)} comes after {versions[-1][1]}; the newest version goes first, '
+                           f'each once')
+            if versions and not bullets:
+                fail(name, f'{file}: {versions[-1][1]} has no lines; say what changed in it')
+            versions.append((version, match.group(1)))
+            bullets = 0
+        elif not versions:
+            fail(name, f'{where}: the first version heading ("## <version>") comes before any text')
+        elif line.startswith('- '):
+            bullets += 1
+        elif line.startswith('  ') and bullets:
+            continue
+        else:
+            fail(name, f'{where}: under a version, each line is a bullet ("- "), a longer one goes on indented by two '
+                       f'spaces')
+    if versions and not bullets:
+        fail(name, f'{file}: {versions[-1][1]} has no lines; say what changed in it')
+    return [v[1] for v in versions]
+
+
+def check_changelog(name, version, changelog):
+    """CHANGELOG.md starts with the manifest's version and lists versions newest first; a translation lists only
+    versions the English one has (it may lag behind)."""
+    if 'en' not in changelog:
+        fail(name, 'CHANGELOG.md is required: a "## <version>" heading per version, newest first')
+    english = changelog_versions(name, 'CHANGELOG.md', changelog['en'])
+    if not english or english[0] != version:
+        fail(name, f'CHANGELOG.md: its first heading is "## {version}", the version in tessera-plugin.yaml')
+    for language, text in sorted(changelog.items()):
+        if language == 'en':
+            continue
+        extra = set(changelog_versions(name, f'CHANGELOG.{language}.md', text)) - set(english)
+        if extra:
+            fail(name, f'CHANGELOG.{language}.md: versions CHANGELOG.md does not have: {", ".join(sorted(extra))}')
 
 
 # ---- plugin.yaml: ESPHome's YAML, read as data ----
@@ -222,7 +320,7 @@ def check_provides(name, manifest, esphome):
 
 
 def check_folder(folder):
-    """(raw manifest, translations, readmes) of a plugin folder, or SystemExit with what is wrong."""
+    """(raw manifest, translations, readmes, changelogs) of a plugin folder, or SystemExit with what is wrong."""
     folder = Path(folder)
     name = folder.name
     try:
@@ -258,14 +356,13 @@ def check_folder(folder):
     components = folder / 'components'
     if not components.is_dir() or not any(components.iterdir()):
         fail(name, 'components/<name>/ is required (the ESPHome component)')
-    readme = {}
-    for path in sorted(folder.glob('README*.md')):
-        language = path.stem.split('.', 1)[1] if '.' in path.stem else 'en'
-        readme[language] = path.read_text(encoding='utf-8')
+    readme = texts(folder, name, 'README')
     if 'en' not in readme:
         fail(name, 'README.md is required')
     if not re.search(r'(?m)^##\s+(Set ?up|Setup)\b', readme['en']):
         fail(name, 'README.md needs a "## Set up" section')
+    changelog = texts(folder, name, 'CHANGELOG')
+    check_changelog(name, manifest['version'], changelog)
     if folder.parent.name == 'plugins' and not (folder / 'LICENSE').is_file() and not (folder.parent.parent / 'LICENSE').is_file():
         fail(name, 'a LICENSE is required')
     for path in sorted(components.rglob('*')):
@@ -278,7 +375,7 @@ def check_folder(folder):
             if match:
                 line = code[:match.start()].count('\n') + 1
                 fail(name, f'{path.relative_to(folder)}:{line}: {why}')
-    return raw, translations, readme
+    return raw, translations, readme, changelog
 
 
 # ---- Across the index: what a plugin needs is there ----
@@ -477,7 +574,7 @@ def main():
         *(f for f in sorted((ROOT / 'plugins').iterdir()) if (f / 'tessera-plugin.yaml').is_file()), ROOT / 'template']
     checked = {}
     for folder in folders:
-        raw, _, _ = check_folder(folder)
+        raw, *_ = check_folder(folder)
         manifest = pm().check(raw)
         checked[manifest['id']] = manifest
         print(f'{folder.name}: ok')
