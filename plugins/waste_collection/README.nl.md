@@ -26,7 +26,8 @@ Houd de bovenbalk vast, dan **Instellingen**, **Plugins**, **Afvalkalender**:
 - **Komende ophaaldagen**: opent de kaart.
 
 Beide instellingen zijn ook entiteiten van het scherm in Home Assistant ("Waste in top bar", "Waste days ahead"), dus
-een automatisering kan ze aanpassen.
+een automatisering kan ze aanpassen, en de editor toont ze in de details van de plugin op het tabblad Plugins van het
+scherm.
 
 ## Goed om te weten
 

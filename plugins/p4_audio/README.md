@@ -24,7 +24,7 @@ anything else that uses them, a voice assistant of your own in the screen's Over
   stays in the screen's memory and is gone once it has played.
 
 The three settings are entities of the screen in Home Assistant too ("Microphone mute", "Speaker volume", "Tap sound"),
-and stand under Screen settings in the editor.
+and stand in the plugin's details on the screen's Plugins tab in the editor.
 
 ## Good to know
 
@@ -38,7 +38,8 @@ and stand under Screen settings in the editor.
 
 The wiring, the codec settings and the first audio for this panel come from pull request
 [#142](https://github.com/MaxGramser/homeassistant_espscreen/pull/142) by [@woozer](https://github.com/woozer), who made
-the panel play and listen first, echo cancellation included.
+the panel play and listen first. That pull request also has echo cancellation; this version of the plugin does not
+(see "Good to know").
 
 ## How it works
 

@@ -2,7 +2,7 @@
 # tap, and two tests on the screen's settings page. A board's own hardware as a plugin (docs/MANIFEST.md): only screens
 # of the boards below are offered it, and only the screens that take it carry the codecs.
 id: p4_audio
-version: 1.0.2
+version: 1.0.3
 api: "0.3"
 icon: volume-high
 maintainer: MaxGramser
@@ -14,7 +14,7 @@ requires:
 boards: [wavesharep4]
 flash_kb: 80
 
-# The three settings of plugin.yaml, also under Screen settings in the editor (the ends of their entity ids).
+# The three settings of plugin.yaml, also in the plugin's details on the screen's Plugins tab (their names as ids).
 settings:
   - { key: microphone_mute, label: setting_mute, hint: setting_mute_hint }
   - { key: speaker_volume, label: setting_volume, hint: setting_volume_hint }

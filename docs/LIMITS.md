@@ -7,9 +7,12 @@
 | The next bus from your stop, with your line chosen in the editor | A tile, a `fetch`, an option with `options_from` (the `ov_departures` plugin). |
 | Today's waste collection from your municipality's API | A tile and a `fetch`. |
 | Hourly energy prices of your own supplier | A `fetch` (up to 48 items) and a tile that draws them. |
+| A day of electricity prices per quarter of an hour from Home Assistant (Nord Pool, ENTSO-e, Tibber, ...) | A tile with `domains`, `has_attributes` and `fields` with `as: numbers` for a sensor's attributes, or `answers` for an action's answer (API 0.5). |
 | A countdown to a date | A tile on the screen's clock alone (the template). |
 | A sensor or a relay on the board's free pins | An ESPHome component with `inputs` of kind `gpio`; anything ESPHome can do. |
 | Waking the screen when someone stands in front of it | A plugin with a radar sensor and `on_tick`. |
+| Settings a person changes in the editor, a test with its result ("Heard: Okay Nabu") | ESPHome entities in `plugin.yaml` named in `settings`; a button with a `status` (API 0.6). |
+| Talking to an AI model or a voice assistant | Home Assistant's Assist and its conversation agents (OpenAI, Anthropic); the plugin picks the assistant, the key stays in Home Assistant. |
 
 ## Works with a way around
 
@@ -18,6 +21,7 @@
 | An API that needs OAuth | A Home Assistant integration that offers the data as an entity; then a normal tile. |
 | An API that gives XML or GTFS-realtime | The Home Assistant integration for it. |
 | Messages from outside (a webhook, a bot) | A webhook in Home Assistant that sets an entity. |
+| A server, an account or a live connection of the plugin's own (a realtime voice session, a cloud service with OAuth) | A Home Assistant integration of your own; the plugin uses its entities and actions. |
 
 ## Cannot, on purpose
 

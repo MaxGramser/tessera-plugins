@@ -26,7 +26,7 @@ Hold the top bar, then **Settings**, **Plugins**, **Waste collection**:
 - **Coming collections**: opens the card.
 
 Both settings are entities of the screen in Home Assistant too ("Waste in top bar", "Waste days ahead"), so an automation
-can change them.
+can change them, and the editor shows them in the plugin's details on the screen's Plugins tab.
 
 ## Good to know
 

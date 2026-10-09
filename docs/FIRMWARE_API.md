@@ -1,4 +1,4 @@
-# The firmware API (plugin API 0.4)
+# The firmware API (plugin API 0.6)
 
 A plugin's code runs on the screen as an ESPHome component. It talks to Tessera's core through one header:
 
@@ -17,8 +17,10 @@ with one sentence. 0.1 has tiles and the moments; 0.2 adds tiles of an entity, c
 settings rows, questions to the app and the date words; 0.3 adds `on_touch`, and a settings action that says how it is
 going and is lit while it runs; 0.4 renames the plugin's 250 ms moment from `on_tick` to `on_interval`, so that
 `on_tick` everywhere means once a second with the clock, and a tile of an entity names its domains as `domains:` in the
-manifest, as a tap action and an input do (`entity:` before it). Name the lowest minor whose parts you use, so the plugin
-builds on as many screens as possible.
+manifest, as a tap action and an input do (`entity:` before it). 0.5 and 0.6 change the app's side only, not this
+header: 0.5 sends a tile of an entity its lists whole when they fit and adds `fields`, `has_attributes` and `answers`;
+0.6 adds settings of kind text and button with a `status`, found by their name in Home Assistant's entity registry. Name
+the lowest minor whose parts you use, so the plugin builds on as many screens as possible.
 
 ## The component: `__init__.py`
 
@@ -152,7 +154,9 @@ A tile with `domains` (0.2) also gets its entity, and is sent again whenever tha
 { "state": "off", "name": "Waste", "attributes": { "message": "Paper", "start_time": 1791410400 } }
 ```
 
-`attributes` holds only the ones the manifest's `attributes` names, a text cut at 48 bytes and a list at 16 items. An
+`attributes` holds only the ones the manifest's `attributes` names and the `fields` it takes out of them (0.5), a text
+cut at 48 bytes. A list comes whole when the tile's data fits its 2.6 KB (0.5; 16 items before): two days of 96 prices
+do. Lists that do not fit together are shortened, all to the same length, from the end. An
 attribute whose name ends in `_at`, `_time` or `date` and holds a moment comes as seconds since 1970, so the tile says it
 in the screen's words (`tessera::date_text`, `days_from_today`). `"wait": "wrong_entity"` means the entity chosen in the
 editor is of another domain than the manifest names.
@@ -230,7 +234,9 @@ An item that is not shown takes no room. A screen without the plugin draws nothi
 
 Rows on the screen's own settings page (hold the top bar): Settings, then Plugins, then the plugin's page, drawn exactly
 as Tessera's rows. Keep the values where Home Assistant sees them too: an ESPHome entity of `plugin.yaml` (a template
-switch, number or select with `restore_value`).
+switch, number or select with `restore_value`, a text, a button). Name the same entities in the manifest's `settings`
+and the editor shows them in the plugin's details on the screen's Plugins tab ([MANIFEST.md](MANIFEST.md), "Settings a
+person changes"). These rows on the glass talk to the entities directly, so they work while Home Assistant is away.
 
 ```cpp
 bool settings(tessera::SettingsPage &page) override {
@@ -275,7 +281,9 @@ void on_message(JsonObjectConst m) override {             // {"re": asked_, "ok"
 
 `call_service:<domain>.<service>` sends the action with `return_response` and hands back its response; `entity_id`,
 `device_id` and `area_id` go as the target, the rest as the action's data. A request is at most 512 bytes; an answer at
-most about 3 KB: longer texts are cut to 48 bytes and lists shortened from the end.
+most about 3 KB: longer texts are cut to 48 bytes, and lists shortened from the end only when it does not fit (0.5; at
+most 48 items before). An answer the manifest maps under `answers` (0.5) comes as its fields: a day of prices as one
+list of numbers instead of a list of objects ([MANIFEST.md](MANIFEST.md), "Answers").
 
 ## Drawing: `tessera::ui`
 

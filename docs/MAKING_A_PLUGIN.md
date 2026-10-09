@@ -8,8 +8,10 @@ need to know Tessera's code.
 A plugin is right for something that not every screen needs and that the screen can draw on its own:
 
 - a tile with data from a web service (the next bus, today's waste collection, the energy price of your supplier);
+- a tile that draws what Home Assistant already knows in a way Tessera's own tiles do not (a day of electricity prices
+  as a chart, a calendar's next event);
 - a tile that only needs the screen's clock (a countdown, a timer of your own);
-- hardware on the board or on its free pins (a sensor, a relay, a speaker).
+- hardware on the board or on its free pins (a sensor, a relay, a speaker), with settings a person can change.
 
 It is the wrong tool for:
 
@@ -105,7 +107,37 @@ void MyIdea::setup() { add_tile("next", [this]() { return new NextTile(this); })
 
 [FIRMWARE_API.md](FIRMWARE_API.md) has the whole API and the rules for drawing.
 
-### 5. Check it
+### 5. Give it settings, if a person should change something
+
+A value a person changes after the build (a volume, a switch, a word, a test) is an ESPHome entity in `plugin.yaml`
+plus one line in the manifest's `settings`. The key is the entity's name written as an id:
+
+```yaml
+# plugin.yaml
+switch:
+  - platform: template
+    name: Show seconds              # key show_seconds
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_OFF
+```
+
+```yaml
+# tessera-plugin.yaml
+settings:
+  - { key: show_seconds, label: setting_seconds, hint: setting_seconds_hint }
+```
+
+The editor shows it in the plugin's details on the screen's Plugins tab, under **Settings**, and a change takes effect
+at once. A switch, number, select, text or button (a button can show a text sensor beside it as its `status`, for a
+test). Read the value in your C++ from the entity itself (`id(...)->state`), and draw the same rows on the screen's own
+settings page with `settings(SettingsPage&)` ([FIRMWARE_API.md](FIRMWARE_API.md), "Settings rows"), so it can be
+changed without Home Assistant too.
+
+Something the build needs (a pin, a model to build in) is an `input` or a `part` instead: the editor shows those in
+the same place, under "When building", with a **Save and build** key. [MANIFEST.md](MANIFEST.md), "Settings a person
+changes", has the table of which to use.
+
+### 6. Check it
 
 ```sh
 python3 tools/check.py plugins/my_idea
@@ -113,7 +145,7 @@ python3 tools/check.py plugins/my_idea
 
 It runs the Tessera app's own manifest check and the rules for the C++. Fix what it says until it prints `ok`.
 
-### 6. Put it on your screen
+### 7. Put it on your screen
 
 Copy the plugin's folder into Home Assistant's config, next to the `esphome` folder:
 
@@ -122,11 +154,11 @@ Copy the plugin's folder into Home Assistant's config, next to the `esphome` fol
 ```
 
 Open Tessera, go to Plugins: your plugin is there with the label **Test**. Add it to a screen; the app writes the
-screen's plugins file and builds the screen. Place its tile in Layout. After every change in the folder, open the
-plugin in the screen's Plugins tab and press **Build again**. [TESTING.md](TESTING.md) has more ways to try it,
+screen's plugins file and builds the screen. Place its tile in Layout. Its settings, inputs and parts are in its details
+on the screen's Plugins tab. After every change in the folder, open the plugin there and press **Build again**. [TESTING.md](TESTING.md) has more ways to try it,
 including a build on your own computer.
 
-### 7. Publish it
+### 8. Publish it
 
 See [PUBLISHING.md](PUBLISHING.md): a plugin in this repository through a pull request, or in a repository of your own
 listed in the index.
@@ -153,6 +185,23 @@ Screen
 - A screen that does not have a plugin draws its tiles as a plain card with the tile's name and "Plugin missing". It
   never fails or restarts over it.
 
+## Where the backend lives
+
+No plugin code runs in the Tessera app: it holds the key to all of Home Assistant and runs only its own code. Home
+Assistant is the backend. Pick the first row that covers what you need:
+
+| What you need | How | The key or account lives |
+|---|---|---|
+| JSON from a public web service | A `fetch` in the manifest ([FETCH.md](FETCH.md)) | An input of `kind: secret`, in the app |
+| What an entity in Home Assistant has, including lists in its attributes | A tile of an entity: `domains`, `attributes`, `fields` with `as: numbers`, `has_attributes` ([MANIFEST.md](MANIFEST.md), "Tiles") | In the integration behind the entity |
+| The answer of a Home Assistant action (`calendar.get_events`, `media_player.search_media`, `nordpool.get_prices_for_date`) | `permissions.ha_commands`, `tessera::send` from the C++, and `answers` to keep only the fields you need | In that integration |
+| To do something (turn on a light, play on a speaker) | `tessera::action`, named in `permissions.home_assistant_actions` | In that integration |
+| A voice assistant, an AI model, a service that needs OAuth or a live connection | Home Assistant's own (Assist and its conversation agents, an integration that offers entities and actions), or a Home Assistant integration you write. The plugin uses its entities and actions like any other | In that integration, never in Tessera or on the screen |
+
+So a plugin that talks to an AI model does not ask for its key: it uses an assistant set up in Home Assistant, and a
+setting picks which one. A plugin that needs something Home Assistant does not offer yet gets a small integration of
+its own, which also works without Tessera and is maintained on its own.
+
 ## Names a plugin.yaml may use
 
 `plugin.yaml` is merged into the screen's own configuration, so it can point at parts the board already has. Only these
@@ -174,7 +223,9 @@ plugin's id (`p4_audio_amp`), so they never meet one of Tessera's.
 | What happens | Why | Fix |
 |---|---|---|
 | The build says "No tessera-plugin.yaml above ..." | The component is not in `components/<id>/` next to the manifest. | Keep the folder layout of the template. |
-| The build says the plugin wants another plugin API | `api:` in the manifest is newer than the screen's core. | Name the lowest API whose parts you use; the core offers plugin API 0.4 now. |
+| The build says the plugin wants another plugin API | `api:` in the manifest is newer than the screen's core. | Name the lowest API whose parts you use; the core offers plugin API 0.6 now. |
+| A setting says "Not on this screen yet" | The screen was not built since the entity was added, or the entity's name does not give the key. | Build again; check that "Show seconds" goes with `show_seconds`. |
+| A setting is grey | The screen is offline, or the entity is unavailable in Home Assistant. | Check the screen; a button that was never pressed is fine. |
 | The tile shows "Plugin missing" | The screen was not built with the plugin, or the tile id differs from `add_tile("...")`. | Build again; make the ids match. |
 | The tile stays empty | `on_state` got `{"wait": ...}`: the fetch is not filled in or failed. | Show the reason (see the bus plugin); check the options. |
 | Text cut with dots | The label is wider than its room. | Take a smaller font from `tessera::Font`, or give the label more width. |

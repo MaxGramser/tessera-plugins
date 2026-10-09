@@ -14,9 +14,22 @@ plugin is done.
    carries out the plugin's `fetch` (JSON from a web service) with its own code.
 4. A tile of a plugin is `plugin:<plugin id>.<tile id>` in a screen's layout. The core gives it a card's drawing area
    while its page is on the glass, hands it the data the app sent (`on_state`), and ticks it once a second (`on_tick`).
-5. The plugin API is 0.4. The manifest names the lowest version whose parts the plugin uses (`api: "0.1"` for a tile
+5. The plugin API is 0.6. The manifest names the lowest version whose parts the plugin uses (`api: "0.1"` for a tile
    alone); it builds on every core with the same major and at least that minor. While the API is 0.x a minor may still
    change a name: check `docs/FIRMWARE_API.md`, "Versions", before you use a moment by name.
+
+## Where each kind of thing lives
+
+| The plugin needs | Use | Read |
+|---|---|---|
+| Data from a web service | A `fetch` the app carries out, mapped to fields | docs/FETCH.md |
+| Data Home Assistant already has (a sensor, a calendar, prices in attributes) | A tile of an entity: `domains`, `attributes`, `fields`, `has_attributes` | docs/MANIFEST.md, "Tiles" |
+| The answer of a Home Assistant action (`calendar.get_events`, `nordpool.get_prices_for_date`) | `permissions.ha_commands`, `tessera::send`, and `answers` to map it | docs/MANIFEST.md, "Answers"; docs/FIRMWARE_API.md |
+| To do something in Home Assistant | `tessera::action`, named in `permissions.home_assistant_actions` | docs/FIRMWARE_API.md |
+| A setting a person changes | An ESPHome entity in `plugin.yaml`, named in `settings` | docs/MANIFEST.md, "Settings a person changes" |
+| A value or key filled in once | `inputs` (`scope: all` for every screen, `screen` per screen) | docs/MANIFEST.md, "What a person fills in" |
+| Hardware on the board | ESPHome components in `plugin.yaml`, `boards`, optional `parts` | docs/MAKING_A_PLUGIN.md |
+| A server, an account, a live session (OAuth, a websocket, a voice model) | A Home Assistant integration of its own, which the plugin reaches through its entities and actions | docs/MAKING_A_PLUGIN.md, "Where the backend lives" |
 
 ## Read in this order
 
@@ -30,8 +43,8 @@ plugin is done.
 The two plugins to copy from: [`template/`](template) (a tile without data, the smallest complete plugin) and
 [`plugins/ov_departures/`](plugins/ov_departures) (a tile with data from a web service, a list of choices and a
 countdown). For the other parts: [`plugins/waste_collection/`](plugins/waste_collection) (a tile of an entity, a card,
-a tap action, a top bar item, settings rows) and [`plugins/p4_audio/`](plugins/p4_audio) (one board's hardware, a click
-on every tap).
+a tap action, a top bar item, settings) and [`plugins/p4_audio/`](plugins/p4_audio) (one board's hardware, a click
+on every tap, settings with tests).
 
 ## Rules that are never optional
 
@@ -56,7 +69,14 @@ on every tap).
 - **Memory**: the manifest's `memory` for a tile is what one tile costs in the screen's layout memory. Keep it honest:
   a few hundred bytes for a handful of labels, about 1200 for a list.
 - **Secrets stay in the app.** An API key is an input of `kind: secret`; it goes into a fetch's header or query, never
-  into the URL path, never to the screen, never into YAML.
+  into the URL path, never to the screen, never into YAML. A key for a service Home Assistant talks to (OpenAI,
+  Anthropic, Spotify) stays in that Home Assistant integration; the plugin never asks for it.
+- **Settings are ESPHome entities.** A value a person changes after the build (a volume, a switch, a word, a test
+  button) is a template entity in `plugin.yaml` and a line in the manifest's `settings`, whose `key` is the entity's
+  name written as an id ("Tap sound" is `tap_sound`). Never a setting of the plugin's own in the app, never a global
+  the editor cannot see.
+- **Home Assistant is the backend.** No plugin code runs in the Tessera app. What needs a server goes into Home
+  Assistant: an existing integration, or one of your own.
 - **Plain English in READMEs**, with a `## Set up` section of numbered steps a person can follow in the Tessera app.
 
 ## When you are done
