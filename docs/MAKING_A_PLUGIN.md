@@ -52,7 +52,7 @@ This makes `plugins/my_idea/` with every name changed. For a plugin in a reposit
 
 ### 2. Describe it in the manifest
 
-Open `tessera-plugin.yaml`. Set the `version` (start at `0.1.0`), `maintainer` (your GitHub name), `stage` (`beta` until people use it every day, then `stable`), `icon` (a name from
+Open `tessera-plugin.yaml`. Set the `version` (start at `0.1.0`), `maintainer` (your GitHub name), `stage` (`beta` until people use it every day, then `stable`), `topics` (below), `icon` (a name from
 Tessera's icon set, see [MANIFEST.md](MANIFEST.md#icon)) and describe your tile under `tiles`:
 
 ```yaml
@@ -69,6 +69,13 @@ tiles:
 
 [MANIFEST.md](MANIFEST.md) lists every field. If the tile needs data from the internet, add a `fetch`
 ([FETCH.md](FETCH.md)).
+
+**Choosing topics.** `topics` says what the plugin is about, so a person finds it among the others: one or two of
+`time`, `weather`, `calendar`, `home`, `energy`, `travel`, `money`, `sports`, `news`, `media`, `photos`, `fun`, `voice`
+and `tech` ([MANIFEST.md](MANIFEST.md), "What it is about"). Put the one that fits best first, and take a second only
+when people would look for it there too: the next bus is `[travel]`, the bin day `[home, calendar]`. Say what it is
+about, not what it adds: whether it is tiles, a function or hardware the app reads from the manifest. None fits? Ask for
+a new topic in an issue here before you publish.
 
 ### 3. Write the words
 
@@ -213,17 +220,76 @@ names stay the same on every board and in every update (Tessera's docs/PROFILES.
 | `ts_touch` | the touch panel |
 | `gpio_backlight_pwm`, `back_light` | the output that drives the backlight, and the light on it |
 | `touch_bus` | the I2C bus the touch panel is on, on every board that has one (the M5Stack Tab5: `tab5_bus`) |
+| `ts_speaker`, `ts_microphone`, `ts_media_player` | a feature, from whichever plugin or board brings it (below) |
 
 A chip on the touch panel's bus (the audio codecs of the Waveshare P4 panel, in `plugins/p4_audio/plugin.yaml`) takes
 `i2c_id: touch_bus`. Any other id of a board file can change in an update; give your own parts ids that start with your
-plugin's id (`p4_audio_amp`), so they never meet one of Tessera's.
+plugin's id (`p4_audio_amp`), so they never meet one of Tessera's. Ids that start with `ts_` are Tessera's: a plugin
+makes one only for a feature it brings.
+
+## Features: a speaker, a microphone, a media player
+
+Some plugins make hardware work, others use it: a voice plugin needs a speaker that another plugin, or the board,
+brings. A feature is how they meet. It is a promise about one ESPHome component and its id, the same on every screen
+([MANIFEST.md](MANIFEST.md), "Features").
+
+**Bringing a feature.** Name it in `provides` and make the component with the feature's id in `plugin.yaml`.
+`tools/check.py` refuses a plugin that provides a feature it does not make:
+
+```yaml
+# tessera-plugin.yaml
+provides: [speaker]
+```
+
+```yaml
+# plugin.yaml
+speaker:
+  - platform: i2s_audio
+    id: ts_speaker                  # the feature's id, never another
+    i2s_dout_pin: GPIO9
+```
+
+A screen has one speaker, so it has one plugin (or its board) that brings it. Another plugin may bring a speaker too,
+for the same board; a person then chooses one of the two for each screen.
+
+**Needing a feature.** Name it in `requires.features` and use the id without making it. The app offers the plugin only
+to a screen that has the feature:
+
+```yaml
+# tessera-plugin.yaml
+requires:
+  features: [speaker]
+```
+
+```yaml
+# plugin.yaml
+my_chime:
+  speaker: ts_speaker
+```
+
+**Using a feature when it is there.** A plugin that also works without it puts what uses the feature in a part with
+`features`. The app offers the part, and builds it, only on a screen that has the feature: a voice plugin listens on
+every screen and answers out loud only where there is a speaker.
+
+```yaml
+# tessera-plugin.yaml
+parts:
+  - { id: aloud, file: parts/aloud.yaml, label: part_aloud, features: [speaker], default: true }
+```
+
+**Needing another plugin.** `requires.plugins: [other_id]` for a plugin that must be on the screen too. The app adds it
+with yours, in the newest version that fits the screen, and asks one yes for both. It must be in the index and made for
+one of your boards.
 
 ## Common mistakes
 
 | What happens | Why | Fix |
 |---|---|---|
 | The build says "No tessera-plugin.yaml above ..." | The component is not in `components/<id>/` next to the manifest. | Keep the folder layout of the template. |
-| The build says the plugin wants another plugin API | `api:` in the manifest is newer than the screen's core. | Name the lowest API whose parts you use; the core offers plugin API 0.6 now. |
+| The build says the plugin wants another plugin API | `api:` in the manifest is newer than the screen's core. | Name the lowest API whose parts you use; the core offers plugin API 0.7 now. |
+| `check.py` says a key "belongs to the core" or "opens the screen" | `plugin.yaml` sets something a plugin never sets, such as `wifi:` or `http_request:`. | Leave it to the core; data comes through a `fetch` ([LIMITS.md](LIMITS.md), "plugin.yaml"). |
+| `check.py` says "provides speaker, so it makes a speaker: with id: ts_speaker" | The plugin promises a feature it does not make, or gives it another id. | Give the component the feature's id. |
+| The plugin is not offered for a screen | It needs a feature or a plugin that screen does not have, or names other `boards`. | Add the plugin that brings the feature to the screen first. |
 | A setting says "Not on this screen yet" | The screen was not built since the entity was added, or the entity's name does not give the key. | Build again; check that "Show seconds" goes with `show_seconds`. |
 | A setting is grey | The screen is offline, or the entity is unavailable in Home Assistant. | Check the screen; a button that was never pressed is fine. |
 | The tile shows "Plugin missing" | The screen was not built with the plugin, or the tile id differs from `add_tile("...")`. | Build again; make the ids match. |

@@ -10,8 +10,11 @@ python3 tools/check.py plugins/my_idea
 
 It runs the Tessera app's own manifest check (`plugin_manifest.py`, downloaded from the Tessera repository into
 `tools/.cache/`) and the rules the app cannot see: the files, the translations, the README and the code rules of
-[FIRMWARE_API.md](FIRMWARE_API.md). Working on Tessera itself? Point it at your checkout:
-`TESSERA_MANIFEST=../homeassistant_espscreen/screen_manager/app/plugin_manifest.py python3 tools/check.py`.
+[FIRMWARE_API.md](FIRMWARE_API.md). It also checks `plugin.yaml` ([LIMITS.md](LIMITS.md), "plugin.yaml"), and that
+what the plugin needs is in the index: the plugins of `requires.plugins`, and a plugin or a board for every feature it
+needs (the boards from Tessera's `boards.json`). Working on Tessera itself? Point it at your checkout:
+`TESSERA_MANIFEST=../homeassistant_espscreen/screen_manager/app/plugin_manifest.py python3 tools/check.py`, and
+`TESSERA_BOARDS=../homeassistant_espscreen/screen_manager/app/boards.json` for its boards.
 
 ## 2. A test folder in Home Assistant (minutes)
 

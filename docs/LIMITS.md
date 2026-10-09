@@ -32,6 +32,7 @@
 | Run code in the Tessera app or the editor | The app holds the key to all of Home Assistant; it runs only its own code. |
 | Reach your home network through the app | A fetch goes only to public hosts the manifest names. |
 | Fetch from the screen itself | The app does it once for every screen, without holding up drawing. |
+| Set the screen's Wi-Fi, API, updates or log, or open a port on it | They belong to the core and the screen's own YAML (below, "plugin.yaml"). |
 | Change without a build | A plugin is part of the firmware: every change builds the screen. |
 | Live video | Pictures reach a screen as snapshots. |
 
@@ -42,6 +43,23 @@ Tessera's own picture route), a message to the app other than a Home Assistant c
 (`permissions.ha_commands`), and a Python part of a plugin in the app (the app runs only its own code, see above). A
 settings page on the screen, a card, top bar items, tap actions, tiles of an entity and questions to the app exist
 since API 0.2 ([FIRMWARE_API.md](FIRMWARE_API.md)).
+
+## plugin.yaml
+
+`plugin.yaml` and the file of every part are merged into the screen's own configuration. `tools/check.py` refuses a
+file that sets one of these keys at its top level:
+
+| Keys | Why |
+|---|---|
+| `esphome`, `esp32`, `esp8266`, `rp2040`, `psram` | The chip, the board and how it starts belong to the core. |
+| `wifi`, `ethernet`, `network`, `improv_serial`, `esp32_improv` | How the screen joins the network is in the screen's own YAML. |
+| `api`, `ota`, `logger` | Home Assistant's connection, updates and the log belong to the screen's own YAML and the core. |
+| `external_components`, `packages`, `substitutions` | The app writes these for every plugin; a plugin's inputs reach `plugin.yaml` as substitutions already. |
+| `web_server`, `captive_portal`, `mqtt`, `wireguard`, `socket`, `udp`, `packet_transport` | They open the screen to the network. |
+| `http_request`, `online_image` | They fetch from the screen; data comes through the app's `fetch`. |
+
+Two more rules for the ids it makes: one that starts with `ts_` only for a feature the plugin provides, and for each
+feature it provides, that feature's component with exactly its id ([MANIFEST.md](MANIFEST.md), "Features").
 
 ## Physical limits
 

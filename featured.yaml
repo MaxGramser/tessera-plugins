@@ -1,0 +1,4 @@
+# The plugins Tessera recommends to start with, in this order: the app shows them first (docs/PUBLISHING.md,
+# "Featured"). Chosen by hand; an id that is not in the index is left out of it.
+- ov_departures
+- waste_collection

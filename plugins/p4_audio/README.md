@@ -5,8 +5,8 @@ a speaker volume, a switch that turns the microphone off, and two tests on the s
 that board are offered it, and only the screens that take it carry the audio code.
 
 The microphone and the speaker are ESPHome's own components (`microphone`, `speaker`, the ES7210 and ES8311 codecs), so
-anything else that uses them, a voice assistant of your own in the screen's Override YAML for example, finds them as
-`p4_microphone` and `p4_speaker`.
+anything else that uses them finds them as `ts_microphone` and `ts_speaker`: another plugin that needs a speaker or a
+microphone, or a voice assistant of your own in the screen's Override YAML.
 
 ## Set up
 
@@ -43,7 +43,8 @@ the panel play and listen first. That pull request also has echo cancellation; t
 
 ## How it works
 
-- `tessera-plugin.yaml`: the board it is for (`boards: [wavesharep4]`), plugin API 0.3, and the three settings.
+- `tessera-plugin.yaml`: the board it is for (`boards: [wavesharep4]`), what it brings for other plugins
+  (`provides: [speaker, microphone]`), API 0.7, and the three settings.
 - `plugin.yaml`: the codecs on the touch panel's I2C bus, the I2S bus, the microphone and the speaker, the speaker's
   amplifier on GPIO53, and the settings as two template switches and a number.
 - `components/p4_audio/`: the settings page, the click (`on_touch`), and the two tests, played from PSRAM without ever

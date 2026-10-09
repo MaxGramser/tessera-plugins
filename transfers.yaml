@@ -1,0 +1,7 @@
+# Ids that moved to another repository or folder (docs/PUBLISHING.md, "Whose id it is"). An id belongs to the
+# repository and folder that first published it; a move needs the consent of the one that had it.
+# - plugin: some_plugin
+#   from: https://github.com/someone/tessera-some-plugin
+#   to: https://github.com/someone-else/tessera-plugins/tree/main/some_plugin
+#   reason: The maker handed it over in issue 12.
+[]

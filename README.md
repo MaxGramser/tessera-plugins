@@ -11,9 +11,12 @@ This repository holds:
 | [`plugins/`](plugins) | The plugins Tessera ships, one folder each. Every folder is a complete plugin. |
 | [`template/`](template) | A small plugin that works, to start your own from. |
 | [`docs/`](docs) | How plugins work and how to make one, step by step. |
-| [`tools/`](tools) | `check.py` (check a plugin), `new_plugin.py` (start one), `build_index.py` (write the index). |
+| [`tools/`](tools) | `check.py` (check a plugin), `new_plugin.py` (start one), `build_index.py` (write the index), `build_likes.py` (copy the likes). |
 | `index.json` | The list the Tessera app reads. Written by `tools/build_index.py`, never by hand. |
 | `blocked.yaml` | Plugin versions the app refuses to build. |
+| `featured.yaml` | The plugins Tessera recommends to start with. |
+| `transfers.yaml` | Plugin ids that moved to another repository. |
+| `likes.json` | How many people like each plugin, copied from Tessera's website every hour by `tools/build_likes.py`. |
 
 ## The plugins
 
@@ -31,7 +34,7 @@ This repository holds:
 3. In **Layout**, place the plugin's tile from the library's **Plugins** group and set its options in the inspector.
 
 Plugins are new and only in the dev version of the app for now (the app added with `#dev` at the end of the repository
-URL, or a local copy). The plugin API is 0.6: while it is 0.x it can still change in a minor, Tessera's own plugins
+URL, or a local copy). The plugin API is 0.7: while it is 0.x it can still change in a minor, Tessera's own plugins
 move with it, and a plugin names the version it was written for ([docs/FIRMWARE_API.md](docs/FIRMWARE_API.md),
 "Versions").
 

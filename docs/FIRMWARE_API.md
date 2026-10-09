@@ -1,4 +1,4 @@
-# The firmware API (plugin API 0.6)
+# The firmware API (plugin API 0.7)
 
 A plugin's code runs on the screen as an ESPHome component. It talks to Tessera's core through one header:
 
@@ -19,8 +19,10 @@ going and is lit while it runs; 0.4 renames the plugin's 250 ms moment from `on_
 `on_tick` everywhere means once a second with the clock, and a tile of an entity names its domains as `domains:` in the
 manifest, as a tap action and an input do (`entity:` before it). 0.5 and 0.6 change the app's side only, not this
 header: 0.5 sends a tile of an entity its lists whole when they fit and adds `fields`, `has_attributes` and `answers`;
-0.6 adds settings of kind text and button with a `status`, found by their name in Home Assistant's entity registry. Name
-the lowest minor whose parts you use, so the plugin builds on as many screens as possible.
+0.6 adds settings of kind text and button with a `status`, found by their name in Home Assistant's entity registry.
+0.7 changes the manifest only: `topics`, features a plugin brings (`provides`) or needs (`requires.features`, a part's
+`features`), and plugins that come along with the one that needs them. Name the lowest minor whose parts you use, so the
+plugin builds on as many screens as possible.
 
 ## The component: `__init__.py`
 
@@ -369,8 +371,9 @@ screen's look. The ones a tile needs most:
   everything of 0.2 in one plugin: a tile of a calendar entity, a card that asks Home Assistant for the coming events, a
   tap action, a top bar item, two settings rows backed by ESPHome entities of `plugin.yaml`, and an input of kind entity.
 - [`plugins/p4_audio/components/p4_audio/p4_audio.cpp`](../plugins/p4_audio/components/p4_audio/p4_audio.cpp): a board's
-  own hardware as a plugin (`boards: [wavesharep4]`): ESPHome's speaker and microphone from `plugin.yaml`, a click in
-  `on_touch`, settings actions that say how they are going, and sound streamed from PSRAM in `loop()` without a wait.
+  own hardware as a plugin (`boards: [wavesharep4]`): ESPHome's speaker and microphone from `plugin.yaml`, brought as the
+  features `ts_speaker` and `ts_microphone` for other plugins, a click in `on_touch`, settings actions that say how they
+  are going, and sound streamed from PSRAM in `loop()` without a wait.
 
 ## What changes in later versions
 

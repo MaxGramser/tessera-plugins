@@ -3,12 +3,16 @@
 # Every field is explained in docs/MANIFEST.md. Start a plugin of your own with: python3 tools/new_plugin.py <id>
 id: my_plugin
 version: 0.1.0
-api: "0.1"
+api: "0.7"
 icon: calendar
 maintainer: your-github-name
 license: MIT
 # beta while it finds its feet, stable once people use it every day, example when it is there to learn from.
 stage: beta
+# What it is about, one or two of: time, weather, calendar, home, energy, travel, money, sports, news, media, photos,
+# fun, voice, tech (docs/MANIFEST.md, "What it is about"). None fits? Ask for a new topic in an issue of the plugins
+# repository.
+topics: [time]
 requires:
   esphome: 2026.6.2
 boards: any

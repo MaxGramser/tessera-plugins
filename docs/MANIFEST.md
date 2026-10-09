@@ -12,11 +12,12 @@ whose name starts with `x-` is ignored, for notes of your own.
 ```yaml
 id: ov_departures
 version: 1.0.0
-api: "0.1"
+api: "0.7"
 icon: bus
 maintainer: MaxGramser
 license: MIT
 stage: example
+topics: [travel]
 requires:
   esphome: 2026.6.2
 boards: any
@@ -74,24 +75,80 @@ starting with a letter.
 |---|---|---|
 | `id` | yes | The plugin's id. Unique in the index, the same as its folder and its component. |
 | `version` | yes | Three numbers, `1.0.0`. Raise it for every change that reaches screens. |
-| `api` | yes | The plugin API it was written for, in quotes: `"0.2"`. It builds on every core with the same major and at least that minor; the core offers plugin API 0.6 now. Name the lowest minor whose parts you use ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
+| `api` | yes | The plugin API it was written for, in quotes: `"0.2"`. It builds on every core with the same major and at least that minor; the core offers plugin API 0.7 now. Name the lowest minor whose parts you use ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
 | `icon` | yes | <a id="icon"></a>A Material Design Icons name from Tessera's icon set (`screen_manager/app/tile_icons.py` in the Tessera repository, such as `bus`, `train`, `calendar`, `thermometer`, `lightbulb`). The screen's icon font holds only that set. |
 | `maintainer` | yes | The GitHub name of whoever looks after the plugin. |
 | `license` | yes | An SPDX name that goes with AGPL-3.0: `MIT`, `Apache-2.0`, `BSD-2-Clause`, `BSD-3-Clause`, `ISC`, `MPL-2.0`, `LGPL-2.1-or-later`, `LGPL-3.0-or-later`, `GPL-3.0-or-later`, `GPL-3.0-only`, `AGPL-3.0-or-later`, `AGPL-3.0-only`, `Unlicense`, `0BSD`, `CC0-1.0`. |
 | `stage` | no | How far along it is, in your word: `stable` (ready for every day), `beta` (works, still finding its feet) or `example` (there to show what a plugin can do and to learn from). The app shows a Beta or Example badge; without it the plugin is `beta`. |
+| `topics` | from API 0.7 | What it is about: one or two of the topics below, `[travel]` or `[home, calendar]`. The app groups and filters plugins by them. |
 
 The plugin's name and one-line summary are not fields: they are `name` and `summary` in `translations/en.json`, part
 `app`, which every plugin must have.
 
-### What it needs
+### What it is about: `topics` (API 0.7)
+
+One or two, the first the one that fits best. A plugin written for API 0.7 or later must have one.
+
+| Topic | What belongs there |
+|---|---|
+| `time` | Clocks, countdowns, timers, alarms, the date. |
+| `weather` | Forecasts, rain, wind, air quality, pollen, tides. |
+| `calendar` | Agendas, events, birthdays, holidays, days something happens. |
+| `home` | The house itself: rooms, appliances, chores, the bins, who is home. |
+| `energy` | Electricity and gas prices, solar panels, batteries, what the house uses. |
+| `travel` | Public transport, traffic, flights, charging stations, the way to work. |
+| `money` | Stocks, currencies, crypto, a budget. |
+| `sports` | Scores, fixtures, standings, workouts. |
+| `news` | Headlines, feeds, messages of a service. |
+| `media` | Music, radio, podcasts, TV, what is playing. |
+| `photos` | Pictures, albums, a picture of the day. |
+| `fun` | Games, quotes, trivia, something to smile at. |
+| `voice` | Speaking and listening: a voice assistant, a speaker, a microphone, sounds. |
+| `tech` | The network, servers, printers, devices and how they are doing. |
+
+There is no catch-all. A plugin that fits none asks for a new topic here, in an issue or a pull request: a topic is
+added in the Tessera app too, so it comes with a core release. `tools/check.py` refuses a topic it does not know; an
+app that does not know a topic yet leaves that topic out, not the plugin.
+
+What a plugin adds is no topic: the app reads it from the manifest ("The kind of plugin", below).
+
+### What it needs and brings
 
 | Field | Default | What |
 |---|---|---|
 | `requires.esphome` | none | The oldest ESPHome it builds with, such as `2026.6.2`. |
 | `requires.psram` | `false` | `true` for a plugin that needs a board with PSRAM (not the CYD). |
-| `requires.plugins` | `[]` | Plugins that must be on the screen first. |
+| `requires.plugins` | `[]` | Plugins that must be on the screen too, at most 8. The app adds them with the one that needs them, each in the newest version that fits the screen, and asks one yes for all of them. Each must be in the index and made for at least one of the plugin's boards (`any` fits every board); no plugin needs itself, and plugins never need each other in a circle. |
+| `requires.features` | `[]` | (API 0.7) Features the screen must have, from the table below: the app offers the plugin only to a screen that has each, from a plugin or from its board. At least one plugin in the index (or a board) must bring each, for one of the plugin's boards. |
+| `provides` | `[]` | (API 0.7) Features the plugin brings for others, from the table below. A plugin cannot need a feature it brings itself. |
 | `boards` | `any` | `any`, or a list of board keys from Tessera's `boards.yaml` (`[cyd, guition]`) for a plugin with hardware of one board. |
 | `flash_kb` | `0` | About how much flash it adds, in KB. The app uses it to say whether it fits a 4 MB board. |
+
+### Features: `provides` and `requires.features` (API 0.7)
+
+A feature is a promise about one ESPHome component and its id. A plugin that needs a speaker finds it as `ts_speaker`,
+whichever plugin or board brings it, the way ESPHome's own voice assistant takes whatever speaker it is given.
+
+| Feature | ESPHome component | Id |
+|---|---|---|
+| `speaker` | `speaker:` | `ts_speaker` |
+| `microphone` | `microphone:` | `ts_microphone` |
+| `media_player` | `media_player:` | `ts_media_player` |
+
+- **Bringing one.** `provides: [speaker]`, and `plugin.yaml` makes that component with exactly that id
+  (`speaker: - platform: i2s_audio` with `id: ts_speaker`). `tools/check.py` checks it.
+- **Needing one.** `requires.features: [speaker]`, and `plugin.yaml` uses the id (`speaker: ts_speaker`) without
+  making it.
+- **Using one when it is there.** A part with `features: [speaker]` (below): the plugin works without it, and does more
+  on a screen that has one.
+- **One of each per screen.** A screen has one speaker: one plugin or its board brings it. Two plugins in the index may
+  bring the same feature; a person then chooses one per screen.
+- **Boards.** A board may bring a feature itself (Tessera's `boards.yaml`); none does yet.
+- **`ts_` is Tessera's.** An id that starts with `ts_` belongs to the core (`ts_touch`) or to a feature. A plugin makes
+  one only for a feature it provides.
+
+`tools/check.py` refuses a feature it does not know. An app that does not know a feature yet keeps one a plugin needs,
+which then fits no screen, and leaves out one a plugin brings.
 
 ### What it may do
 
@@ -130,12 +187,21 @@ so a build without the value still works.
 
 ### Optional parts: `parts`
 
-A part is an extra ESPHome file a person turns on per screen (large test tools, for example).
+A part is an extra ESPHome file a person turns on per screen (large test tools, for example). At most 4.
 
 ```yaml
 parts:
   - { id: tests, file: parts/tests.yaml, label: tests, hint: tests_hint, flash_kb: 440, default: false }
+  - { id: answer_aloud, file: parts/aloud.yaml, label: aloud, features: [speaker], default: true }
 ```
+
+| Field | What |
+|---|---|
+| `id`, `file`, `label` | Required. `file` is a `.yaml` file inside the plugin (`parts/tests.yaml`), with the same rules as `plugin.yaml` ([LIMITS.md](LIMITS.md), "plugin.yaml"). |
+| `hint` | Text key under the part. |
+| `flash_kb` | About how much flash it adds, in KB. |
+| `default` | `true`: on when the plugin is added. |
+| `features` | (API 0.7) Features the part uses: it is offered, and built, only on a screen that has each. A voice plugin answers out loud with a part that needs a speaker, and listens without one. |
 
 ### Tiles: `tiles`
 
@@ -323,10 +389,23 @@ parts), with a **Save and build** key that lights up when something differs from
 The app changes only an entity a plugin on that screen names here, of that screen's own device. A `status` is only
 shown, never set.
 
+## The kind of plugin
+
+The app shows a plugin as one of three kinds. A maker does not write it: the app reads it from the manifest, so it is
+never wrong.
+
+| Kind | When |
+|---|---|
+| Tiles | It has `tiles`. |
+| Hardware | No tiles, and it brings a feature (`provides`), asks for a pin (an input of kind `gpio`), or names its `boards`. |
+| Functions | The rest: something for the whole screen, such as top bar items, tap actions, a voice or a sound. |
+
 ## Limits at a glance
 
 | What | Most |
 |---|---|
+| Topics | 2 |
+| Plugins a plugin needs | 8 |
 | Tiles per plugin | 8 |
 | Options per tile | 12 |
 | Inputs | 8 |

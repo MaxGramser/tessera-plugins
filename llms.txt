@@ -1,7 +1,7 @@
 # Tessera plugins
 
 > Plugins for Tessera, the ESP32 touch screens for Home Assistant. A plugin is an ESPHome component (C++) built into a
-> screen's firmware plus a manifest the Tessera app reads; the app fetches web data for it. The plugin API is 0.6 now.
+> screen's firmware plus a manifest the Tessera app reads; the app fetches web data for it. The plugin API is 0.7 now.
 > Home Assistant is the backend: no plugin code runs in the app.
 
 Start with AGENTS.md (rules for AI assistants), then docs/MAKING_A_PLUGIN.md.
@@ -9,24 +9,25 @@ Start with AGENTS.md (rules for AI assistants), then docs/MAKING_A_PLUGIN.md.
 ## Docs
 - [AGENTS.md](AGENTS.md): rules, the reading order, what "done" means
 - [docs/MAKING_A_PLUGIN.md](docs/MAKING_A_PLUGIN.md): files, steps, how the pieces meet, common mistakes
-- [docs/MANIFEST.md](docs/MANIFEST.md): every field of tessera-plugin.yaml, limits
+- [docs/MANIFEST.md](docs/MANIFEST.md): every field of tessera-plugin.yaml (topics, features, what it needs), limits
 - [docs/FIRMWARE_API.md](docs/FIRMWARE_API.md): tessera::Plugin, tessera::Tile, drawing helpers, rules
 - [docs/FETCH.md](docs/FETCH.md): data from a web service, the map language
 - [docs/TRANSLATIONS.md](docs/TRANSLATIONS.md): screen and app texts, plurals
 - [docs/TESTING.md](docs/TESTING.md): check.py, a test folder in Home Assistant, a local build
-- [docs/PUBLISHING.md](docs/PUBLISHING.md): the index, labels, versions, blocked versions
-- [docs/LIMITS.md](docs/LIMITS.md): what fits and what does not
+- [docs/PUBLISHING.md](docs/PUBLISHING.md): the index, whose id it is, featured plugins, likes, labels, versions, blocked versions
+- [docs/LIMITS.md](docs/LIMITS.md): what fits and what does not, what plugin.yaml may not set
 
 ## Examples
 - [template/](template): the smallest complete plugin, a countdown tile without data
 - [plugins/ov_departures/](plugins/ov_departures): a tile with fetched data, a list of choices and a countdown
 - [plugins/waste_collection/](plugins/waste_collection): a tile of an entity, a card, a tap action, a top bar item, settings
-- [plugins/p4_audio/](plugins/p4_audio): one board's hardware (speaker, microphone) as a plugin, a click on every tap
+- [plugins/p4_audio/](plugins/p4_audio): one board's hardware as a plugin that provides the features speaker and microphone, a click on every tap
 
 ## Tools
 - tools/new_plugin.py <id>: copy the template under a new id
-- tools/check.py [folder]: the app's manifest check plus folder, translation, README and code rules
+- tools/check.py [folder]: the app's manifest check plus folder, translation, README, code and plugin.yaml rules, and what a plugin needs from the index
 - tools/build_index.py: write index.json
+- tools/build_likes.py: write likes.json
 
 ## The core
 - Tessera repository: https://github.com/MaxGramser/homeassistant_espscreen (branch dev while plugins are new)

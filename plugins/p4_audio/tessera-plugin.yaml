@@ -1,13 +1,16 @@
 # Audio on the Waveshare ESP32-P4 86 panel: its speaker and microphone with ESPHome's own components, a click on every
 # tap, and two tests on the screen's settings page. A board's own hardware as a plugin (docs/MANIFEST.md): only screens
-# of the boards below are offered it, and only the screens that take it carry the codecs.
+# of the boards below are offered it, and only the screens that take it carry the codecs. It brings the speaker and the
+# microphone as features, so another plugin that needs one finds it as ts_speaker and ts_microphone.
 id: p4_audio
-version: 1.0.3
-api: "0.3"
+version: 1.1.0
+api: "0.7"
 icon: volume-high
 maintainer: MaxGramser
 license: MIT
 stage: beta
+topics: [voice]
+provides: [speaker, microphone]
 requires:
   esphome: 2026.9.0
   psram: true

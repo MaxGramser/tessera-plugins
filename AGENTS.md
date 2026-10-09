@@ -14,9 +14,10 @@ plugin is done.
    carries out the plugin's `fetch` (JSON from a web service) with its own code.
 4. A tile of a plugin is `plugin:<plugin id>.<tile id>` in a screen's layout. The core gives it a card's drawing area
    while its page is on the glass, hands it the data the app sent (`on_state`), and ticks it once a second (`on_tick`).
-5. The plugin API is 0.6. The manifest names the lowest version whose parts the plugin uses (`api: "0.1"` for a tile
-   alone); it builds on every core with the same major and at least that minor. While the API is 0.x a minor may still
-   change a name: check `docs/FIRMWARE_API.md`, "Versions", before you use a moment by name.
+5. The plugin API is 0.7. The manifest names the lowest version whose parts the plugin uses (`api: "0.1"` for a tile
+   alone, `"0.7"` once it has `topics`); it builds on every core with the same major and at least that minor. While the
+   API is 0.x a minor may still change a name: check `docs/FIRMWARE_API.md`, "Versions", before you use a moment by
+   name.
 
 ## Where each kind of thing lives
 
@@ -29,6 +30,9 @@ plugin is done.
 | A setting a person changes | An ESPHome entity in `plugin.yaml`, named in `settings` | docs/MANIFEST.md, "Settings a person changes" |
 | A value or key filled in once | `inputs` (`scope: all` for every screen, `screen` per screen) | docs/MANIFEST.md, "What a person fills in" |
 | Hardware on the board | ESPHome components in `plugin.yaml`, `boards`, optional `parts` | docs/MAKING_A_PLUGIN.md |
+| A speaker, microphone or media player for other plugins | `provides`, and the component with the feature's id (`ts_speaker`) in `plugin.yaml` | docs/MAKING_A_PLUGIN.md, "Features" |
+| A speaker, microphone or media player another plugin or the board brings | `requires.features`, or a part with `features` when the plugin also works without it | docs/MANIFEST.md, "Features" |
+| Another plugin on the same screen | `requires.plugins`: the app adds it with yours | docs/MANIFEST.md, "What it needs and brings" |
 | A server, an account, a live session (OAuth, a websocket, a voice model) | A Home Assistant integration of its own, which the plugin reaches through its entities and actions | docs/MAKING_A_PLUGIN.md, "Where the backend lives" |
 
 ## Read in this order
@@ -49,6 +53,13 @@ on every tap, settings with tests).
 ## Rules that are never optional
 
 - **Start from the template**: `python3 tools/new_plugin.py <id>`. Do not write the folder from memory.
+- **Topics say what it is about**: one or two of the list in `docs/MANIFEST.md`, "What it is about", required from
+  API 0.7. Never a topic of your own; ask for a new one in an issue. What the plugin adds (tiles, a function, hardware)
+  is no topic: the app reads it from the manifest.
+- **A feature is a promise.** A plugin that `provides` a speaker makes `speaker:` with `id: ts_speaker`; one that needs
+  it uses `ts_speaker` and never makes it. Ids that start with `ts_` are Tessera's, for nothing else.
+- **plugin.yaml adds, it never takes over**: no `wifi`, `api`, `ota`, `logger`, `esphome`, `http_request`,
+  `web_server`, `packages`, `external_components` or the other keys of `docs/LIMITS.md`, "plugin.yaml".
 - **The id is the same everywhere**: the folder in `plugins/`, `id:` in the manifest, the component folder
   `components/<id>/`, the YAML key in `plugin.yaml` and the C++ namespace `esphome::<id>`. Lowercase letters, digits
   and `_`, starting with a letter, at most 32.
