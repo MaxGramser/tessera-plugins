@@ -13,8 +13,8 @@ Start with AGENTS.md (rules for AI assistants), then docs/MAKING_A_PLUGIN.md.
 - [docs/FIRMWARE_API.md](docs/FIRMWARE_API.md): tessera::Plugin, tessera::Tile, drawing helpers, rules
 - [docs/FETCH.md](docs/FETCH.md): data from a web service, the map language
 - [docs/TRANSLATIONS.md](docs/TRANSLATIONS.md): screen and app texts, plurals
-- [docs/TESTING.md](docs/TESTING.md): check.py, a test folder in Home Assistant, a local build
-- [docs/PUBLISHING.md](docs/PUBLISHING.md): the index, whose id it is, featured plugins, likes, labels, versions, blocked versions
+- [docs/TESTING.md](docs/TESTING.md): check.py, a test from a GitHub link, a test folder in Home Assistant, a local build
+- [docs/PUBLISHING.md](docs/PUBLISHING.md): where a plugin comes from (index, link, branch, folder) and how it is pinned and updated, id and origin, whose id it is, finding a plugin, featured, likes, labels, blocked versions, versions
 - [docs/LIMITS.md](docs/LIMITS.md): what fits and what does not, what plugin.yaml may not set
 
 ## Examples

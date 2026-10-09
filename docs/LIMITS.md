@@ -7,11 +7,11 @@
 | The next bus from your stop, with your line chosen in the editor | A tile, a `fetch`, an option with `options_from` (the `ov_departures` plugin). |
 | Today's waste collection from your municipality's API | A tile and a `fetch`. |
 | Hourly energy prices of your own supplier | A `fetch` (up to 48 items) and a tile that draws them. |
-| A day of electricity prices per quarter of an hour from Home Assistant (Nord Pool, ENTSO-e, Tibber, ...) | A tile with `domains`, `has_attributes` and `fields` with `as: numbers` for a sensor's attributes, or `answers` for an action's answer (API 0.5). |
+| A day of electricity prices per quarter of an hour from Home Assistant (Nord Pool, ENTSO-e, Tibber, ...) | A tile with `domains`, `has_attributes` and `fields` with `as: numbers` for a sensor's attributes, or `answers` for an action's answer. |
 | A countdown to a date | A tile on the screen's clock alone (the template). |
 | A sensor or a relay on the board's free pins | An ESPHome component with `inputs` of kind `gpio`; anything ESPHome can do. |
-| Waking the screen when someone stands in front of it | A plugin with a radar sensor and `on_tick`. |
-| Settings a person changes in the editor, a test with its result ("Heard: Okay Nabu") | ESPHome entities in `plugin.yaml` named in `settings`; a button with a `status` (API 0.6). |
+| Waking the screen when someone stands in front of it | A plugin with a radar sensor and `on_interval`. |
+| Settings a person changes in the editor, a test with its result ("Heard: Okay Nabu") | ESPHome entities in `plugin.yaml` named in `settings`; a button with a `status`. |
 | Talking to an AI model or a voice assistant | Home Assistant's Assist and its conversation agents (OpenAI, Anthropic); the plugin picks the assistant, the key stays in Home Assistant. |
 
 ## Works with a way around
@@ -41,8 +41,8 @@
 Not in the plugin API so far: a picture of the plugin's own on a tile or a card (pictures reach a screen through
 Tessera's own picture route), a message to the app other than a Home Assistant command its manifest names
 (`permissions.ha_commands`), and a Python part of a plugin in the app (the app runs only its own code, see above). A
-settings page on the screen, a card, top bar items, tap actions, tiles of an entity and questions to the app exist
-since API 0.2 ([FIRMWARE_API.md](FIRMWARE_API.md)).
+settings page on the screen, a card, top bar items, tap actions, tiles of an entity and questions to the app are all
+there ([FIRMWARE_API.md](FIRMWARE_API.md)).
 
 ## plugin.yaml
 

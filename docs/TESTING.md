@@ -1,6 +1,6 @@
 # Testing a plugin
 
-Three layers, from quick to real. A plugin is done when it ran on a real screen.
+Four ways, from quick to real. A plugin is done when it ran on a real screen.
 
 ## 1. The check (seconds)
 
@@ -16,9 +16,27 @@ needs (the boards from Tessera's `boards.json`). Working on Tessera itself? Poin
 `TESSERA_MANIFEST=../homeassistant_espscreen/screen_manager/app/plugin_manifest.py python3 tools/check.py`, and
 `TESSERA_BOARDS=../homeassistant_espscreen/screen_manager/app/boards.json` for its boards.
 
-## 2. A test folder in Home Assistant (minutes)
+## 2. A test from GitHub (minutes)
 
-The quickest way onto a real screen, with nothing published:
+The simplest way onto a real screen: push the plugin to a repository of your own, without a release, and add it with a
+link.
+
+1. Push the plugin to GitHub: the whole repository is the plugin, or the plugin is a folder in it.
+2. Open Tessera, go to Plugins, **Add with a link**, and paste `https://github.com/<you>/<repo>`, or
+   `https://github.com/<you>/<repo>/tree/main/<folder>` for a folder. The app reads the plugin and says whether it fits
+   before anything is built.
+3. Add it to a screen. A repository without a release is a test of its default branch, with the label **Test**: the
+   screen builds the commit the app read. The build's progress and log are in the screen's Plugins tab.
+4. Place the tile in Layout and set its options.
+5. Push a change. Within the hour the app sees the newer commit and offers it as an update on the screen's Plugins tab;
+   one tap builds it. Nothing is built without that tap.
+
+Once the repository has releases, a plain link takes the newest release. To keep testing a branch, choose
+**Test a branch** in the same dialog and name it.
+
+## 3. A test folder in Home Assistant (minutes)
+
+Nothing published at all, and every build takes the folder as it is:
 
 1. Copy the plugin's folder into Home Assistant's config, beside the `esphome` folder, under its id:
 
@@ -31,14 +49,13 @@ The quickest way onto a real screen, with nothing published:
    The Samba share, the File editor or `scp` all work.
 2. Open Tessera, go to Plugins. The plugin is there with the label **Test**. A folder that is not a valid plugin shows
    what is wrong with it under the list.
-3. Add it to a screen. The app writes the screen's plugins file with the folder in it and builds the screen; the
-   build's log is under Firmware & USB.
+3. Add it to a screen. The app writes the screen's plugins file with the folder in it and builds the screen.
 4. Place the tile in Layout and set its options.
 5. After a change in the folder, open the plugin in the screen's Plugins tab and press **Build again**.
 
-A test folder has no version check and no updates: every build takes what the folder holds.
+A test folder has no updates: every build takes what the folder holds.
 
-## 3. A build on your own computer
+## 4. A build on your own computer
 
 The screen's YAML and its plugins file build anywhere ESPHome runs:
 

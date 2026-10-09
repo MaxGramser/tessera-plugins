@@ -14,10 +14,8 @@ plugin is done.
    carries out the plugin's `fetch` (JSON from a web service) with its own code.
 4. A tile of a plugin is `plugin:<plugin id>.<tile id>` in a screen's layout. The core gives it a card's drawing area
    while its page is on the glass, hands it the data the app sent (`on_state`), and ticks it once a second (`on_tick`).
-5. The plugin API is 0.7. The manifest names the lowest version whose parts the plugin uses (`api: "0.1"` for a tile
-   alone, `"0.7"` once it has `topics`); it builds on every core with the same major and at least that minor. While the
-   API is 0.x a minor may still change a name: check `docs/FIRMWARE_API.md`, "Versions", before you use a moment by
-   name.
+5. The plugin API is 0.7, and a manifest says `api: "0.7"`. A plugin builds on every core with the same major and at
+   least its minor. While the API is 0.x a minor may still change a name (`docs/FIRMWARE_API.md`, "Versions").
 
 ## Where each kind of thing lives
 
@@ -53,16 +51,16 @@ on every tap, settings with tests).
 ## Rules that are never optional
 
 - **Start from the template**: `python3 tools/new_plugin.py <id>`. Do not write the folder from memory.
-- **Topics say what it is about**: one or two of the list in `docs/MANIFEST.md`, "What it is about", required from
-  API 0.7. Never a topic of your own; ask for a new one in an issue. What the plugin adds (tiles, a function, hardware)
+- **Topics say what it is about**: one or two of the list in `docs/MANIFEST.md`, "What it is about", always. Never a topic of your own; ask for a new one in an issue. What the plugin adds (tiles, a function, hardware)
   is no topic: the app reads it from the manifest.
 - **A feature is a promise.** A plugin that `provides` a speaker makes `speaker:` with `id: ts_speaker`; one that needs
   it uses `ts_speaker` and never makes it. Ids that start with `ts_` are Tessera's, for nothing else.
 - **plugin.yaml adds, it never takes over**: no `wifi`, `api`, `ota`, `logger`, `esphome`, `http_request`,
   `web_server`, `packages`, `external_components` or the other keys of `docs/LIMITS.md`, "plugin.yaml".
-- **The id is the same everywhere**: the folder in `plugins/`, `id:` in the manifest, the component folder
-  `components/<id>/`, the YAML key in `plugin.yaml` and the C++ namespace `esphome::<id>`. Lowercase letters, digits
-  and `_`, starting with a letter, at most 32.
+- **The id is the same everywhere, and for ever**: the folder in `plugins/`, `id:` in the manifest, the component
+  folder `components/<id>/`, the YAML key in `plugin.yaml` and the C++ namespace `esphome::<id>`. Lowercase letters,
+  digits and `_`, starting with a letter, at most 32. Screens, layouts and secrets know the plugin by it: never rename
+  it. A fork that keeps the id is another plugin of that id (another origin) and never gets the original's secrets.
 - **No words in code or manifest.** Every name, label and hint in the manifest is a key into
   `translations/en.json`, part `app`. Every word on the screen is a key of part `screen`, read with
   `plugin->text("key")`. English is complete; other languages may lack keys.
@@ -96,5 +94,7 @@ on every tap, settings with tests).
 python3 tools/check.py plugins/<id>     # must print "<id>: ok"
 ```
 
-Then build it on a real screen ([docs/TESTING.md](docs/TESTING.md)). A plugin that passes the check but was never on a
+Then build it on a real screen ([docs/TESTING.md](docs/TESTING.md)): push it to GitHub and add the repository's link
+in the app (without a release that is a test of the default branch, and a newer push shows as an update), or copy the
+folder into Home Assistant's config as `tessera-plugins/<id>/`. A plugin that passes the check but was never on a
 screen is not done: say so, and say which board you did not try.

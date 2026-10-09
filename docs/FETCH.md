@@ -65,7 +65,7 @@ A small path language, on purpose without filters or expressions:
 | `[:5]` | The first five items. |
 
 A field path (inside `fields`, `value`, `label`) starts at an item, without `$`: `name`, `departure.time`, `stops[0]`.
-From API 0.5 it may also start with a list step, for an answer that files its list under a name you cannot know in
+It may also start with a list step, for an answer that files its list under a name you cannot know in
 advance: `[*][*].price` reads every price of Nord Pool's `{"NL": [...]}`.
 
 The same paths and kinds work in a tile's `fields` (the attributes of its entity) and in `answers` (the answer of a
@@ -108,7 +108,7 @@ A field is a path, or `{ path, as, tz }`:
 | `text` (default) | Text, at most 48 bytes. |
 | `number` | A number (a text such as `"0,23"` is read as one). |
 | `epoch` | Seconds since 1970, from a number (seconds or milliseconds) or an ISO 8601 time. A time without a zone is read in `tz` (`Europe/Amsterdam`), or in Home Assistant's time zone without one. |
-| `numbers` | (API 0.5) Every value the path reaches, in order, as one list of numbers: `prices[*].price` of 96 objects is 96 numbers. A value that is not a number is `null`, so a slot keeps its place. |
+| `numbers` | Every value the path reaches, in order, as one list of numbers: `prices[*].price` of 96 objects is 96 numbers. A value that is not a number is `null`, so a slot keeps its place. |
 
 At most 8 fields. A field that is missing in an item is `null`.
 

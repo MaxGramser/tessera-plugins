@@ -6,12 +6,13 @@ that board are offered it, and only the screens that take it carry the audio cod
 
 The microphone and the speaker are ESPHome's own components (`microphone`, `speaker`, the ES7210 and ES8311 codecs), so
 anything else that uses them finds them as `ts_microphone` and `ts_speaker`: another plugin that needs a speaker or a
-microphone, or a voice assistant of your own in the screen's Override YAML.
+microphone, or a voice assistant of your own in the screen's Override YAML. On this panel such a plugin brings this one
+along when it is added.
 
 ## Set up
 
 1. Have a screen of the Waveshare ESP32-P4 86 panel (board `wavesharep4`) in Tessera.
-2. Open **Plugins**, choose **P4 panel audio** and tick the screen. It builds once with the plugin.
+2. Open **Plugins**, tab **Hardware**, choose **P4 panel audio** and tick the screen. It builds once with the plugin.
 3. On the screen: hold the top bar, then **Settings**, **Plugins**, **Audio**, and tap **Test the speaker**.
 
 ## On the screen

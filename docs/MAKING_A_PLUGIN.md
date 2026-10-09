@@ -154,27 +154,29 @@ It runs the Tessera app's own manifest check and the rules for the C++. Fix what
 
 ### 7. Put it on your screen
 
-Copy the plugin's folder into Home Assistant's config, next to the `esphome` folder:
+Two ways, both a test only you see, with the label **Test**:
 
-```
-/config/tessera-plugins/my_idea/      (the folder as it is in plugins/my_idea/)
-```
+- **From GitHub.** Push the plugin to a repository of your own and add its link in Tessera: Plugins, **Add with a
+  link**. Without a release the app tests your default branch. It builds the commit it read, and a newer push shows as
+  an update on the screen's Plugins tab within the hour, which one tap builds.
+- **From a folder.** Copy the plugin's folder into Home Assistant's config, next to the `esphome` folder, as
+  `/config/tessera-plugins/my_idea/`. Every build takes what the folder holds: after a change, open the plugin in the
+  screen's Plugins tab and press **Build again**.
 
-Open Tessera, go to Plugins: your plugin is there with the label **Test**. Add it to a screen; the app writes the
-screen's plugins file and builds the screen. Place its tile in Layout. Its settings, inputs and parts are in its details
-on the screen's Plugins tab. After every change in the folder, open the plugin there and press **Build again**. [TESTING.md](TESTING.md) has more ways to try it,
-including a build on your own computer.
+Add it to a screen; the app writes the screen's plugins file and builds the screen. Place its tile in Layout. Its
+settings, inputs and parts are in its details on the screen's Plugins tab. [TESTING.md](TESTING.md) has both ways step
+by step, and a build on your own computer.
 
 ### 8. Publish it
 
-See [PUBLISHING.md](PUBLISHING.md): a plugin in this repository through a pull request, or in a repository of your own
-listed in the index.
+See [PUBLISHING.md](PUBLISHING.md): a plugin in this repository through a pull request, or in a repository of your own,
+added with a link or listed in the index.
 
 ## How the pieces meet
 
 ```
 Home Assistant config                               Tessera app (in Home Assistant)
-  esphome/kitchen.yaml        <- packages:            reads tessera-plugin.yaml (index or folder)
+  esphome/kitchen.yaml        <- packages:            reads tessera-plugin.yaml (index, link or folder)
     tessera_plugins: !include kitchen.plugins.yaml    writes kitchen.plugins.yaml
   esphome/kitchen.plugins.yaml                        runs the plugin's fetches, sends each tile its data
      packages: plugin_my_idea  -> plugin.yaml
@@ -187,8 +189,10 @@ Screen
 
 - The screen's own YAML gets one line under `packages:` once, and every build of that screen (the app's, ESPHome
   Device Builder's, a computer that shares the folder) builds the same plugins.
-- The plugins file pins a plugin from the index to one commit. A new release of the plugin reaches a screen only when
-  someone updates it in the app.
+- The plugins file pins every plugin to one commit, except one from a folder. A newer version reaches a screen only
+  when someone updates it in the app.
+- The id is the plugin's name for ever: the firmware, the layouts and the secrets know the plugin by it. Never change
+  it once the plugin is on a screen.
 - A screen that does not have a plugin draws its tiles as a plain card with the tile's name and "Plugin missing". It
   never fails or restarts over it.
 
@@ -252,8 +256,9 @@ speaker:
 A screen has one speaker, so it has one plugin (or its board) that brings it. Another plugin may bring a speaker too,
 for the same board; a person then chooses one of the two for each screen.
 
-**Needing a feature.** Name it in `requires.features` and use the id without making it. The app offers the plugin only
-to a screen that has the feature:
+**Needing a feature.** Name it in `requires.features` and use the id without making it. A screen has the feature from
+its board or from a plugin that brings it. When it lacks it, that plugin comes along with yours: by itself when one
+fits the screen, the person's choice when several do. With none the plugin does not fit that screen:
 
 ```yaml
 # tessera-plugin.yaml
@@ -278,8 +283,9 @@ parts:
 ```
 
 **Needing another plugin.** `requires.plugins: [other_id]` for a plugin that must be on the screen too. The app adds it
-with yours, in the newest version that fits the screen, and asks one yes for both. It must be in the index and made for
-one of your boards.
+with yours, in the newest version that fits the screen, in the same build, and asks one yes for both. It must be in
+the index and made for one of your boards. A plugin yours needs is removed only together with yours, and one that only
+came along is offered to go as well.
 
 ## Common mistakes
 
@@ -289,7 +295,7 @@ one of your boards.
 | The build says the plugin wants another plugin API | `api:` in the manifest is newer than the screen's core. | Name the lowest API whose parts you use; the core offers plugin API 0.7 now. |
 | `check.py` says a key "belongs to the core" or "opens the screen" | `plugin.yaml` sets something a plugin never sets, such as `wifi:` or `http_request:`. | Leave it to the core; data comes through a `fetch` ([LIMITS.md](LIMITS.md), "plugin.yaml"). |
 | `check.py` says "provides speaker, so it makes a speaker: with id: ts_speaker" | The plugin promises a feature it does not make, or gives it another id. | Give the component the feature's id. |
-| The plugin is not offered for a screen | It needs a feature or a plugin that screen does not have, or names other `boards`. | Add the plugin that brings the feature to the screen first. |
+| The plugin fits none of the screens | It names other `boards`, or nothing in the index that fits the screen brings a feature it needs. | Check `boards`; a feature needs a plugin in the index (or a board) that brings it for that board. |
 | A setting says "Not on this screen yet" | The screen was not built since the entity was added, or the entity's name does not give the key. | Build again; check that "Show seconds" goes with `show_seconds`. |
 | A setting is grey | The screen is offline, or the entity is unavailable in Home Assistant. | Check the screen; a button that was never pressed is fine. |
 | The tile shows "Plugin missing" | The screen was not built with the plugin, or the tile id differs from `add_tile("...")`. | Build again; make the ids match. |

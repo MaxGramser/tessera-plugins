@@ -9,20 +9,10 @@ A plugin's code runs on the screen as an ESPHome component. It talks to Tessera'
 The header lives in the Tessera repository at `components/smart_display/plugin_api.h`; it is the reference, and this
 page explains it. Everything is in namespace `tessera`.
 
-**Versions.** A manifest names the API it was written for (`api: "0.2"`). A plugin builds on every core with the same
-major and at least its minor. From 1.0 on that is a promise: a minor only adds, only a break raises the major. While the
-API is 0.x it is not promised to anyone yet: a minor may still change a name or a signature as the API settles, and
-Tessera's own plugins move with it in the same release; the core refuses a plugin written for a newer API than its own
-with one sentence. 0.1 has tiles and the moments; 0.2 adds tiles of an entity, cards, tap actions, top bar items,
-settings rows, questions to the app and the date words; 0.3 adds `on_touch`, and a settings action that says how it is
-going and is lit while it runs; 0.4 renames the plugin's 250 ms moment from `on_tick` to `on_interval`, so that
-`on_tick` everywhere means once a second with the clock, and a tile of an entity names its domains as `domains:` in the
-manifest, as a tap action and an input do (`entity:` before it). 0.5 and 0.6 change the app's side only, not this
-header: 0.5 sends a tile of an entity its lists whole when they fit and adds `fields`, `has_attributes` and `answers`;
-0.6 adds settings of kind text and button with a `status`, found by their name in Home Assistant's entity registry.
-0.7 changes the manifest only: `topics`, features a plugin brings (`provides`) or needs (`requires.features`, a part's
-`features`), and plugins that come along with the one that needs them. Name the lowest minor whose parts you use, so the
-plugin builds on as many screens as possible.
+**Versions.** A manifest names the plugin API it was written for: `api: "0.7"`, the one the core offers now. A plugin
+builds on every core with the same major and at least its minor, and a core with an older API refuses it with one
+sentence. From 1.0 on that is a promise: a minor only adds, only a break raises the major. While the API is 0.x a minor
+may still change a name or a signature as the API settles, and Tessera's own plugins move with it in the same release.
 
 ## The component: `__init__.py`
 
@@ -70,9 +60,9 @@ class MyIdea : public Component, public tessera::Plugin {
 | Member | What |
 |---|---|
 | `add_tile(id, make)` | A tile type, by its id in the manifest. Call it in `setup()`. `make` returns a new tile object; the core deletes it. |
-| `add_card(id, make, wide)` | A card (0.2), by its id in the manifest's `cards`. `wide`: as wide as the glass instead of a hand's width. |
-| `add_tap_action(id, run)` | A tap action for Home Assistant's own tiles (0.2), by its id in `tap_actions`. |
-| `add_bar_item(id, read)` | An item for the top bar (0.2), by its id in `bar_items`. |
+| `add_card(id, make, wide)` | A card, by its id in the manifest's `cards`. `wide`: as wide as the glass instead of a hand's width. |
+| `add_tap_action(id, run)` | A tap action for Home Assistant's own tiles, by its id in `tap_actions`. |
+| `add_bar_item(id, read)` | An item for the top bar, by its id in `bar_items`. |
 | `text(key)` | A text of part `screen` of the plugin's translations, `""` for an unknown key. |
 | `plugin_id()`, `plugin_version()` | From the manifest. |
 | `memory(tile)` | A tile type's `memory` from the manifest. |
@@ -82,14 +72,14 @@ The moments every plugin can hear (override what you need; each has an empty def
 | Moment | When |
 |---|---|
 | `on_ready()` | The screen's interface is up. |
-| `on_interval(now_ms)` | Every 250 ms, the screen's own interval, with `millis()` (0.4; `on_tick` before it). Keep it short: the screen draws and takes taps in the same loop. A tile's or a card's `on_tick` is another thing: once a second, with the clock. |
+| `on_interval(now_ms)` | Every 250 ms, the screen's own interval, with `millis()`. Keep it short: the screen draws and takes taps in the same loop. A tile's or a card's `on_tick` is another thing: once a second, with the clock. |
 | `on_standby(dark)` | The screen dimmed or went dark (`true`), or woke up (`false`). |
 | `before_update()` | A firmware update starts: let go of large buffers. |
-| `settings(page)` | Once, when the interface is up: add rows to the screen's settings page (0.2, below). Return true when you added some. |
-| `on_message(message)` | An answer of the app to `tessera::send()` (0.2, below). |
-| `on_cards_closed()` | The cards closed: Back, standby, Back to page 1, another card (0.2). |
-| `on_alert()` | An alert is about to show, a doorbell for example (0.2). |
-| `on_touch()` | A tap the screen took, after the touch filter (0.3): a tile, a key, a button, a row of the settings, Back or the pager. For a click or a buzz. It runs inside the touch event, so start a sound there and never wait for it. A slider's release, a refused tap and the repeat of a held key do not count. |
+| `settings(page)` | Once, when the interface is up: add rows to the screen's settings page (below). Return true when you added some. |
+| `on_message(message)` | An answer of the app to `tessera::send()` (below). |
+| `on_cards_closed()` | The cards closed: Back, standby, Back to page 1, another card. |
+| `on_alert()` | An alert is about to show, a doorbell for example. |
+| `on_touch()` | A tap the screen took, after the touch filter: a tile, a key, a button, a row of the settings, Back or the pager. For a click or a buzz. It runs inside the touch event, so start a sound there and never wait for it. A slider's release, a refused tap and the repeat of a held key do not count. |
 
 ## A tile: `tessera::Tile`
 
@@ -131,8 +121,8 @@ A change of the tile's size or options makes a new object: `create()` never has 
 | `width`, `height` | Its size in pixels, the card's padding already off. |
 | `columns`, `rows` | The grid cells the tile covers (1x1, 2x1, ...). |
 | `name` | The name the tile got in the editor, `""` for none. Valid during `create()` only: copy it. |
-| `entity` | The Home Assistant entity the tile belongs to (0.2, a manifest tile with `domains`), `""` for none. Copy it. |
-| `tile` | The tile's index in the layout (0.2): pass it to `tessera::open_card` so the card follows the tile. |
+| `entity` | The Home Assistant entity the tile belongs to (a manifest tile with `domains`), `""` for none. Copy it. |
+| `tile` | The tile's index in the layout: pass it to `tessera::open_card` so the card follows the tile. |
 | `options` | The tile's options, the manifest's defaults filled in. Read with ArduinoJson: `c.options["walk"] \| 0`. |
 
 ### What `on_state` gets
@@ -150,14 +140,14 @@ or, for a map without `items`, the fields of one object. Two more keys can be th
 | `"stale": true` | The service did not answer the last time; this is the last good answer. Say so if it matters. |
 | `"wait": "<why>"` | There is no answer to show: `not_filled` (an option the URL needs is empty), `asking` (the first answer is on its way), `failed` (the service did not answer and there is no older answer), `too_large`, `refused`. |
 
-A tile with `domains` (0.2) also gets its entity, and is sent again whenever that entity changes in Home Assistant:
+A tile with `domains` also gets its entity, and is sent again whenever that entity changes in Home Assistant:
 
 ```json
 { "state": "off", "name": "Waste", "attributes": { "message": "Paper", "start_time": 1791410400 } }
 ```
 
-`attributes` holds only the ones the manifest's `attributes` names and the `fields` it takes out of them (0.5), a text
-cut at 48 bytes. A list comes whole when the tile's data fits its 2.6 KB (0.5; 16 items before): two days of 96 prices
+`attributes` holds only the ones the manifest's `attributes` names and the `fields` it takes out of them, a text
+cut at 48 bytes. A list comes whole when the tile's data fits its 2.6 KB: two days of 96 prices
 do. Lists that do not fit together are shortened, all to the same length, from the end. An
 attribute whose name ends in `_at`, `_time` or `date` and holds a moment comes as seconds since 1970, so the tile says it
 in the screen's words (`tessera::date_text`, `days_from_today`). `"wait": "wrong_entity"` means the entity chosen in the
@@ -165,7 +155,7 @@ editor is of another domain than the manifest names.
 
 A tile without `data` and without `domains` gets `{}`.
 
-## A tile of an entity (0.2)
+## A tile of an entity
 
 In the manifest, `domains: [calendar]` and `attributes: [message, start_time]`. The editor then
 offers the entities of those domains in the tile's inspector, also of a domain Tessera itself draws no tile for. To act on
@@ -179,7 +169,7 @@ tessera::action("climate.set_temperature", entity_, "temperature", "21");
 The screen must be allowed to perform actions, and the manifest names each action under
 `permissions.home_assistant_actions`.
 
-## A card (0.2)
+## A card
 
 A card is a screen of its own over the page, opened by a tile's `on_tap`, a tap action or a settings row. Tessera draws
 its frame: the page's ground, a round back key at the top left and the title in the middle; the card draws everything
@@ -204,7 +194,7 @@ tessera::open_card(plugin_id(), "upcoming", entity_, tile_);   // from a tile's 
 none). `on_state` gets a plugin tile's data, or `{"state", "name"}` of one of Tessera's tiles. The title is the tile's
 name unless `open_card` passes one; `tessera::close_card()` closes it as Back does.
 
-## A tap action (0.2)
+## A tap action
 
 A tap action lets a person set one of Tessera's own tiles to do something of the plugin on a tap: a sensor tile that
 opens the plugin's card. The manifest's `tap_actions` names the domains it is for; the editor offers it in the tap
@@ -217,7 +207,7 @@ add_tap_action("upcoming", [this](const tessera::TapContext &c) {
 });
 ```
 
-## A top bar item (0.2)
+## A top bar item
 
 The manifest's `bar_items` lists them; a person places one on a page's top bar in the editor, under "From plugins".
 The screen asks the plugin what it shows every few seconds and draws the bar again when that changed:
@@ -232,7 +222,7 @@ add_bar_item("soon", [this]() {
 
 An item that is not shown takes no room. A screen without the plugin draws nothing for it.
 
-## Settings rows (0.2)
+## Settings rows
 
 Rows on the screen's own settings page (hold the top bar): Settings, then Plugins, then the plugin's page, drawn exactly
 as Tessera's rows. Keep the values where Home Assistant sees them too: an ESPHome entity of `plugin.yaml` (a template
@@ -253,9 +243,9 @@ bool settings(tessera::SettingsPage &page) override {
 ```
 
 Also `choice(label, {words...}, read, write)`, `action(label, icon, run, confirm, text)` and `info(label, text)`. At
-most twelve rows. An action with `confirm` asks once, as Restart does. With `text` (0.3) it says how it is going on its
+most twelve rows. An action with `confirm` asks once, as Restart does. With `text` it says how it is going on its
 right, read again every second while the page shows: a test that runs, a countdown. `.active(running)` after it
-lights the row in the accent while `running` says so (0.3), the way a row that asks is lit; a tap on it is yours to
+lights the row in the accent while `running` says so, the way a row that asks is lit; a tap on it is yours to
 stop what runs.
 
 ```cpp
@@ -264,7 +254,7 @@ page.action(text("tone"), "\U000F0387", [this] { tone_ ? stop() : play_tone(); }
     .active([this] { return tone_; });
 ```
 
-## Questions to the app (0.2)
+## Questions to the app
 
 A plugin may ask Home Assistant something the screen cannot: the events of a calendar, a sensor's history. The app asks
 it on the plugin's behalf, only a command the manifest names under `permissions.ha_commands`, and logs every one.
@@ -283,8 +273,7 @@ void on_message(JsonObjectConst m) override {             // {"re": asked_, "ok"
 
 `call_service:<domain>.<service>` sends the action with `return_response` and hands back its response; `entity_id`,
 `device_id` and `area_id` go as the target, the rest as the action's data. A request is at most 512 bytes; an answer at
-most about 3 KB: longer texts are cut to 48 bytes, and lists shortened from the end only when it does not fit (0.5; at
-most 48 items before). An answer the manifest maps under `answers` (0.5) comes as its fields: a day of prices as one
+most about 3 KB: longer texts are cut to 48 bytes, and lists shortened from the end only when it does not fit. An answer the manifest maps under `answers` comes as its fields: a day of prices as one
 list of numbers instead of a list of objects ([MANIFEST.md](MANIFEST.md), "Answers").
 
 ## Drawing: `tessera::ui`
@@ -336,12 +325,12 @@ screen's look. The ones a tile needs most:
 | `tessera::format(text, n)` | `{n}` filled in; with `"1 day \| {n} days"` the form that fits `n` in the screen's language. |
 | `tessera::fill(text, name, value)` | `{name}` filled in. |
 | `tessera::refresh()` | Draw the plugin's cards again in the next pass, after a change outside `on_state` and `on_tick`. |
-| `tessera::days_from_today(epoch)` | 0 today, 1 tomorrow, -1 yesterday, on the screen's calendar (0.2). `INT32_MIN` while the clock is not set. |
-| `tessera::date_text(epoch)` | A day as the top bar writes it: "Fri 9 Oct", "vr 9 okt" (0.2). |
-| `tessera::days_text(days)` | "Tomorrow", "In 3 days" in the screen's language; `""` for today (bring your own word) and the past (0.2). |
-| `tessera::action(service, entity, key, value)` | A Home Assistant action on an entity (0.2, see "A tile of an entity"). |
-| `tessera::open_card(plugin_id, card, entity, tile, title)`, `close_card()` | Open or close a card (0.2). |
-| `tessera::send(plugin, request)` | Ask the app (0.2, see "Questions to the app"). |
+| `tessera::days_from_today(epoch)` | 0 today, 1 tomorrow, -1 yesterday, on the screen's calendar. `INT32_MIN` while the clock is not set. |
+| `tessera::date_text(epoch)` | A day as the top bar writes it: "Fri 9 Oct", "vr 9 okt". |
+| `tessera::days_text(days)` | "Tomorrow", "In 3 days" in the screen's language; `""` for today (bring your own word) and the past. |
+| `tessera::action(service, entity, key, value)` | A Home Assistant action on an entity (see "A tile of an entity"). |
+| `tessera::open_card(plugin_id, card, entity, tile, title)`, `close_card()` | Open or close a card. |
+| `tessera::send(plugin, request)` | Ask the app (see "Questions to the app"). |
 
 ## Rules
 
@@ -368,15 +357,14 @@ screen's look. The ones a tile needs most:
 - [`plugins/ov_departures/components/ov_departures/ov_departures.cpp`](../plugins/ov_departures/components/ov_departures/ov_departures.cpp):
   data from a fetch, a single-cell layout and a list layout, badges, a countdown every second, waiting states.
 - [`plugins/waste_collection/components/waste_collection/waste_collection.cpp`](../plugins/waste_collection/components/waste_collection/waste_collection.cpp):
-  everything of 0.2 in one plugin: a tile of a calendar entity, a card that asks Home Assistant for the coming events, a
+  most of the API in one plugin: a tile of a calendar entity, a card that asks Home Assistant for the coming events, a
   tap action, a top bar item, two settings rows backed by ESPHome entities of `plugin.yaml`, and an input of kind entity.
 - [`plugins/p4_audio/components/p4_audio/p4_audio.cpp`](../plugins/p4_audio/components/p4_audio/p4_audio.cpp): a board's
   own hardware as a plugin (`boards: [wavesharep4]`): ESPHome's speaker and microphone from `plugin.yaml`, brought as the
   features `ts_speaker` and `ts_microphone` for other plugins, a click in `on_touch`, settings actions that say how they
   are going, and sound streamed from PSRAM in `loop()` without a wait.
 
-## What changes in later versions
+## Not in the API yet
 
-Not in the API yet: a plugin's own messages beyond Home Assistant commands, and pictures (a camera of the plugin's
-own). Each will raise the minor; a plugin
-raises its `api` only when it uses one.
+A plugin's own messages beyond Home Assistant commands, and pictures (a camera of the plugin's own). Each will raise
+the minor.

@@ -49,4 +49,4 @@ else the English one.
 ## Translating someone's plugin
 
 A translation is a pull request on the plugin's repository: add `translations/<language>.json` (and a README if you
-like). The app sees it with the next release of the plugin.
+like). Screens get it with the plugin's next version, as an update.

@@ -75,19 +75,19 @@ starting with a letter.
 |---|---|---|
 | `id` | yes | The plugin's id. Unique in the index, the same as its folder and its component. |
 | `version` | yes | Three numbers, `1.0.0`. Raise it for every change that reaches screens. |
-| `api` | yes | The plugin API it was written for, in quotes: `"0.2"`. It builds on every core with the same major and at least that minor; the core offers plugin API 0.7 now. Name the lowest minor whose parts you use ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
+| `api` | yes | The plugin API it was written for, in quotes: `"0.7"`, the plugin API 0.7 the core offers now. It builds on every core with the same major and at least that minor ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
 | `icon` | yes | <a id="icon"></a>A Material Design Icons name from Tessera's icon set (`screen_manager/app/tile_icons.py` in the Tessera repository, such as `bus`, `train`, `calendar`, `thermometer`, `lightbulb`). The screen's icon font holds only that set. |
 | `maintainer` | yes | The GitHub name of whoever looks after the plugin. |
 | `license` | yes | An SPDX name that goes with AGPL-3.0: `MIT`, `Apache-2.0`, `BSD-2-Clause`, `BSD-3-Clause`, `ISC`, `MPL-2.0`, `LGPL-2.1-or-later`, `LGPL-3.0-or-later`, `GPL-3.0-or-later`, `GPL-3.0-only`, `AGPL-3.0-or-later`, `AGPL-3.0-only`, `Unlicense`, `0BSD`, `CC0-1.0`. |
 | `stage` | no | How far along it is, in your word: `stable` (ready for every day), `beta` (works, still finding its feet) or `example` (there to show what a plugin can do and to learn from). The app shows a Beta or Example badge; without it the plugin is `beta`. |
-| `topics` | from API 0.7 | What it is about: one or two of the topics below, `[travel]` or `[home, calendar]`. The app groups and filters plugins by them. |
+| `topics` | yes | What it is about: one or two of the topics below, `[travel]` or `[home, calendar]`. The Plugins page shows them as chips to filter by. |
 
 The plugin's name and one-line summary are not fields: they are `name` and `summary` in `translations/en.json`, part
 `app`, which every plugin must have.
 
-### What it is about: `topics` (API 0.7)
+### What it is about: `topics`
 
-One or two, the first the one that fits best. A plugin written for API 0.7 or later must have one.
+One or two, the first the one that fits best. `tools/check.py` and the index require at least one.
 
 | Topic | What belongs there |
 |---|---|
@@ -107,10 +107,11 @@ One or two, the first the one that fits best. A plugin written for API 0.7 or la
 | `tech` | The network, servers, printers, devices and how they are doing. |
 
 There is no catch-all. A plugin that fits none asks for a new topic here, in an issue or a pull request: a topic is
-added in the Tessera app too, so it comes with a core release. `tools/check.py` refuses a topic it does not know; an
-app that does not know a topic yet leaves that topic out, not the plugin.
+added in the Tessera app too, so it comes with a core release. `tools/check.py` refuses a topic it does not know. The app
+reads leniently: a topic it does not know yet is left out, never the plugin, and a plugin without topics shows under
+none.
 
-What a plugin adds is no topic: the app reads it from the manifest ("The kind of plugin", below).
+What a plugin adds is no topic: the app reads it from the manifest ("The type of plugin", below).
 
 ### What it needs and brings
 
@@ -118,13 +119,13 @@ What a plugin adds is no topic: the app reads it from the manifest ("The kind of
 |---|---|---|
 | `requires.esphome` | none | The oldest ESPHome it builds with, such as `2026.6.2`. |
 | `requires.psram` | `false` | `true` for a plugin that needs a board with PSRAM (not the CYD). |
-| `requires.plugins` | `[]` | Plugins that must be on the screen too, at most 8. The app adds them with the one that needs them, each in the newest version that fits the screen, and asks one yes for all of them. Each must be in the index and made for at least one of the plugin's boards (`any` fits every board); no plugin needs itself, and plugins never need each other in a circle. |
-| `requires.features` | `[]` | (API 0.7) Features the screen must have, from the table below: the app offers the plugin only to a screen that has each, from a plugin or from its board. At least one plugin in the index (or a board) must bring each, for one of the plugin's boards. |
-| `provides` | `[]` | (API 0.7) Features the plugin brings for others, from the table below. A plugin cannot need a feature it brings itself. |
+| `requires.plugins` | `[]` | Plugins that must be on the screen too, at most 8. They come along: the app adds them from the index with the one that needs them, each in the newest version that fits the screen, in the same build, and asks one yes for all of them. Each must be in the index and made for at least one of the plugin's boards (`any` fits every board); no plugin needs itself, and plugins never need each other in a circle. |
+| `requires.features` | `[]` | Features the screen must have, from the table below. A screen has a feature from its board or from a plugin that brings it. When it lacks one, the plugin of the index that brings it and fits the screen comes along; with several the person chooses one, with none the plugin does not fit that screen. At least one plugin in the index (or a board) must bring each, for one of the plugin's boards. |
+| `provides` | `[]` | Features the plugin brings for others, from the table below. A plugin cannot need a feature it brings itself. |
 | `boards` | `any` | `any`, or a list of board keys from Tessera's `boards.yaml` (`[cyd, guition]`) for a plugin with hardware of one board. |
 | `flash_kb` | `0` | About how much flash it adds, in KB. The app uses it to say whether it fits a 4 MB board. |
 
-### Features: `provides` and `requires.features` (API 0.7)
+### Features: `provides` and `requires.features`
 
 A feature is a promise about one ESPHome component and its id. A plugin that needs a speaker finds it as `ts_speaker`,
 whichever plugin or board brings it, the way ESPHome's own voice assistant takes whatever speaker it is given.
@@ -142,7 +143,9 @@ whichever plugin or board brings it, the way ESPHome's own voice assistant takes
 - **Using one when it is there.** A part with `features: [speaker]` (below): the plugin works without it, and does more
   on a screen that has one.
 - **One of each per screen.** A screen has one speaker: one plugin or its board brings it. Two plugins in the index may
-  bring the same feature; a person then chooses one per screen.
+  bring the same feature; a person then chooses one per screen, and the app never puts a second one on it.
+- **Coming along, and going.** What a plugin needs comes along when it is added, in one build. A plugin another one
+  needs is removed only together with it (the app asks), and a plugin that only came along is offered to go as well.
 - **Boards.** A board may bring a feature itself (Tessera's `boards.yaml`); none does yet.
 - **`ts_` is Tessera's.** An id that starts with `ts_` belongs to the core (`ts_touch`) or to a feature. A plugin makes
   one only for a feature it provides.
@@ -160,7 +163,7 @@ before anyone adds the plugin, and asks again when an update asks for more.
 | `permissions.network` | The hosts its fetches reach: names only, no address, nothing on a home network (`.local`, `192.168.x.x`). A fetch to any other host is refused. |
 | `permissions.read_entities` | Home Assistant entities the screen itself reads (an ESPHome `homeassistant` sensor). `"{calendar}"` stands for the entity a person chose in the input `calendar`. |
 | `permissions.home_assistant_actions` | Home Assistant actions the screen calls (`tessera::action`). |
-| `permissions.ha_commands` | Home Assistant commands the app may ask on the plugin's behalf (`tessera::send`, API 0.2): `call_service:<domain>.<service>` for an action that answers (`call_service:calendar.get_events`), or a websocket command (`history/history_during_period`). Commands that read or change Home Assistant itself (`config/...`, `auth`, `supervisor`, `fire_event`, `render_template`, plain `call_service`, ...) are refused. Every one asked is logged. |
+| `permissions.ha_commands` | Home Assistant commands the app may ask on the plugin's behalf (`tessera::send`): `call_service:<domain>.<service>` for an action that answers (`call_service:calendar.get_events`), or a websocket command (`history/history_during_period`). Commands that read or change Home Assistant itself (`config/...`, `auth`, `supervisor`, `fire_event`, `render_template`, plain `call_service`, ...) are refused. Every one asked is logged. |
 | `attributes` | Any of `cloud` (uses a service outside the home), `commercial`, `ai-developed`. A plugin with `permissions.network` has `cloud`. |
 | `privacy` | An https link to what the service sees. Required with `cloud`. A section of the README is fine. |
 
@@ -176,7 +179,7 @@ inputs:
 
 | Field | What |
 |---|---|
-| `kind` | `secret` (kept by the app, never shown again, never on the screen or in YAML; used in a fetch), `text`, `gpio` (a free pin of the board), or `entity` (API 0.2: an entity of `domains`, for the plugin's own `homeassistant` sensors). |
+| `kind` | `secret` (kept by the app, never shown again, never on the screen or in YAML; used in a fetch), `text`, `gpio` (a free pin of the board), or `entity` (an entity of `domains`, for the plugin's own `homeassistant` sensors). |
 | `domains` | For `entity`, and only there: the Home Assistant domains it takes, `[calendar]`. The editor offers the entities of those domains. |
 | `scope` | `all`: asked once for every screen. `screen`: per screen. Default: `all` for a secret, `screen` for the rest. |
 | `label`, `hint` | Text keys. |
@@ -201,7 +204,7 @@ parts:
 | `hint` | Text key under the part. |
 | `flash_kb` | About how much flash it adds, in KB. |
 | `default` | `true`: on when the plugin is added. |
-| `features` | (API 0.7) Features the part uses: it is offered, and built, only on a screen that has each. A voice plugin answers out loud with a part that needs a speaker, and listens without one. |
+| `features` | Features the part uses: it is offered, and built, only on a screen that has each. A voice plugin answers out loud with a part that needs a speaker, and listens without one. |
 
 ### Tiles: `tiles`
 
@@ -212,10 +215,10 @@ parts:
 | `icon` | no | From Tessera's icon set; the plugin's icon when left out. The editor shows it, and a screen without the plugin draws it on its placeholder. |
 | `sizes` | yes | `{ min: 1x1, max: 2x2 }`, columns x rows. The editor offers the sizes in between that fit the screen's grid. |
 | `memory` | yes | What one tile costs of the screen's layout memory, in bytes (64 to 16384). The screen and the app add it to the layout's budget. About 400 for a few labels, 1200 for a list. |
-| `domains` | no | The Home Assistant domains of the entity the tile belongs to, `[calendar]`, as a tap action and an input of kind `entity` name theirs (API 0.4; `entity:` before it). The inspector offers the entities of those domains, also of a domain Tessera draws no tile for; the tile gets the entity's state, name and `attributes`, again at every change. |
-| `attributes` | no | With `domains`: the attributes the tile gets, at most 16. One named `..._at`, `..._time` or `...date` that holds a moment comes as seconds since 1970. A list comes whole when it fits (API 0.5; 16 items before): texts and numbers, not objects. |
-| `fields` | no | With `domains` (API 0.5): values taken out of the entity's attributes with the paths and kinds of a fetch's map ([FETCH.md](FETCH.md)), at most 8, each named apart from `attributes`, `state` and `name`. `{ prices: { path: "raw_today[*].value", as: numbers } }` turns a list of 96 objects into one list of 96 numbers, which fits where the objects would not. |
-| `has_attributes` | no | With `domains` (API 0.5): attributes an entity must have to be offered in the inspector, at most 8. `[raw_today]` lists the price sensor instead of every sensor in the house. Only the list: the tile keeps its entity when an attribute is gone for a while (an entity that is unavailable has none). |
+| `domains` | no | The Home Assistant domains of the entity the tile belongs to, `[calendar]`, as a tap action and an input of kind `entity` name theirs. The inspector offers the entities of those domains, also of a domain Tessera draws no tile for; the tile gets the entity's state, name and `attributes`, again at every change. |
+| `attributes` | no | With `domains`: the attributes the tile gets, at most 16. One named `..._at`, `..._time` or `...date` that holds a moment comes as seconds since 1970. A list comes whole when it fits: texts and numbers, not objects. |
+| `fields` | no | With `domains`: values taken out of the entity's attributes with the paths and kinds of a fetch's map ([FETCH.md](FETCH.md)), at most 8, each named apart from `attributes`, `state` and `name`. `{ prices: { path: "raw_today[*].value", as: numbers } }` turns a list of 96 objects into one list of 96 numbers, which fits where the objects would not. |
+| `has_attributes` | no | With `domains`: attributes an entity must have to be offered in the inspector, at most 8. `[raw_today]` lists the price sensor instead of every sensor in the house. Only the list: the tile keeps its entity when an attribute is gone for a while (an entity that is unavailable has none). |
 | `data` | no | The id of the fetch whose answer the tile gets in `on_state`. |
 | `example` | no | Text key: a line the editor shows on the tile's placeholder. |
 | `preview` | no | How the editor draws the tile from its data, so the page in the editor looks like the glass (it cannot run your C++). With `data` or `domains`. `badge`, `title` and `value` are templates of the first item's fields (`"{line}"`, `"{to}"`; for a tile of an entity `{state}`, `{name}` and its attributes); `countdown` names a field with `as: epoch`, and the editor counts down to it in whole minutes (the editor's clock moves every 30 seconds). `value` or `countdown`, not both. Without a preview the editor shows the icon, the name and `example`. |
@@ -247,7 +250,7 @@ At most 8. [FETCH.md](FETCH.md) explains them in full.
 | `every` | How old an answer may get: `30s`, `5m`, `1h`, `1d`. At least 30 seconds. |
 | `map` | What of the answer reaches the screen. |
 
-### Answers: `answers` (API 0.5)
+### Answers: `answers`
 
 What the screen gets of the answer to a command of `permissions.ha_commands`: its fields, with the paths and kinds of a
 fetch's map. A command without an entry here comes as Home Assistant answered it, bounded.
@@ -265,7 +268,7 @@ answers:
 `on_message` then gets `{"re": 1, "ok": true, "result": {"prices": [83.1, 81.4, ...], "start": 1791410400}}`: about
 700 bytes instead of 8 KB of objects, of which a quarter would have fitted. At most 8 entries, one per command.
 
-### Cards: `cards` (API 0.2)
+### Cards: `cards`
 
 A screen of the plugin's own over the page ([FIRMWARE_API.md](FIRMWARE_API.md), "A card").
 
@@ -280,7 +283,7 @@ cards:
 | `name` | Text key: what the editor calls it. On the screen the card's title is the tile's name, or what `open_card` passes. |
 | `wide` | `true`: as wide as the glass (a picture, a timeline); else a hand's width, as Tessera's own cards. |
 
-### Tap actions: `tap_actions` (API 0.2)
+### Tap actions: `tap_actions`
 
 Something a person can set one of Tessera's own tiles to do on a tap, in the tile's inspector.
 
@@ -296,7 +299,7 @@ tap_actions:
 | `domains` | The kinds of tile it is offered for. |
 | `card` | Optional: the card it opens, for the editor's description. |
 
-### Top bar items: `bar_items` (API 0.2)
+### Top bar items: `bar_items`
 
 ```yaml
 bar_items:
@@ -310,7 +313,7 @@ bar_items:
 | `icon` | From Tessera's set; the plugin's icon when left out. |
 | `example` | Text key: what the editor's mockup of the bar shows. |
 
-### Settings a person changes: `settings` (API 0.2, more kinds in 0.6)
+### Settings a person changes: `settings`
 
 A setting is an ESPHome entity of the plugin's `plugin.yaml`. Home Assistant sees it like any entity of the screen, the
 screen can show it on its own settings page, and the Tessera editor shows it in the plugin's details on the screen's
@@ -355,23 +358,22 @@ text_sensor:
 |---|---|
 | `key` | The entity's `name` in `plugin.yaml` written as an id, the way ESPHome does it: lowercase, a space becomes `_`, anything but letters, digits, `_` and `-` becomes `_`. "Tap sound" is `tap_sound`, "Mic gain (dB)" is `mic_gain__db_`. Give settings plain names and the key is obvious. |
 | `label`, `hint` | Text keys: the row's name and the line under it. |
-| `status` | (API 0.6) Only for a button: the key of a text sensor whose state the row shows beside the button, so a test can say how it went ("Heard: Okay Nabu"). The editor reads it again a few times after a press. |
+| `status` | Only for a button: the key of a text sensor whose state the row shows beside the button, so a test can say how it went ("Heard: Okay Nabu"). The editor reads it again a few times after a press. |
 
 The kind of row follows from the entity's platform:
 
-| Platform in `plugin.yaml` | The editor shows | Since |
-|---|---|---|
-| `switch` | A switch | 0.2 |
-| `number` | A number with its min, max, step and unit, with - and + | 0.2 |
-| `select` | Its options as buttons, a dropdown from six options on (at most 48) | 0.2 (dropdown 0.6) |
-| `text` | A text field, saved with Enter or when it is left, within the entity's `min_length` and `max_length`; hidden when its `mode` is `password` | 0.6 |
-| `button` | A **Run** key, with its `status` beside it | 0.6 |
+| Platform in `plugin.yaml` | The editor shows |
+|---|---|
+| `switch` | A switch |
+| `number` | A number with its min, max, step and unit, with - and + |
+| `select` | Its options as buttons, a dropdown from six options on (at most 48) |
+| `text` | A text field, saved with Enter or when it is left, within the entity's `min_length` and `max_length`; hidden when its `mode` is `password` |
+| `button` | A **Run** key, with its `status` beside it |
 
 **How the app finds the entity.** It looks in Home Assistant's entity registry for an entity of that screen's device
 whose name in ESPHome gives the key. A person who renames the entity in Home Assistant keeps the setting; so does a
 screen with a name other than you expected. Do not build on Home Assistant's `unique_id` or the YAML `id`: neither is
-what the key means. (Before API 0.6 the app matched the end of the entity id; it still does for an entity Home
-Assistant's registry does not have.)
+what the key means. An entity Home Assistant's registry does not have is found by the end of its entity id.
 
 **Settings, inputs or parts?**
 
@@ -389,12 +391,12 @@ parts), with a **Save and build** key that lights up when something differs from
 The app changes only an entity a plugin on that screen names here, of that screen's own device. A `status` is only
 shown, never set.
 
-## The kind of plugin
+## The type of plugin
 
-The app shows a plugin as one of three kinds. A maker does not write it: the app reads it from the manifest, so it is
-never wrong.
+The app shows a plugin as one of three types, one tab each on the Plugins page. A maker does not write it: the app
+reads it from the manifest, so it is never wrong.
 
-| Kind | When |
+| Type | When |
 |---|---|
 | Tiles | It has `tiles`. |
 | Hardware | No tiles, and it brings a feature (`provides`), asks for a pin (an input of kind `gpio`), or names its `boards`. |

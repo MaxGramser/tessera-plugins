@@ -28,10 +28,17 @@ This repository holds:
 
 ## Using a plugin
 
-1. Open Tessera in Home Assistant and go to **Plugins**, or to the **Plugins** tab of a screen.
-2. Open a plugin, read what it does and what it may do, tick the screens it goes on, and apply. Each screen builds its
-   firmware once with the plugin in it.
+1. Open Tessera in Home Assistant and go to **Plugins**, or to the **Plugins** tab of a screen. The tabs Tiles,
+   Functions and Hardware say what a plugin adds, and In use what your screens run. Topics narrow the list, and it is
+   sorted by most liked unless you choose newest or name.
+2. Open a plugin, read what it does and what it may do, tick the screens it goes on, and apply. What it needs comes
+   along: a plugin it names, or the plugin that brings a speaker the screen lacks. Each screen builds its firmware once
+   with all of it.
 3. In **Layout**, place the plugin's tile from the library's **Plugins** group and set its options in the inspector.
+
+A plugin that is not in the list can be added with a link to its GitHub repository (**Add with a link**). Every screen
+stays on the commit it was built with: a newer version shows as an update on the screen's Plugins tab, and one tap
+builds it.
 
 Plugins are new and only in the dev version of the app for now (the app added with `#dev` at the end of the repository
 URL, or a local copy). The plugin API is 0.7: while it is 0.x it can still change in a minor, Tessera's own plugins
@@ -50,9 +57,10 @@ python3 tools/check.py plugins/my_idea       # the same check the app does
 Then read [docs/MAKING_A_PLUGIN.md](docs/MAKING_A_PLUGIN.md). It goes through every file, how to try the plugin on
 your own screen before anyone else sees it, and how it gets into the list.
 
-A plugin can also live in a repository of your own. List it once with a pull request that adds a four-line file to
-`community/`; after that every release you publish reaches the app by itself within the hour, without a pull request
-here ([docs/PUBLISHING.md](docs/PUBLISHING.md)).
+A plugin can also live in a repository of your own. To try it, push it and add the repository's link in the app: a
+repository without a release is a test of its default branch. To share it, list it once with a pull request that adds a
+three-line file to `community/`; after that every release you publish reaches the app by itself within the hour,
+without a pull request here ([docs/PUBLISHING.md](docs/PUBLISHING.md)).
 
 Working with an AI assistant? Point it at [AGENTS.md](AGENTS.md) first: it has the rules and the order to read the
 docs in.
