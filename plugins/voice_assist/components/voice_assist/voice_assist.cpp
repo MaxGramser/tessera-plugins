@@ -1,7 +1,6 @@
 #include "voice_assist.h"
 
 #include "esphome/components/api/api_server.h"
-#include "esphome/components/audio/audio.h"
 #include "esphome/core/hal.h"
 
 namespace esphome::voice_assist {
@@ -152,27 +151,16 @@ bool VoiceAssist::settings(tessera::SettingsPage &page) {
 }
 
 void VoiceAssist::loop() {
-  // A sound goes to the speaker as far as its buffer takes it, the rest at the next turns of the loop; nothing waits.
-  if (playing_ != nullptr && speaker_ != nullptr) {
-    played_ += speaker_->play(playing_->data + played_, playing_->length - played_, 0);
-    if (played_ >= playing_->length) playing_ = nullptr;
-  }
-  // While Assist thinks: the plop, again and again.
+  // While Assist thinks: the plop, again and again. The player hands the speaker what it takes, never waiting.
   if (phase_ == Phase::THINKING && is_on(thinking_sound_on_) && millis() - plopped_at_ >= PLOP_EVERY_MS) {
     plopped_at_ = millis();
-    play_(thinking_sound_);
+    sounds_.play(thinking_sound_);
   }
-}
-
-void VoiceAssist::play_(const Sound &sound) {
-  if (speaker_ == nullptr || sound.length == 0) return;
-  speaker_->set_audio_stream_info(audio::AudioStreamInfo(16, sound.channels, sound.rate));
-  playing_ = &sound;
-  played_ = 0;
+  sounds_.loop();
 }
 
 void VoiceAssist::listening_() {
-  if (phase_ != Phase::LISTENING && is_on(wake_sound_on_)) play_(wake_sound_);
+  if (phase_ != Phase::LISTENING && is_on(wake_sound_on_)) sounds_.play(wake_sound_);
 }
 
 void VoiceAssist::phase(Phase p) {
@@ -198,7 +186,7 @@ void VoiceAssist::heard(const std::string &text) {
 
 void VoiceAssist::answer(const std::string &text) {
   // The answer is about to play on the same speaker: a plop that is still going stops here.
-  if (playing_ == &thinking_sound_) playing_ = nullptr;
+  if (sounds_.playing(thinking_sound_)) sounds_.stop();
   answer_ = text;
   answered_at_ = millis();
   phase_ = Phase::ANSWERING;
