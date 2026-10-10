@@ -259,11 +259,11 @@ names stay the same on every board and in every update (Tessera's docs/PROFILES.
 | `ts_touch` | the touch panel |
 | `gpio_backlight_pwm`, `back_light` | the output that drives the backlight, and the light on it |
 | `touch_bus` | the I2C bus the touch panel is on, on every board that has one (the M5Stack Tab5: `tab5_bus`) |
-| `ts_speaker`, `ts_microphone`, `ts_media_player` | a feature, from whichever plugin or board brings it (below) |
+| `ts_speaker`, `ts_microphone`, `ts_media_player`, `ts_camera` | a feature, from whichever plugin or board brings it (below) |
 
-A chip on the touch panel's bus (the audio codecs of the Waveshare P4 panel, in `plugins/p4_audio/plugin.yaml`) takes
-`i2c_id: touch_bus`. Any other id of a board file can change in an update; give your own parts ids that start with your
-plugin's id (`p4_audio_amp`), so they never meet one of Tessera's. Ids that start with `ts_` are Tessera's: a plugin
+A chip on the touch panel's bus (a sensor you added beside it) takes `i2c_id: touch_bus`. Any other id of a board file
+can change in an update; give your own parts ids that start with your plugin's id (`my_idea_sensor`), so they never
+meet one of Tessera's. Ids that start with `ts_` are Tessera's: a plugin
 makes one only for a feature it brings.
 
 ## Features: a speaker, a microphone, a media player

@@ -21,7 +21,9 @@ Start with AGENTS.md (rules for AI assistants), then docs/MAKING_A_PLUGIN.md.
 - [template/](template): the smallest complete plugin, a countdown tile without data
 - [plugins/ov_departures/](plugins/ov_departures): a tile with fetched data, a list of choices and a countdown
 - [plugins/waste_collection/](plugins/waste_collection): a tile of an entity, a card, a tap action, a top bar item, settings
-- [plugins/p4_audio/](plugins/p4_audio): one board's hardware as a plugin that provides the features speaker and microphone, a click on every tap
+- [plugins/voice_assist/](plugins/voice_assist): ESPHome's voice components on the features microphone, speaker and media player, sounds, a tile and a top bar item in colour
+- [plugins/screen_camera/](plugins/screen_camera): a board's camera through the board-only feature camera_sensor, with a driver of its own
+- [plugins/tap_sound/](plugins/tap_sound): the smallest plugin with a sound
 
 ## Tools
 - tools/new_plugin.py <id>: copy the template under a new id

@@ -45,8 +45,9 @@ plugin is done.
 The two plugins to copy from: [`template/`](template) (a tile without data, the smallest complete plugin) and
 [`plugins/ov_departures/`](plugins/ov_departures) (a tile with data from a web service, a list of choices and a
 countdown). For the other parts: [`plugins/waste_collection/`](plugins/waste_collection) (a tile of an entity, a card,
-a tap action, a top bar item, settings) and [`plugins/p4_audio/`](plugins/p4_audio) (one board's hardware, a click
-on every tap, settings with tests).
+a tap action, a top bar item, settings), [`plugins/voice_assist/`](plugins/voice_assist) (features it needs, sounds of
+its own, ESPHome components of its own, a top bar item in colour) and [`plugins/screen_camera/`](plugins/screen_camera)
+(a board's hardware through a feature only a board brings, and a driver beside the plugin's own component).
 
 ## Rules that are never optional
 

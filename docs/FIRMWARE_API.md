@@ -285,6 +285,38 @@ void on_message(JsonObjectConst m) override {             // {"re": asked_, "ok"
 most about 3 KB: longer texts are cut to 48 bytes, and lists shortened from the end only when it does not fit. An answer the manifest maps under `answers` comes as its fields: a day of prices as one
 list of numbers instead of a list of objects ([MANIFEST.md](MANIFEST.md), "Answers").
 
+## Sounds
+
+A plugin that needs the feature `speaker` can bring sounds of its own (0.8): WAV files of 16-bit samples, mono or
+stereo, in its component's folder. `smart_display.sound()` builds one into the firmware in `__init__.py`, and checks it
+(a file that is not such a WAV stops the build with the reason); `tessera::SoundPlayer` from `plugin_sound.h` plays
+them on `ts_speaker`, one at a time, at any rate the file has:
+
+```python
+from pathlib import Path
+from esphome.components import smart_display, speaker
+
+TICK = Path(__file__).parent / "sounds" / "tap.wav"
+# in CONFIG_SCHEMA: cv.Required("speaker"): cv.use_id(speaker.Speaker), and a check that runs smart_display.read_sound(TICK)
+# in to_code:
+cg.add(var.set_speaker(await cg.get_variable(config["speaker"])))
+cg.add(var.set_tick(smart_display.sound(config[CONF_ID], "tick", TICK)))
+```
+
+```cpp
+#include "esphome/components/smart_display/plugin_sound.h"
+
+tessera::Sound tick_;           // set_tick() keeps it
+tessera::SoundPlayer sounds_;   // set_speaker() hands it the speaker
+
+void loop() override { sounds_.loop(); }       // hands the speaker what it takes now, never waits
+void on_touch() override { sounds_.play(tick_); }
+```
+
+`play()` starts a sound in place of the one that plays, `stop()` ends it, `playing(sound)` says which one plays. A
+sound follows the screen's volume. On a board whose microphone and speaker share one bus (`AUDIO_HALF_DUPLEX`), a sound
+waits while something listens, and the player drops it when the speaker took nothing of it for a second.
+
 ## Drawing: `tessera::ui`
 
 The screen's look is the same on every tile, so a plugin draws with the core's sizes, colours and fonts.
@@ -371,10 +403,13 @@ screen's look. The ones a tile needs most:
 - [`plugins/waste_collection/components/waste_collection/waste_collection.cpp`](../plugins/waste_collection/components/waste_collection/waste_collection.cpp):
   most of the API in one plugin: a tile of a calendar entity, a card that asks Home Assistant for the coming events, a
   tap action, a top bar item, two settings rows backed by ESPHome entities of `plugin.yaml`, and an input of kind entity.
-- [`plugins/p4_audio/components/p4_audio/p4_audio.cpp`](../plugins/p4_audio/components/p4_audio/p4_audio.cpp): a board's
-  own hardware as a plugin (`boards: [wavesharep4]`): ESPHome's speaker and microphone from `plugin.yaml`, brought as the
-  features `ts_speaker` and `ts_microphone` for other plugins, a click in `on_touch`, settings actions that say how they
-  are going, and sound streamed from PSRAM in `loop()` without a wait.
+- [`plugins/voice_assist/components/voice_assist/voice_assist.cpp`](../plugins/voice_assist/components/voice_assist/voice_assist.cpp):
+  ESPHome's own components (`micro_wake_word`, `voice_assistant`) from `plugin.yaml` on the features it needs, a tile
+  and a top bar item whose icon changes tone, settings rows and sounds of its own.
+- [`plugins/screen_camera/`](../plugins/screen_camera): a board's hardware through a feature only a board brings
+  (`camera_sensor`), a driver beside the plugin's own component, and a top bar item that follows the camera.
+- [`plugins/tap_sound/components/tap_sound/tap_sound.cpp`](../plugins/tap_sound/components/tap_sound/tap_sound.cpp): the
+  smallest plugin with a sound, played in `on_touch`.
 
 ## Not in the API yet
 

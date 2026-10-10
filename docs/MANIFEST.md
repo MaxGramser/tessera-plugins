@@ -151,8 +151,8 @@ whichever plugin or board brings it, the way ESPHome's own voice assistant takes
 - **Boards.** A board may bring a feature itself: the reTerminal D1001 brings a speaker, a microphone and a media
   player (Tessera's `features/audio.yaml`). A plugin that brings one the board has does not fit that screen.
 - **Only a board.** `camera_sensor` is hardware: the camera's sensor, which the board powers and whose I2C bus it names
-  in the substitution `CAMERA_I2C`. A plugin needs it (`requires.features: [camera_sensor]`) and uses
-  `i2c_id: ${CAMERA_I2C}`; no plugin brings it.
+  in the substitution `CAMERA_I2C`, and the pin that clocks it in `CAMERA_XCLK_PIN` (-1 when the sensor has its own
+  clock). A plugin needs it (`requires.features: [camera_sensor]`) and uses `i2c_id: ${CAMERA_I2C}`; no plugin brings it.
 - **`ts_` is Tessera's.** An id that starts with `ts_` belongs to the core (`ts_touch`) or to a feature. A plugin makes
   one only for a feature it provides.
 
