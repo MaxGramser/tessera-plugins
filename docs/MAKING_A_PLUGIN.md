@@ -46,6 +46,7 @@ Every file has a counterpart in [`template/`](../template); read it next to this
 ### 1. Copy the template
 
 ```sh
+pip install pyyaml                  # once: the tools read YAML with PyYAML
 python3 tools/new_plugin.py my_idea
 ```
 
@@ -152,7 +153,11 @@ changes", has the table of which to use.
 python3 tools/check.py plugins/my_idea
 ```
 
-It runs the Tessera app's own manifest check and the rules for the C++. Fix what it says until it prints `ok`.
+It needs Python 3 with PyYAML (`pip install pyyaml`). It runs the Tessera app's own manifest check and the rules for the
+C++. Fix what it says until it prints `ok`. It also fails while the plugin still has what only the template may have:
+`maintainer: your-github-name`, `<year> <your name>` in `LICENSE` (fill it in, or delete the file for a plugin in
+`plugins/` of this repository, which the repository's LICENSE covers), and the README's line that it is the template.
+[TESTING.md](TESTING.md) says what else it checks.
 
 ### 7. Put it on your screen
 
@@ -327,7 +332,8 @@ came along is offered to go as well.
 | What happens | Why | Fix |
 |---|---|---|
 | The build says "No tessera-plugin.yaml above ..." | The component is not in `components/<id>/` next to the manifest. | Keep the folder layout of the template. |
-| The build says the plugin wants another plugin API | `api:` in the manifest is newer than the screen's core. | Name the lowest API whose parts you use; the core offers plugin API 0.8 now. |
+| The build says the plugin wants another plugin API | `api:` in the manifest is newer than the screen's core. | Name the lowest API whose parts you use; the core offers plugin API 0.8 now. Or update the screen's firmware. |
+| The build says a newer API "changed a name it may use" | `api:` is from before a minor that renamed something (0.4: `Plugin::on_tick` became `on_interval`). | Move the code to the new name and raise `api` ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
 | `check.py` says a key "belongs to the core" or "opens the screen" | `plugin.yaml` sets something a plugin never sets, such as `wifi:` or `http_request:`. | Leave it to the core; data comes through a `fetch` ([LIMITS.md](LIMITS.md), "plugin.yaml"). |
 | `check.py` says "provides speaker, so it makes a speaker: with id: ts_speaker" | The plugin promises a feature it does not make, or gives it another id. | Give the component the feature's id. |
 | The plugin fits none of the screens | It names other `boards`, or nothing in the index that fits the screen brings a feature it needs. | Check `boards`; a feature needs a plugin in the index (or a board) that brings it for that board. |

@@ -78,26 +78,57 @@ There are two ways for people to find it:
      maintainer: someone            # you: the owner of the repository
      ```
 
-  3. CI checks that you own the repository and that your release passes `tools/check.py`. Once it is merged, the
-     index follows your releases by itself: it is built again every hour and takes your newest release, checked with
-     the same rules, pinned to its commit. A release that does not pass stays out, and the one before it stays listed.
+  3. CI checks the entry and your release (below). Once it is merged, the index follows your releases by itself: it is
+     built again every hour and takes your newest release, checked with the same rules, pinned to its commit. When
+     your newest release does not pass, the plugin is left out of the index until a release passes; its id stays
+     yours.
 
   Add `ref: v1.2.0` only to hold the list at one release; without it the list follows your newest.
 
-What a community plugin needs:
+**What is checked automatically**, when the pull request is opened and every time the index is built:
 
-1. The person who lists it owns the repository (or is a member of its organisation).
-2. The repository is public, has issues on, and has at least one release.
-3. `tools/check.py` passes on the release.
-4. Its licence goes with AGPL-3.0.
-5. It builds on the boards it names (or on Tessera's sample boards for `boards: any`).
-6. Its permissions name everything its code does.
-7. What it needs is in the index: every plugin of `requires.plugins`, and a plugin or a board for every feature of
-   `requires.features`, for one of its boards.
+1. The file is `community/<id>.yaml`, named after the plugin's id, with `repo` and `maintainer`, and optionally `path`
+   (a folder inside the repository) and `ref`.
+2. `maintainer` is the GitHub account that owns the repository, and the pull request comes from that account. An
+   organisation cannot open a pull request itself: for a repository of an organisation, ask in an issue, and a
+   maintainer of this repository opens it.
+3. The repository can be read without an account (it is public), and has a release, or the tag that `ref` names.
+4. `tools/check.py` passes on that release: the manifest (with a licence that goes with AGPL-3.0, and an `api` the core
+   can build), the folder and its files, the translations, the README and the changelog, `plugin.yaml` and the code
+   rules. The manifest's id is the file's name.
+5. The id is not one of Tessera's own, and no other repository or folder published it first ("Whose id it is", below).
+6. What it needs is in the index: every plugin of `requires.plugins`, and a plugin or a board for every feature of
+   `requires.features`, for one of its boards; and no plugins that need each other in a circle.
 
-Tessera does not review community plugins or their releases: the app says so before anyone adds one, and asks them to
-trust the maker. What it can do is stop a version: `blocked.yaml` (below) refuses it in every app, and a plugin that
-breaks the rules leaves the list.
+**What is yours to get right**, because nothing checks it:
+
+- The repository has issues on, so people can tell you what goes wrong ([TESTING.md](TESTING.md), "Reporting a
+  problem with a plugin").
+- It builds and works on the boards it names, and with `boards: any` on a small and a large screen at least. Say in the
+  README which boards you tried.
+- `permissions` name everything its code does. The app enforces `network` and `ha_commands`; nothing checks
+  `read_entities` or `home_assistant_actions` against the code.
+- `memory` and `flash_kb` are honest.
+- The code rules of `tools/check.py` look for a few patterns that are mistakes (a colour as a number, a timer of its
+  own, a connection from the screen). They catch slips, not intent.
+
+## What listing means
+
+A plugin is C++ compiled into the screen's firmware. On the screen it has full access to the device: it can call any
+Home Assistant action the screen may call, read what the screen reads, use the board's hardware and the network the
+screen is on, and nothing on the screen stops it. The manifest's `permissions` are enforced only where the app does the
+work for the plugin: a fetch reaches only the hosts of `permissions.network`, and `tessera::send` only the commands of
+`permissions.ha_commands`.
+
+- Tessera's own plugins, in `plugins/`, are made and reviewed by Tessera.
+- Listing a community plugin is not a review. CI checks the shape of each release (above), not what its code does. The
+  app says so before anyone adds a community plugin, and asks them to trust the maker.
+- A plugin added with a link or from a folder has passed only the app's own manifest check.
+- `blocked.yaml` is how a harmful version is stopped: every app refuses to build it, a screen that runs it shows the
+  reason on its Plugins tab, and its next build leaves the plugin out ("Blocked versions", below). A plugin that breaks
+  the rules also leaves the list.
+
+Found a plugin that does harm? Open an issue in this repository.
 
 ## Whose id it is
 
@@ -166,6 +197,8 @@ reason in its Plugins tab, and its next build leaves the plugin out.
   update it shows the lines of every version between the one a screen runs and the new one, so say there what a person
   notices and what they must do ([MAKING_A_PLUGIN.md](MAKING_A_PLUGIN.md#the-changelog)). The index carries it as
   `changelog`, one text per language, beside `readme`.
-- `api`: the plugin API the plugin was written for. It builds on every core with the same major and at least that
-  minor; a core with an older API refuses it and says why. While the API is 0.x a minor may still change a name or a
-  signature, and Tessera's own plugins move with it. From 1.0 on only a break raises the major.
+- `api`: the plugin API the plugin was written for. It builds on a core with the same major and at least that minor,
+  unless a minor after its own changed a name; a core it does not fit refuses it and says why. While the API is 0.x a
+  minor may still change a name or a signature, the core lists the minors that did (only 0.4 so far), and Tessera's
+  own plugins move with them. From 1.0 on a minor only adds and only a break raises the major
+  ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions").

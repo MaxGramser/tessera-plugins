@@ -34,15 +34,15 @@
 | Fetch from the screen itself | The app does it once for every screen, without holding up drawing. |
 | Set the screen's Wi-Fi, API, updates or log, or open a port on it | They belong to the core and the screen's own YAML (below, "plugin.yaml"). |
 | Change without a build | A plugin is part of the firmware: every change builds the screen. |
-| Live video | Pictures reach a screen as snapshots. |
 
 ## Cannot, yet
 
-Not in the plugin API so far: a picture of the plugin's own on a tile or a card (pictures reach a screen through
-Tessera's own picture route), a message to the app other than a Home Assistant command its manifest names
+Not in the plugin API so far: a picture or video drawn on a plugin's tile or card (pictures and live cameras reach a
+screen through Tessera's own camera tiles), a message to the app other than a Home Assistant command its manifest names
 (`permissions.ha_commands`), and a Python part of a plugin in the app (the app runs only its own code, see above). A
-settings page on the screen, a card, top bar items, tap actions, tiles of an entity and questions to the app are all
-there ([FIRMWARE_API.md](FIRMWARE_API.md)).
+settings page on the screen, a card, top bar items, tap actions, tiles of an entity, questions to the app, sounds on
+the screen's speaker and a camera of the screen's own for Home Assistant (the features `camera` and `camera_sensor`)
+are all there ([FIRMWARE_API.md](FIRMWARE_API.md)).
 
 ## plugin.yaml
 

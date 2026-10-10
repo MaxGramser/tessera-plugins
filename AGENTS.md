@@ -9,13 +9,16 @@ plugin is done.
 1. A plugin is a folder: a manifest (`tessera-plugin.yaml`), an ESPHome package (`plugin.yaml`), an ESPHome component
    in C++ (`components/<id>/`), texts (`translations/<language>.json`), a `README.md` and a `CHANGELOG.md`.
 2. The screen builds the component into its firmware; the component registers tile types with the core through
-   `tessera::Plugin` (`esphome/components/smart_display/plugin_api.h` in the Tessera repository).
+   `tessera::Plugin` (`components/smart_display/plugin_api.h` in the Tessera repository; a plugin includes it as
+   `esphome/components/smart_display/plugin_api.h`).
 3. The Tessera app (in Home Assistant) reads only the manifest: it shows the plugin, its options and its README, and
    carries out the plugin's `fetch` (JSON from a web service) with its own code.
 4. A tile of a plugin is `plugin:<plugin id>.<tile id>` in a screen's layout. The core gives it a card's drawing area
    while its page is on the glass, hands it the data the app sent (`on_state`), and ticks it once a second (`on_tick`).
-5. The plugin API is 0.8, and a manifest says `api: "0.8"`. A plugin builds on every core with the same major and at
-   least its minor. While the API is 0.x a minor may still change a name (`docs/FIRMWARE_API.md`, "Versions").
+5. The plugin API is 0.8, and a new manifest says `api: "0.8"`. A plugin builds on a core with the same major and at
+   least its minor, unless a minor after its own changed a name: while the major is 0 that may happen, and the core
+   lists those minors (only 0.4 so far). So a plugin of 0.7 builds on a core of 0.8, one of 0.3 does not
+   (`docs/FIRMWARE_API.md`, "Versions").
 
 ## Where each kind of thing lives
 
@@ -95,8 +98,12 @@ its own, ESPHome components of its own, a top bar item in colour) and [`plugins/
 ## When you are done
 
 ```sh
+pip install pyyaml                      # once: the check reads YAML
 python3 tools/check.py plugins/<id>     # must print "<id>: ok"
 ```
+
+The check also fails while the folder still has the template's placeholders: `maintainer: your-github-name`, the
+LICENSE's `<year> <your name>`, and the README's line that it is the template.
 
 Then build it on a real screen ([docs/TESTING.md](docs/TESTING.md)): push it to GitHub and add the repository's link
 in the app (without a release that is a test of the default branch, and a newer push shows as an update), or copy the

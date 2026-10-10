@@ -9,10 +9,8 @@ A plugin's code runs on the screen as an ESPHome component. It talks to Tessera'
 The header lives in the Tessera repository at `components/smart_display/plugin_api.h`; it is the reference, and this
 page explains it. Everything is in namespace `tessera`.
 
-**Versions.** A manifest names the plugin API it was written for: `api: "0.8"`, the one the core offers now. A plugin
-builds on every core with the same major and at least its minor, and a core with an older API refuses it with one
-sentence. From 1.0 on that is a promise: a minor only adds, only a break raises the major. While the API is 0.x a minor
-may still change a name or a signature as the API settles, and Tessera's own plugins move with it in the same release.
+A manifest names the plugin API it was written for: `api: "0.8"`, the plugin API 0.8 the core offers now. Which cores
+a plugin builds on is under "Versions" at the end of this page.
 
 ## The component: `__init__.py`
 
@@ -38,7 +36,8 @@ async def to_code(config):
 
 `smart_display.register_plugin(var, __file__)` finds `tessera-plugin.yaml` above the component folder and:
 
-- checks that the manifest's `api` fits the core's plugin API, and stops the build with a clear sentence when not;
+- checks that the manifest's `api` fits the core's plugin API ("Versions", below), and stops the build with one
+  sentence when not;
 - hands the C++ object the plugin's id and version (`plugin_id()`, `plugin_version()`);
 - hands it each tile's `memory` from the manifest, which the screen counts in its layout budget;
 - hands it the texts of `translations/<language>.json`, part `screen`, in the language the screen is built in, with
@@ -413,5 +412,54 @@ screen's look. The ones a tile needs most:
 
 ## Not in the API yet
 
-A plugin's own messages beyond Home Assistant commands, and pictures (a camera of the plugin's own). Each will raise
-the minor.
+A plugin's own messages beyond Home Assistant commands, and a picture drawn on a tile or a card. A plugin can bring a
+camera (0.8): the feature `camera`, an ESPHome `esp_video_camera` with the id `ts_camera` that Home Assistant shows as
+any ESPHome camera, made from a board's camera sensor (the feature `camera_sensor`), as
+[`plugins/screen_camera/`](../plugins/screen_camera) does. What the API has no part for yet is drawing a picture
+itself. Each will raise the minor.
+
+## Versions
+
+A manifest names the plugin API it was written for: `api: "0.8"`, the plugin API 0.8 the core offers now. When a
+screen is built, `smart_display.register_plugin()` compares it with the core's and stops the build with one sentence
+when it does not fit. A plugin fits a core when all three hold:
+
+1. the major is the same;
+2. its minor is at most the core's;
+3. no minor the core lists as a break lies after the plugin's own minor, up to the core's.
+
+**From 1.0 on** a minor only adds, so the third rule never stops a plugin: only a break raises the major.
+
+**While the major is 0** a minor may still change a name or a signature as the API settles. The core lists those
+minors in `PLUGIN_API_BREAKS`, in `screen_manager/app/plugin_manifest.py` and in `components/smart_display/__init__.py`
+(a test keeps the two equal). Today the list holds one: 0.4, where `Plugin::on_tick` became `on_interval`. So with a
+core of 0.8:
+
+| The manifest says | Builds? | Why |
+|---|---|---|
+| `api: "0.8"` | Yes | The core's own. |
+| `api: "0.7"` | Yes | Same major, an older minor, and no break after 0.7. |
+| `api: "0.3"` | No | 0.4 changed a name it may use; the build says so in one sentence and asks to update the plugin. |
+| `api: "0.9"` | No | Newer than the core; the build asks to update the plugin or the screen's firmware. |
+| `api: "1.0"` | No | Another major. |
+
+`tools/check.py` applies the same rules against the core it checks with (`api_fits` of `plugin_manifest.py`), so a
+manifest that names an API this core cannot build fails there first. Tessera's own plugins move with every break in the
+same release.
+
+Name the lowest minor whose parts you use: the plugin then builds on every core from that minor on. What each minor
+brought:
+
+| Minor | What it brought |
+|---|---|
+| 0.1 | Tiles (`Tile`, `add_tile`, `TileContext`), the drawing helpers, the clock, and the plugin's moments: `on_ready`, `on_standby`, `before_update` and one every 250 ms. |
+| 0.2 | Tiles of an entity (`TileContext::entity`, `tessera::action`), cards (`Card`, `add_card`, `open_card`, `close_card`), tap actions, top bar items, settings rows, questions to the app (`tessera::send`, `on_message`), date words such as `date_text` and `days_text`, `on_cards_closed` and `on_alert`. |
+| 0.3 | `on_touch`, and a settings action that says how it is going (its `text`) with `.active()`. |
+| 0.4 | A break: `Plugin::on_tick` (every 250 ms, with `millis()`) became `on_interval`, so that `on_tick` everywhere means once a second with the clock. |
+| 0.5 | The app's side only: lists of an entity bounded by bytes instead of 16 items, a tile's `fields`, `answers`, the field kind `numbers`, `has_attributes`. |
+| 0.6 | The app's side only: settings of kind text and button, a button's `status`, settings found by their name in the entity registry, and each plugin's settings in its details on the screen's Plugins tab. |
+| 0.7 | The manifest's side only: `topics`, features (`provides`, `requires.features`), parts that need a feature, and plugins that come along with the one that needs them. |
+| 0.8 | The features `camera` (`ts_camera`) and `camera_sensor`, the first feature only a board brings; a top bar item's `tone` and `ui::set_tone`; sounds of a plugin's own (`plugin_sound.h`, `smart_display.sound()`). |
+
+A minor of the app's or the manifest's side only still counts: a plugin that uses what it brought needs an app that
+knows it ([MANIFEST.md](MANIFEST.md), "Which minor brought a field").

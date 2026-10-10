@@ -1,7 +1,8 @@
 # Tessera plugins
 
 > Plugins for Tessera, the ESP32 touch screens for Home Assistant. A plugin is an ESPHome component (C++) built into a
-> screen's firmware plus a manifest the Tessera app reads; the app fetches web data for it. The plugin API is 0.8 now.
+> screen's firmware plus a manifest the Tessera app reads; the app fetches web data for it. The plugin API is 0.8 now;
+> a plugin builds on the same major from its own minor up, unless a listed minor after it changed a name (only 0.4).
 > Home Assistant is the backend: no plugin code runs in the app.
 
 Start with AGENTS.md (rules for AI assistants), then docs/MAKING_A_PLUGIN.md.
@@ -9,12 +10,13 @@ Start with AGENTS.md (rules for AI assistants), then docs/MAKING_A_PLUGIN.md.
 ## Docs
 - [AGENTS.md](AGENTS.md): rules, the reading order, what "done" means
 - [docs/MAKING_A_PLUGIN.md](docs/MAKING_A_PLUGIN.md): files, steps, the changelog (CHANGELOG.md, a heading per version, shown with an update), how the pieces meet, common mistakes
-- [docs/MANIFEST.md](docs/MANIFEST.md): every field of tessera-plugin.yaml (topics, features, what it needs), limits
-- [docs/FIRMWARE_API.md](docs/FIRMWARE_API.md): tessera::Plugin, tessera::Tile, drawing helpers, rules
+- [docs/MANIFEST.md](docs/MANIFEST.md): every field of tessera-plugin.yaml as the check reads it (required fields, types, allowed values, defaults, limits), a real example, which minor brought a field
+- [docs/FIRMWARE_API.md](docs/FIRMWARE_API.md): tessera::Plugin, tessera::Tile, drawing helpers, sounds, rules, versions (which plugin fits which core, what each minor brought)
 - [docs/FETCH.md](docs/FETCH.md): data from a web service, the map language
 - [docs/TRANSLATIONS.md](docs/TRANSLATIONS.md): screen and app texts, plurals
-- [docs/TESTING.md](docs/TESTING.md): check.py, a test from a GitHub link, a test folder in Home Assistant, a local build
-- [docs/PUBLISHING.md](docs/PUBLISHING.md): where a plugin comes from (index, link, branch, folder) and how it is pinned and updated, id and origin, whose id it is, finding a plugin, featured, likes, labels, blocked versions, versions
+- [docs/TESTING.md](docs/TESTING.md): check.py (needs PyYAML), a test from a GitHub link, a test folder in Home Assistant, a local build, and how long a round of each takes
+- [docs/PUBLISHING.md](docs/PUBLISHING.md): where a plugin comes from (index, link, branch, folder) and how it is pinned and updated, id and origin, what is checked for a community plugin and what is the maker's own, what listing means (no review; blocked.yaml stops a version), whose id it is, finding a plugin, featured, likes, labels, blocked versions, versions
+- [docs/README.md](docs/README.md): the list of pages, and the words these docs use mapped to the usual terms
 - [docs/LIMITS.md](docs/LIMITS.md): what fits and what does not, what plugin.yaml may not set
 
 ## Examples
@@ -27,7 +29,7 @@ Start with AGENTS.md (rules for AI assistants), then docs/MAKING_A_PLUGIN.md.
 
 ## Tools
 - tools/new_plugin.py <id>: copy the template under a new id
-- tools/check.py [folder]: the app's manifest check plus folder, translation, README, CHANGELOG.md, code and plugin.yaml rules, and what a plugin needs from the index
+- tools/check.py [folder]: the app's manifest check plus an api the core can build, folder, translation, README, CHANGELOG.md, LICENSE, template placeholder, code and plugin.yaml rules, and what a plugin needs from the index (needs Python 3 and PyYAML: pip install pyyaml)
 - tools/build_index.py: write index.json
 - tools/build_likes.py: write likes.json
 

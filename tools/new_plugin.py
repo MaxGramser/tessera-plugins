@@ -6,7 +6,9 @@
 
 It copies template/ and renames everything that carries the template's name: the component folder and files, the
 C++ namespace and class (my_plugin -> bin_day, MyPlugin -> BinDay) and the manifest's id. The tile still counts days:
-change it into yours (docs/MAKING_A_PLUGIN.md, "Step by step"), then run python3 tools/check.py <folder>.
+change it into yours (docs/MAKING_A_PLUGIN.md, "Step by step"), then run python3 tools/check.py <folder>. The check
+fails until the template's maintainer (your-github-name), the LICENSE's "<year> <your name>" and the README's line that
+it is the template are yours.
 """
 import re
 import shutil
@@ -33,8 +35,9 @@ def main():
             text = path.read_text(encoding='utf-8')
             text = text.replace('my_plugin', plugin).replace('MyPlugin', camel)
             path.write_text(text, encoding='utf-8')
-    print(f'{target}: made from the template. Next: edit tessera-plugin.yaml, translations/ and components/{plugin}/, '
-          f'then python3 tools/check.py {target}')
+    print(f'{target}: made from the template. Next: edit tessera-plugin.yaml (your GitHub name as maintainer), '
+          f'translations/, components/{plugin}/, README.md (what your plugin does) and LICENSE (the year and your name; '
+          f'a plugin in plugins/ of this repository may delete it), then python3 tools/check.py {target}')
 
 
 if __name__ == '__main__':

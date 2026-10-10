@@ -32,8 +32,12 @@ it out with its own code, and the screen gets only the fields the manifest maps.
 
 A URL and the headers can hold `{name}`:
 
-- an option of a tile that uses the fetch (`{stop}` is the tile's option `stop`);
-- an input of the plugin (`{api_key}`), with `scope: all`.
+- an option of a tile that uses the fetch (`{stop}` is the tile's option `stop`), through `data` or `options_from`;
+- an input of kind `secret` (`{api_key}`). A secret with `scope: all` is the same for every screen; one with
+  `scope: screen` is the one filled in for the tile's screen.
+
+The check accepts the id of any input here, but the app fills in only options and secrets: a value a fetch needs that
+is not a secret is an option of the tile.
 
 A value in the URL is percent-encoded. A placeholder with no value means no ask: the tile gets
 `{"wait": "not_filled"}`.
@@ -123,7 +127,8 @@ map:
   label: [LinePublicNumber, DestinationName50]     # what the list shows, joined with " · "
 ```
 
-Each value appears once, at most 48 of them. The editor asks for the list with the tile's other options filled in (the
+`value` and `label` may each be one path or a list of paths; `label` is `value` when left out. Each value appears
+once, at most 48 of them. The editor asks for the list with the tile's other options filled in (the
 stop of the bus tile), so a list can depend on them.
 
 ## Size on the screen

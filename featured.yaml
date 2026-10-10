@@ -1,4 +1,5 @@
-# The plugins Tessera recommends to start with, in this order: the app shows them first (docs/PUBLISHING.md,
-# "Featured"). Chosen by hand; an id that is not in the index is left out of it.
+# The plugins Tessera recommends to start with, in this order: on the Plugins page a recommendation breaks a tie in
+# the number of likes (docs/PUBLISHING.md, "Finding a plugin"). Chosen by hand; an id that is not in the index is left
+# out of it.
 - ov_departures
 - waste_collection

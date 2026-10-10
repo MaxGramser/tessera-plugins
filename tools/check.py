@@ -8,12 +8,15 @@ It runs the app's own manifest check: plugin_manifest.py from the Tessera reposi
 screen_manager/app/plugin_manifest.py), fetched into tools/.cache/ and fetched again when it is an hour old (offline,
 the copy there serves). The same file decides in the app whether a
 plugin is shown, so a plugin that passes here is read the same way there. Then the rules the manifest check cannot see:
+an `api` the core can build (docs/FIRMWARE_API.md, "Versions"), none of the template's placeholders outside template/,
 the folder layout, the translations (English complete), the README and the changelog, the licence, the drawing rules for the firmware
 code (docs/FIRMWARE_API.md, "Rules"), what plugin.yaml may set (docs/LIMITS.md, "plugin.yaml"), and, across the index,
 that every plugin and feature a plugin needs is there (docs/MANIFEST.md, "What it needs and brings").
 
 TESSERA_MANIFEST=/path/to/plugin_manifest.py uses a local copy instead (a checkout of the Tessera repository), and
 TESSERA_BOARDS=/path/to/boards.json the boards a local checkout knows (screen_manager/app/boards.json).
+
+It needs Python 3 with PyYAML (pip install pyyaml).
 """
 import datetime
 import importlib.util
@@ -25,7 +28,10 @@ import time
 import urllib.request
 from pathlib import Path
 
-import yaml
+try:
+    import yaml
+except ImportError:
+    raise SystemExit('tools/check.py needs PyYAML to read the YAML files: pip install pyyaml') from None
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = 'https://raw.githubusercontent.com/MaxGramser/homeassistant_espscreen/{ref}/screen_manager/app/{name}'
@@ -100,6 +106,31 @@ def pm(fresh=False):
 
 def plugin_api():
     return '.'.join(map(str, pm().PLUGIN_API))
+
+
+def api_problem(wanted):
+    """Why a plugin written for plugin API `wanted` ("0.7") does not build on the core the manifest module belongs to,
+    as a sentence, or None. The module's own api_fits decides: the same major, at most the core's minor, and no minor
+    after the plugin's own up to the core's that changed a name (PLUGIN_API_BREAKS, docs/FIRMWARE_API.md, "Versions")."""
+    module = pm()
+    offered = plugin_api()
+    breaks = getattr(module, 'PLUGIN_API_BREAKS', {})
+    fits = getattr(module, 'api_fits', None)
+    match = module.API.match(str(wanted or ''))
+    if not match:
+        return None    # the manifest check says what is wrong with its form
+    major, minor = int(match.group(1)), int(match.group(2))
+    if fits is not None and fits(wanted):
+        return None
+    if major == module.PLUGIN_API[0] and minor <= module.PLUGIN_API[1]:
+        broke = [b for b in breaks.get(major, ()) if minor < b <= module.PLUGIN_API[1]]
+        if not broke:
+            return None
+        return (f'api "{wanted}" is from before plugin API {major}.{broke[-1]}, which changed a name, and the core '
+                f'offers plugin API {offered}; update the plugin to it')
+    if major == module.PLUGIN_API[0]:
+        return f'api "{wanted}" is newer than plugin API {offered}, the one the core offers'
+    return f'api "{wanted}" has another major than plugin API {offered}, the one the core offers'
 
 
 BOARDS = None
@@ -325,6 +356,13 @@ def check_provides(name, manifest, esphome):
             fail(name, f'plugin.yaml: provides {feature}, so it makes a "{domain}:" with id: {wanted}')
 
 
+# What template/ holds until a maker fills it in (tools/new_plugin.py copies it as it is): a plugin other than the
+# template itself may not keep it.
+TEMPLATE_MAINTAINER = 'your-github-name'
+TEMPLATE_LICENSE = '<year> <your name>'
+TEMPLATE_README = re.compile(r'This is the template for a Tessera plugin', re.I)
+
+
 def check_folder(folder):
     """(raw manifest, translations, readmes, changelogs) of a plugin folder, or SystemExit with what is wrong."""
     folder = Path(folder)
@@ -347,6 +385,12 @@ def check_folder(folder):
         fail(name, f'tessera-plugin.yaml: {error}')
     if manifest['id'] != name and folder.parent.name == 'plugins':
         fail(name, f'the folder must be called {manifest["id"]}, as the plugin\'s id')
+    problem = api_problem(manifest['api'])
+    if problem:
+        fail(name, f'tessera-plugin.yaml: {problem} (docs/FIRMWARE_API.md, "Versions")')
+    template = folder.resolve() == (ROOT / 'template').resolve()
+    if not template and manifest['maintainer'] == TEMPLATE_MAINTAINER:
+        fail(name, f'tessera-plugin.yaml: maintainer is still the template\'s {TEMPLATE_MAINTAINER}; write your GitHub name')
     english = set(translations['en'].get('screen') or {})
     for lang, data in translations.items():
         extra = set(data.get('screen') or {}) - english
@@ -367,6 +411,11 @@ def check_folder(folder):
         fail(name, 'README.md is required')
     if not re.search(r'(?m)^##\s+(Set ?up|Setup)\b', readme['en']):
         fail(name, 'README.md needs a "## Set up" section')
+    if not template and TEMPLATE_README.search(readme['en']):
+        fail(name, 'README.md still says it is the template; say what your plugin does')
+    if not template and (folder / 'LICENSE').is_file() \
+            and TEMPLATE_LICENSE in (folder / 'LICENSE').read_text(encoding='utf-8', errors='replace'):
+        fail(name, f'LICENSE still has the template\'s "{TEMPLATE_LICENSE}": fill in the year and your name')
     changelog = texts(folder, name, 'CHANGELOG')
     check_changelog(name, manifest['version'], changelog)
     if folder.parent.name == 'plugins' and not (folder / 'LICENSE').is_file() and not (folder.parent.parent / 'LICENSE').is_file():

@@ -43,8 +43,9 @@ stays on the commit it was built with: a newer version shows as an update on the
 builds it.
 
 Plugins are new and only in the dev version of the app for now (the app added with `#dev` at the end of the repository
-URL, or a local copy). The plugin API is 0.8: while it is 0.x it can still change in a minor, Tessera's own plugins
-move with it, and a plugin names the version it was written for ([docs/FIRMWARE_API.md](docs/FIRMWARE_API.md),
+URL, or a local copy). The plugin API is 0.8, and a plugin names the version it was written for. While the API is 0.x
+a minor may still change a name: the core lists the minors that did (only 0.4 so far), a plugin written before one no
+longer builds and says so, and Tessera's own plugins move with it ([docs/FIRMWARE_API.md](docs/FIRMWARE_API.md),
 "Versions").
 
 ## Making a plugin
@@ -52,6 +53,7 @@ move with it, and a plugin names the version it was written for ([docs/FIRMWARE_
 ```sh
 git clone https://github.com/MaxGramser/tessera-plugins
 cd tessera-plugins
+pip install pyyaml                           # the check needs PyYAML
 python3 tools/new_plugin.py my_idea          # plugins/my_idea/, copied from template/
 python3 tools/check.py plugins/my_idea       # the same check the app does
 ```
@@ -75,12 +77,16 @@ docs in.
 - **In the app** a plugin is only a description. The app reads its manifest and carries out what it asks with its own
   code: fetch JSON from a web service it names, keep a secret key, show its options and its README. The app never runs
   a plugin's code.
-- A plugin draws only its own tiles. It cannot change how other tiles look, block taps, or reach your home network
-  through the app.
+- Through the plugin API a plugin draws only its own tiles. It cannot change how other tiles look, block taps, or
+  reach your home network through the app.
+- On the screen nothing fences a plugin in: its C++ is part of the firmware and can do what the firmware can. A plugin
+  of the community is checked automatically, not reviewed, so add one from a maker you trust
+  ([docs/PUBLISHING.md](docs/PUBLISHING.md), "What listing means").
 
 [docs/LIMITS.md](docs/LIMITS.md) has the full list, with the way around where there is one.
 
 ## Licence
 
-The tools, the template and Tessera's own plugins are MIT ([LICENSE](LICENSE)). A plugin is built into firmware that
-is AGPL-3.0, so every plugin's licence must go with AGPL-3.0 ([docs/MANIFEST.md](docs/MANIFEST.md), "license").
+The tools, the template and Tessera's own plugins are MIT ([LICENSE](LICENSE)), unless a plugin's folder has a
+LICENSE of its own (Screen camera is GPL-3.0-only). A plugin is built into firmware that is AGPL-3.0, so every
+plugin's licence must go with AGPL-3.0 (`license` in [docs/MANIFEST.md](docs/MANIFEST.md), "Who and what").
