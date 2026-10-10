@@ -9,7 +9,7 @@ staat er een camera in de bovenbalk van het scherm, zodat wie ervoor staat het w
 
 ## Wat je nodig hebt
 
-- Een scherm waarvan het bord een camera heeft die Tessera kan aanzetten en bereiken: de reTerminal D1001.
+- Een scherm waarvan het bord een camera heeft die Tessera kan aanzetten en bereiken: de reTerminal D1001 of de M5Stack Tab5.
 - Verder niets in Home Assistant: de camera hoort bij het apparaat van het scherm in de ESPHome-integratie.
 
 ## Instellen

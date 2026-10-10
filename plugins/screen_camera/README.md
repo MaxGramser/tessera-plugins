@@ -9,7 +9,7 @@ the screen's top bar, so whoever stands in front of it knows.
 
 ## What you need
 
-- A screen whose board has a camera that Tessera knows how to power and reach: the reTerminal D1001.
+- A screen whose board has a camera that Tessera knows how to power and reach: the reTerminal D1001 or the M5Stack Tab5.
 - Nothing else in Home Assistant: the camera comes with the screen's device in the ESPHome integration.
 
 ## Set up
