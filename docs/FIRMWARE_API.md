@@ -1,4 +1,4 @@
-# The firmware API (plugin API 0.7)
+# The firmware API (plugin API 0.8)
 
 A plugin's code runs on the screen as an ESPHome component. It talks to Tessera's core through one header:
 
@@ -9,7 +9,7 @@ A plugin's code runs on the screen as an ESPHome component. It talks to Tessera'
 The header lives in the Tessera repository at `components/smart_display/plugin_api.h`; it is the reference, and this
 page explains it. Everything is in namespace `tessera`.
 
-**Versions.** A manifest names the plugin API it was written for: `api: "0.7"`, the one the core offers now. A plugin
+**Versions.** A manifest names the plugin API it was written for: `api: "0.8"`, the one the core offers now. A plugin
 builds on every core with the same major and at least its minor, and a core with an older API refuses it with one
 sentence. From 1.0 on that is a promise: a minor only adds, only a break raises the major. While the API is 0.x a minor
 may still change a name or a signature as the API settles, and Tessera's own plugins move with it in the same release.
@@ -214,13 +214,22 @@ The screen asks the plugin what it shows every few seconds and draws the bar aga
 
 ```cpp
 add_bar_item("soon", [this]() {
-  tessera::BarItem item;           // shown, icon (a codepoint of Tessera's set), text (a few words)
+  tessera::BarItem item;           // shown, icon (a codepoint of Tessera's set), text (a few words), tone
   if (tomorrow_) { item.shown = true; item.icon = 0xF044C; item.text = "Tomorrow: Paper"; }
   return item;
 });
 ```
 
 An item that is not shown takes no room. A screen without the plugin draws nothing for it.
+
+**Its colour (0.8).** `item.tone` colours the icon by what it means, and the core picks the colour in both looks:
+`Tone::NORMAL` the bar's own grey, `Tone::ACCENT` the screen's blue (it listens, it is on), `Tone::BUSY` Home
+Assistant's amber (it works on something), `Tone::ALERT` its red (a camera that streams, something that went wrong).
+The words keep the bar's colour. `ui::set_tone(label, tone, role)` gives a tile's icon the same colours (`role` for
+`NORMAL`).
+
+**Icon only.** A person can choose to show an item's icon without its words (Show, Icon only), so give every item an
+icon that says it alone.
 
 ## Settings rows
 
@@ -288,7 +297,7 @@ The screen's look is the same on every tile, so a plugin draws with the core's s
 | `ui::font(Font)` | The screen's font. |
 | `ui::line_height(Font)`, `ui::text_width(text, Font)` | To lay out before setting. |
 | `ui::label(parent, Font, Role)` | A one-line label, cut with dots when too long. |
-| `ui::set_text(label, text)`, `ui::set_font(label, Font)`, `ui::set_color(label, Role)` | Change it only when it differs: call them on every tick for free. |
+| `ui::set_text(label, text)`, `ui::set_font(label, Font)`, `ui::set_color(label, Role)`, `ui::set_tone(label, Tone, Role)` | Change it only when it differs: call them on every tick for free. |
 | `ui::block(parent, Role)` | A rounded block with the radius of a key (a badge, a bar). |
 | `ui::color(Role)` | A colour by its role. |
 | `ui::icon(codepoint)` | An icon of Tessera's set as text, for a label in `Font::ICON` or `ICON_SMALL`. |
@@ -341,7 +350,10 @@ screen's look. The ones a tile needs most:
 3. **No LVGL click handlers** (`LV_EVENT_CLICKED`, `LV_EVENT_PRESSED`): use `on_tap`, which has the touch filter in
    front of it.
 4. **No timers, tasks or waits** (`lv_timer_create`, `xTaskCreate`, `delay`): use `on_tick` and `on_state`. A plugin
-   that streams (sound to a speaker) may use its ESPHome component's own `loop()`, as long as nothing in it waits.
+   that streams (sound to a speaker) may use its ESPHome component's own `loop()`, as long as nothing in it waits. A
+   driver of hardware beside the plugin's own component, one that uses no plugin API and no LVGL, may run a task of
+   its own the way ESPHome's drivers do (a camera captures on the other core); rules 1 to 4 are for the code that
+   draws and takes taps, rules 5 and 6 for all of it.
 5. **No network from the screen** (`http_request`, an HTTP client): data comes through the app's `fetch`.
 6. **No walk of the heap** (`heap_caps_get_largest_free_block`, `heap_caps_get_info`): it shifts the picture of an
    RGB panel while it runs.

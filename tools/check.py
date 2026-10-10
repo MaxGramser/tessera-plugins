@@ -32,14 +32,20 @@ SOURCE = 'https://raw.githubusercontent.com/MaxGramser/homeassistant_espscreen/{
 CACHE = ROOT / 'tools' / '.cache'
 
 # Code rules for a plugin's C++ (docs/FIRMWARE_API.md): what the core forbids itself, so a plugin draws like the rest.
+# CODE_RULES hold for every file; SCREEN_RULES for a component that uses the plugin API (its tiles, its top bar), and
+# not for a driver of hardware beside it that never touches the screen, which may run a task of its own as ESPHome's
+# own drivers do (a camera's capture, docs/LIMITS.md).
 CODE_RULES = [
-    (re.compile(r'lv_color_hex\s*\(|0x[0-9a-fA-F]{6}\b'), 'a colour as a number: use a theme role (tessera::ui::color)'),
     (re.compile(r'heap_caps_get_largest_free_block|heap_caps_get_info'), 'a walk of the heap: it shifts the picture of an RGB panel'),
+    (re.compile(r'http_request|HTTPClient|esp_http_client|WiFiClient'), 'a connection from the screen: data comes through the app (fetch)'),
+]
+SCREEN_RULES = [
+    (re.compile(r'lv_color_hex\s*\(|0x[0-9a-fA-F]{6}\b'), 'a colour as a number: use a theme role (tessera::ui::color)'),
     (re.compile(r'LV_EVENT_CLICKED|LV_EVENT_PRESSED'), 'an LVGL tap of its own: use Tile::on_tap, which has the touch filter in front'),
     (re.compile(r'lv_timer_create|xTaskCreate|delay\s*\(\s*\d'), 'a timer, a task or a wait of its own: use on_tick'),
     (re.compile(r'lv_font_t\s+\w+\s*=|font:\s*$|LV_FONT_DECLARE'), 'a font of its own: use the screen\'s fonts (tessera::Font)'),
-    (re.compile(r'http_request|HTTPClient|esp_http_client|WiFiClient'), 'a connection from the screen: data comes through the app (fetch)'),
 ]
+SCREEN_CODE = re.compile(r'plugin_api\.h|\btessera::|\blv_')
 
 # What plugin.yaml (and a part's file) never sets at its top level (docs/LIMITS.md, "plugin.yaml"). It is merged into
 # the screen's own configuration, so these would change what the core and the screen's own YAML hold, or open the
@@ -365,16 +371,16 @@ def check_folder(folder):
     check_changelog(name, manifest['version'], changelog)
     if folder.parent.name == 'plugins' and not (folder / 'LICENSE').is_file() and not (folder.parent.parent / 'LICENSE').is_file():
         fail(name, 'a LICENSE is required')
-    for path in sorted(components.rglob('*')):
-        if path.suffix not in ('.h', '.cpp', '.c', '.hpp'):
-            continue
-        text = path.read_text(encoding='utf-8', errors='replace')
-        code = re.sub(r'//[^\n]*|/\*.*?\*/', '', text, flags=re.S)
-        for rule, why in CODE_RULES:
-            match = rule.search(code)
-            if match:
-                line = code[:match.start()].count('\n') + 1
-                fail(name, f'{path.relative_to(folder)}:{line}: {why}')
+    for component in sorted(p for p in components.iterdir() if p.is_dir()):
+        sources = {path: re.sub(r'//[^\n]*|/\*.*?\*/', '', path.read_text(encoding='utf-8', errors='replace'), flags=re.S)
+                   for path in sorted(component.rglob('*')) if path.suffix in ('.h', '.cpp', '.c', '.hpp')}
+        screen = any(SCREEN_CODE.search(code) for code in sources.values())
+        for path, code in sources.items():
+            for rule, why in CODE_RULES + (SCREEN_RULES if screen else []):
+                match = rule.search(code)
+                if match:
+                    line = code[:match.start()].count('\n') + 1
+                    fail(name, f'{path.relative_to(folder)}:{line}: {why}')
     return raw, translations, readme, changelog
 
 

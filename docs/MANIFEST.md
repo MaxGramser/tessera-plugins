@@ -12,7 +12,7 @@ whose name starts with `x-` is ignored, for notes of your own.
 ```yaml
 id: ov_departures
 version: 1.0.0
-api: "0.7"
+api: "0.8"
 icon: bus
 maintainer: MaxGramser
 license: MIT
@@ -75,7 +75,7 @@ starting with a letter.
 |---|---|---|
 | `id` | yes | The plugin's id. Unique in the index, the same as its folder and its component. |
 | `version` | yes | Three numbers, `1.0.0`. Raise it for every change that reaches screens, and give it a `## 1.0.0` heading with its lines at the top of `CHANGELOG.md` ([MAKING_A_PLUGIN.md](MAKING_A_PLUGIN.md#the-changelog)). |
-| `api` | yes | The plugin API it was written for, in quotes: `"0.7"`, the plugin API 0.7 the core offers now. It builds on every core with the same major and at least that minor ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
+| `api` | yes | The plugin API it was written for, in quotes: `"0.8"`, the plugin API 0.8 the core offers now. It builds on every core with the same major and at least that minor ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
 | `icon` | yes | <a id="icon"></a>A Material Design Icons name from Tessera's icon set (`screen_manager/app/tile_icons.py` in the Tessera repository, such as `bus`, `train`, `calendar`, `thermometer`, `lightbulb`). The screen's icon font holds only that set. |
 | `maintainer` | yes | The GitHub name of whoever looks after the plugin. |
 | `license` | yes | An SPDX name that goes with AGPL-3.0: `MIT`, `Apache-2.0`, `BSD-2-Clause`, `BSD-3-Clause`, `ISC`, `MPL-2.0`, `LGPL-2.1-or-later`, `LGPL-3.0-or-later`, `GPL-3.0-or-later`, `GPL-3.0-only`, `AGPL-3.0-or-later`, `AGPL-3.0-only`, `Unlicense`, `0BSD`, `CC0-1.0`. |
@@ -135,6 +135,8 @@ whichever plugin or board brings it, the way ESPHome's own voice assistant takes
 | `speaker` | `speaker:` | `ts_speaker` |
 | `microphone` | `microphone:` | `ts_microphone` |
 | `media_player` | `media_player:` | `ts_media_player` |
+| `camera` | `esp_video_camera:` | `ts_camera` |
+| `camera_sensor` | none: a board's own | `${CAMERA_I2C}`, the I2C bus of the sensor |
 
 - **Bringing one.** `provides: [speaker]`, and `plugin.yaml` makes that component with exactly that id
   (`speaker: - platform: i2s_audio` with `id: ts_speaker`). `tools/check.py` checks it.
@@ -146,7 +148,11 @@ whichever plugin or board brings it, the way ESPHome's own voice assistant takes
   bring the same feature; a person then chooses one per screen, and the app never puts a second one on it.
 - **Coming along, and going.** What a plugin needs comes along when it is added, in one build. A plugin another one
   needs is removed only together with it (the app asks), and a plugin that only came along is offered to go as well.
-- **Boards.** A board may bring a feature itself (Tessera's `boards.yaml`); none does yet.
+- **Boards.** A board may bring a feature itself: the reTerminal D1001 brings a speaker, a microphone and a media
+  player (Tessera's `features/audio.yaml`). A plugin that brings one the board has does not fit that screen.
+- **Only a board.** `camera_sensor` is hardware: the camera's sensor, which the board powers and whose I2C bus it names
+  in the substitution `CAMERA_I2C`. A plugin needs it (`requires.features: [camera_sensor]`) and uses
+  `i2c_id: ${CAMERA_I2C}`; no plugin brings it.
 - **`ts_` is Tessera's.** An id that starts with `ts_` belongs to the core (`ts_touch`) or to a feature. A plugin makes
   one only for a feature it provides.
 

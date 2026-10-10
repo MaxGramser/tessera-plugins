@@ -14,7 +14,7 @@ plugin is done.
    carries out the plugin's `fetch` (JSON from a web service) with its own code.
 4. A tile of a plugin is `plugin:<plugin id>.<tile id>` in a screen's layout. The core gives it a card's drawing area
    while its page is on the glass, hands it the data the app sent (`on_state`), and ticks it once a second (`on_tick`).
-5. The plugin API is 0.7, and a manifest says `api: "0.7"`. A plugin builds on every core with the same major and at
+5. The plugin API is 0.8, and a manifest says `api: "0.8"`. A plugin builds on every core with the same major and at
    least its minor. While the API is 0.x a minor may still change a name (`docs/FIRMWARE_API.md`, "Versions").
 
 ## Where each kind of thing lives
