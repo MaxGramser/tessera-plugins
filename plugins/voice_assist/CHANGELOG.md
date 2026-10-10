@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.3 - 2026-10-10
+- A new wake sound.
+
 ## 0.2.2 - 2026-10-10
 - New wake and thinking sounds. The thinking sound plays again as soon as it ends, so its own length sets the rhythm.
 

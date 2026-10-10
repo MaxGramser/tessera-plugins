@@ -1,5 +1,8 @@
 # Wijzigingen
 
+## 0.2.3 - 2026-10-10
+- Een nieuw geluid voor wakker worden.
+
 ## 0.2.2 - 2026-10-10
 - Nieuwe geluiden voor wakker worden en nadenken. Het denkgeluid speelt opnieuw zodra het afgelopen is, dus de eigen lengte bepaalt het ritme.
 
