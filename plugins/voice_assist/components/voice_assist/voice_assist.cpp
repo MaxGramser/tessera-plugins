@@ -1,6 +1,7 @@
 #include "voice_assist.h"
 
 #include "esphome/components/api/api_server.h"
+#include "esphome/components/audio/audio.h"
 #include "esphome/core/hal.h"
 
 namespace esphome::voice_assist {
@@ -8,12 +9,18 @@ namespace esphome::voice_assist {
 using tessera::Font;
 namespace ui = tessera::ui;
 
-// Icons of Tessera's set: the assistant, the assistant thinking, the assistant that could not help.
+// Icons of Tessera's set: the assistant, listening, thinking, answering, and the assistant that could not help.
 static constexpr uint32_t ICON_ASSISTANT = 0xF06A9;   // robot
+static constexpr uint32_t ICON_LISTENING = 0xF036C;   // microphone
 static constexpr uint32_t ICON_THINKING = 0xF01D8;    // dots-horizontal
+static constexpr uint32_t ICON_ANSWERING = 0xF057E;   // volume-high
 static constexpr uint32_t ICON_FAILED = 0xF169F;      // robot-confused
 // How long a reply or a failure stays on the tile after it was spoken.
 static constexpr uint32_t REPLY_SHOWN_MS = 20000;
+// While Assist thinks, a plop this often.
+static constexpr uint32_t PLOP_EVERY_MS = 700;
+
+static bool is_on(switch_::Switch *s) { return s == nullptr || s->state; }
 
 // The tile: the assistant's icon, what it does now, and under it what it heard or answered. A tap asks, or stops.
 class AssistTile : public tessera::Tile {
@@ -39,9 +46,8 @@ class AssistTile : public tessera::Tile {
     const Phase phase = plugin_->current();
     const bool busy = phase == Phase::LISTENING || phase == Phase::THINKING || phase == Phase::ANSWERING;
     const bool failed = plugin_->showing_failure();
-    uint32_t glyph = phase == Phase::THINKING ? ICON_THINKING : failed ? ICON_FAILED : ICON_ASSISTANT;
-    ui::set_text(icon_, ui::icon(glyph));
-    ui::set_color(icon_, busy ? theme::ACCENT : theme::MUTED);
+    ui::set_text(icon_, ui::icon(plugin_->phase_icon()));
+    ui::set_tone(icon_, plugin_->phase_tone(), theme::MUTED);
     std::string status = busy || failed ? plugin_->phase_word() : plugin_->idle_line();
     // Under it: what was heard while it thinks, the reply while and after it answers.
     std::string detail;
@@ -108,7 +114,8 @@ void VoiceAssist::setup() {
     const bool fresh_failure = showing_failure();
     if (busy() || phase_ == Phase::LISTENING || phase_ == Phase::THINKING || phase_ == Phase::ANSWERING || fresh_failure) {
       item.shown = true;
-      item.icon = phase_ == Phase::THINKING ? ICON_THINKING : fresh_failure ? ICON_FAILED : ICON_ASSISTANT;
+      item.icon = phase_icon();
+      item.tone = phase_tone();
       item.text = phase_word();
     }
     return item;
@@ -132,13 +139,46 @@ bool VoiceAssist::settings(tessera::SettingsPage &page) {
                 [this] { auto index = wake_phrase_->active_index(); return index.has_value() ? (int) *index : 0; },
                 [this](int index) { wake_phrase_->make_call().set_index((size_t) index).perform(); });
   }
+  page.toggle(text("wake_sound"), [this] { return is_on(wake_sound_on_); },
+              [this](bool on) { if (wake_sound_on_ != nullptr) on ? wake_sound_on_->turn_on() : wake_sound_on_->turn_off(); });
+  page.toggle(text("thinking_sound"), [this] { return is_on(thinking_sound_on_); },
+              [this](bool on) {
+                if (thinking_sound_on_ != nullptr) on ? thinking_sound_on_->turn_on() : thinking_sound_on_->turn_off();
+              });
   page.action(text("ask"), "\U000F06A9", [this] { ask(); }, nullptr,
               [this]() -> std::string { return busy() ? phase_word() : std::string(); })
       .active([this] { return busy(); });
   return true;
 }
 
+void VoiceAssist::loop() {
+  // A sound goes to the speaker as far as its buffer takes it, the rest at the next turns of the loop; nothing waits.
+  if (playing_ != nullptr && speaker_ != nullptr) {
+    played_ += speaker_->play(playing_->data + played_, playing_->length - played_, 0);
+    if (played_ >= playing_->length) playing_ = nullptr;
+  }
+  // While Assist thinks: the plop, again and again.
+  if (phase_ == Phase::THINKING && is_on(thinking_sound_on_) && millis() - plopped_at_ >= PLOP_EVERY_MS) {
+    plopped_at_ = millis();
+    play_(thinking_sound_);
+  }
+}
+
+void VoiceAssist::play_(const Sound &sound) {
+  if (speaker_ == nullptr || sound.length == 0) return;
+  speaker_->set_audio_stream_info(audio::AudioStreamInfo(16, sound.channels, sound.rate));
+  playing_ = &sound;
+  played_ = 0;
+}
+
+void VoiceAssist::listening_() {
+  if (phase_ != Phase::LISTENING && is_on(wake_sound_on_)) play_(wake_sound_);
+}
+
 void VoiceAssist::phase(Phase p) {
+  if (p == Phase::LISTENING) listening_();
+  // The first plop at once, the next ones from loop().
+  if (p == Phase::THINKING && phase_ != Phase::THINKING) plopped_at_ = millis() - PLOP_EVERY_MS;
   if (p == Phase::IDLE && phase_ == Phase::FAILED) {
     // The pipeline ends after a failure too: the failure stays on the tile while it is fresh.
   } else {
@@ -157,6 +197,8 @@ void VoiceAssist::heard(const std::string &text) {
 }
 
 void VoiceAssist::answer(const std::string &text) {
+  // The answer is about to play on the same speaker: a plop that is still going stops here.
+  if (playing_ == &thinking_sound_) playing_ = nullptr;
   answer_ = text;
   answered_at_ = millis();
   phase_ = Phase::ANSWERING;
@@ -185,6 +227,7 @@ void VoiceAssist::ask() {
     assistant_->request_stop();
     return;
   }
+  listening_();
   phase_ = Phase::LISTENING;
   heard_.clear();
   answer_.clear();
@@ -205,6 +248,26 @@ std::string VoiceAssist::idle_line() const {
   if (wake_word_on_ != nullptr && wake_word_on_->state && wake_phrase_ != nullptr && wake_phrase_->has_state())
     return tessera::fill(text("say_phrase"), "phrase", std::string(wake_phrase_->current_option()));
   return text("tap_to_ask");
+}
+
+uint32_t VoiceAssist::phase_icon() const {
+  switch (phase_) {
+    case Phase::LISTENING: return ICON_LISTENING;
+    case Phase::THINKING: return ICON_THINKING;
+    case Phase::ANSWERING: return ICON_ANSWERING;
+    case Phase::FAILED: return showing_failure() ? ICON_FAILED : ICON_ASSISTANT;
+    default: return ICON_ASSISTANT;
+  }
+}
+
+tessera::Tone VoiceAssist::phase_tone() const {
+  switch (phase_) {
+    case Phase::LISTENING: return tessera::Tone::ACCENT;
+    case Phase::THINKING: return tessera::Tone::BUSY;
+    case Phase::ANSWERING: return tessera::Tone::ACCENT;
+    case Phase::FAILED: return showing_failure() ? tessera::Tone::ALERT : tessera::Tone::NORMAL;
+    default: return tessera::Tone::NORMAL;
+  }
 }
 
 std::string VoiceAssist::phase_word() const {

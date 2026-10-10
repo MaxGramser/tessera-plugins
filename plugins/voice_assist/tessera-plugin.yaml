@@ -1,11 +1,12 @@
 # Voice assistant: Home Assistant's own Assist on the screen. The screen listens for a wake word on its own (ESPHome's
 # micro_wake_word), then hands what it hears to Home Assistant's Assist pipeline (ESPHome's voice_assistant) and plays
 # the answer on its media player. Speech to text, the conversation agent and text to speech are whatever Home
-# Assistant is set up with: its own, Whisper and Piper, OpenAI, Claude. It needs a microphone and a media player, which
+# Assistant is set up with: its own, Whisper and Piper, OpenAI, Claude. It plays a sound when it starts to listen and a
+# plop while Assist thinks (components/voice_assist/sounds). It needs a microphone, a speaker and a media player, which
 # a board brings (features/audio.yaml) or a plugin.
 id: voice_assist
-version: 0.1.0
-api: "0.7"
+version: 0.2.0
+api: "0.8"
 icon: robot
 maintainer: MaxGramser
 license: MIT
@@ -14,7 +15,7 @@ topics: [voice]
 requires:
   esphome: 2026.9.0
   psram: true
-  features: [microphone, media_player]
+  features: [microphone, speaker, media_player]
 boards: any
 flash_kb: 420
 
@@ -33,3 +34,5 @@ bar_items:
 settings:
   - { key: wake_word, label: setting_wake_word, hint: setting_wake_word_hint }
   - { key: wake_phrase, label: setting_wake_phrase, hint: setting_wake_phrase_hint }
+  - { key: wake_sound, label: setting_wake_sound, hint: setting_wake_sound_hint }
+  - { key: thinking_sound, label: setting_thinking_sound, hint: setting_thinking_sound_hint }

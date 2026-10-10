@@ -28,11 +28,19 @@ Hold the top bar, then **Settings**, **Plugins**, **Voice assistant**:
 
 - **Wake word**: whether the screen listens for its wake phrase. Off, a tap on the tile still asks.
 - **Wake phrase**: Okay Nabu, Hey Jarvis or Hey Mycroft.
+- **Wake sound**: a short sound when the screen starts to listen, after the wake phrase or a tap.
+- **Thinking sound**: a soft plop, again and again, while Home Assistant works out the answer.
 - **Ask now**: asks a question at once.
 
-Both settings are entities of the screen in Home Assistant too ("Wake word", "Wake phrase"), and the editor shows them
-in the plugin's details on the screen's Plugins tab. The screen's own **Microphone** switch, on a board that has one,
+The settings are entities of the screen in Home Assistant too ("Wake word", "Wake phrase", "Wake sound", "Thinking
+sound"), and the editor shows them in the plugin's details on the screen's Plugins tab. The screen's own **Microphone** switch, on a board that has one,
 silences it for the assistant as well.
+
+## The sounds
+
+They are two files in `components/voice_assist/sounds/`: `wake.wav` and `thinking.wav` (one plop; the screen repeats it
+every 0.7 seconds). Each is a WAV file of 16-bit samples, mono, at 48 kHz like the screen's speaker. A plugin of your
+own made from this one can swap them; the build says so when a file is not such a WAV.
 
 ## Privacy
 

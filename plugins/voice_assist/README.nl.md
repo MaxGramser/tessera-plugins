@@ -28,11 +28,19 @@ Houd de bovenbalk vast, dan **Instellingen**, **Plugins**, **Spraakassistent**:
 
 - **Wekwoord**: of het scherm naar zijn wekzin luistert. Uit stelt een tik op de tegel nog steeds een vraag.
 - **Wekzin**: Okay Nabu, Hey Jarvis of Hey Mycroft.
+- **Wekgeluid**: een kort geluid als het scherm begint te luisteren, na de wekzin of een tik.
+- **Denkgeluid**: een zacht plopje, steeds opnieuw, zolang Home Assistant het antwoord bedenkt.
 - **Nu vragen**: stelt meteen een vraag.
 
-Beide instellingen zijn ook entiteiten van het scherm in Home Assistant ("Wake word", "Wake phrase"), en de editor
-toont ze in de details van de plugin op het tabblad Plugins van het scherm. De eigen schakelaar **Microfoon** van het
+De instellingen zijn ook entiteiten van het scherm in Home Assistant ("Wake word", "Wake phrase", "Wake sound",
+"Thinking sound"), en de editor toont ze in de details van de plugin op het tabblad Plugins van het scherm. De eigen schakelaar **Microfoon** van het
 scherm, op een bord dat er een heeft, zet hem ook voor de assistent uit.
+
+## De geluiden
+
+Het zijn twee bestanden in `components/voice_assist/sounds/`: `wake.wav` en `thinking.wav` (een plopje; het scherm
+herhaalt het elke 0,7 seconde). Elk is een WAV-bestand met 16-bit samples, mono, op 48 kHz zoals de luidspreker van het
+scherm. Een eigen plugin die je van deze maakt kan ze vervangen; de build zegt het als een bestand niet zo'n WAV is.
 
 ## Privacy
 

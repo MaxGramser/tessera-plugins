@@ -13,7 +13,9 @@
   "tap_to_ask": "Tap to ask",
   "wake_word": "Wake word",
   "wake_phrase": "Wake phrase",
-  "ask": "Ask now"
+  "ask": "Ask now",
+  "wake_sound": "Wake sound",
+  "thinking_sound": "Thinking sound"
  },
  "app": {
   "name": "Voice assistant",
@@ -25,6 +27,10 @@
   "setting_wake_word": "Wake word",
   "setting_wake_word_hint": "Whether the screen listens for its wake phrase. Off, a tap on the assistant's tile still asks.",
   "setting_wake_phrase": "Wake phrase",
-  "setting_wake_phrase_hint": "What you say to start a question. The screen recognises it itself, nothing leaves it until then."
+  "setting_wake_phrase_hint": "What you say to start a question. The screen recognises it itself, nothing leaves it until then.",
+  "setting_wake_sound": "Wake sound",
+  "setting_wake_sound_hint": "A short sound when the screen starts to listen, after the wake phrase or a tap.",
+  "setting_thinking_sound": "Thinking sound",
+  "setting_thinking_sound_hint": "A soft plop, again and again, while Home Assistant works out the answer."
  }
 }

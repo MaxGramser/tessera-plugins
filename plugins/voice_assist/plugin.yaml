@@ -55,7 +55,7 @@ voice_assistant:
   on_error:
     - lambda: 'id(va_plugin).failed(code, message);'
 
-# The two settings, kept on the screen and shown in Home Assistant, on the screen's settings page and in the editor.
+# The settings, kept on the screen and shown in Home Assistant, on the screen's settings page and in the editor.
 switch:
   - platform: template
     id: va_wake_word
@@ -72,6 +72,21 @@ switch:
             - lambda: 'id(va_wake)->start();'
     on_turn_off:
       - lambda: 'id(va_wake)->stop();'
+  # Its two sounds on the screen's speaker: when it starts to listen, and a plop again and again while Assist thinks.
+  - platform: template
+    id: va_wake_sound
+    name: "Wake sound"
+    icon: mdi:bell-ring
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: config
+  - platform: template
+    id: va_thinking_sound
+    name: "Thinking sound"
+    icon: mdi:timer-sand
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: config
 
 select:
   - platform: template
@@ -93,3 +108,6 @@ voice_assist:
   wake_word_on: va_wake_word
   wake_phrase: va_wake_phrase
   phrases: [va_okay_nabu, va_hey_jarvis, va_hey_mycroft]
+  speaker: ts_speaker
+  wake_sound_on: va_wake_sound
+  thinking_sound_on: va_thinking_sound
