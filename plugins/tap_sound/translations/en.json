@@ -1,0 +1,15 @@
+{
+ "_meta": {
+  "name": "English"
+ },
+ "screen": {
+  "name": "Tap sound",
+  "tap_sound": "Tap sound"
+ },
+ "app": {
+  "name": "Tap sound",
+  "summary": "A short, soft tick on the screen's speaker for every tap, at the screen's volume.",
+  "setting_tap_sound": "Tap sound",
+  "setting_tap_sound_hint": "A tick on the speaker for every tap the screen takes. It follows the screen's volume."
+ }
+}

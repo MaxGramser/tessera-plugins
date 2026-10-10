@@ -1,0 +1,20 @@
+# Tap sound: a short, soft tick on the screen's speaker for every tap the screen takes, with a setting to turn it off.
+# It needs a speaker, which a board brings (features/audio.yaml) or a plugin; the tick follows the screen's volume.
+id: tap_sound
+version: 0.1.0
+api: "0.8"
+icon: gesture-tap-button
+maintainer: MaxGramser
+license: MIT
+stage: beta
+topics: [fun]
+requires:
+  esphome: 2026.9.0
+  psram: true
+  features: [speaker]
+boards: any
+flash_kb: 12
+
+# The setting of plugin.yaml, also in the plugin's details on the screen's Plugins tab (its name as id).
+settings:
+  - { key: tap_sound, label: setting_tap_sound, hint: setting_tap_sound_hint }

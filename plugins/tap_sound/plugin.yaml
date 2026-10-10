@@ -1,0 +1,15 @@
+# What a screen gets when it takes this plugin: a tick on its speaker (ts_speaker, the feature speaker) for every tap,
+# and a setting to turn it off, kept on the screen and shown in Home Assistant, on the screen's settings page and in the
+# editor.
+switch:
+  - platform: template
+    id: tap_sound_on
+    name: "Tap sound"
+    icon: mdi:gesture-tap-button
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: config
+
+tap_sound:
+  speaker: ts_speaker
+  sound_on: tap_sound_on

@@ -1,0 +1,15 @@
+{
+ "_meta": {
+  "name": "Nederlands"
+ },
+ "screen": {
+  "name": "Tikgeluid",
+  "tap_sound": "Tikgeluid"
+ },
+ "app": {
+  "name": "Tikgeluid",
+  "summary": "Een kort, zacht tikje op de luidspreker van het scherm bij elke tik, op het volume van het scherm.",
+  "setting_tap_sound": "Tikgeluid",
+  "setting_tap_sound_hint": "Een tikje op de luidspreker bij elke tik die het scherm neemt. Het volgt het volume van het scherm."
+ }
+}
