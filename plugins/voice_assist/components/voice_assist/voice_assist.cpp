@@ -16,9 +16,6 @@ static constexpr uint32_t ICON_ANSWERING = 0xF057E;   // volume-high
 static constexpr uint32_t ICON_FAILED = 0xF169F;      // robot-confused
 // How long a reply or a failure stays on the tile after it was spoken.
 static constexpr uint32_t REPLY_SHOWN_MS = 20000;
-// While Assist thinks, a plop this often.
-static constexpr uint32_t PLOP_EVERY_MS = 700;
-
 static bool is_on(switch_::Switch *s) { return s == nullptr || s->state; }
 
 // The tile: the assistant's icon, what it does now, and under it what it heard or answered. A tap asks, or stops.
@@ -151,11 +148,9 @@ bool VoiceAssist::settings(tessera::SettingsPage &page) {
 }
 
 void VoiceAssist::loop() {
-  // While Assist thinks: the plop, again and again. The player hands the speaker what it takes, never waiting.
-  if (phase_ == Phase::THINKING && is_on(thinking_sound_on_) && millis() - plopped_at_ >= PLOP_EVERY_MS) {
-    plopped_at_ = millis();
-    sounds_.play(thinking_sound_);
-  }
+  // While Assist thinks: the thinking sound again as soon as the last one went to the speaker, so its own length sets
+  // the rhythm and nothing is cut off. The player hands the speaker what it takes, never waiting.
+  if (phase_ == Phase::THINKING && is_on(thinking_sound_on_) && !sounds_.playing()) sounds_.play(thinking_sound_);
   sounds_.loop();
 }
 
@@ -165,8 +160,6 @@ void VoiceAssist::listening_() {
 
 void VoiceAssist::phase(Phase p) {
   if (p == Phase::LISTENING) listening_();
-  // The first plop at once, the next ones from loop().
-  if (p == Phase::THINKING && phase_ != Phase::THINKING) plopped_at_ = millis() - PLOP_EVERY_MS;
   if (p == Phase::IDLE && phase_ == Phase::FAILED) {
     // The pipeline ends after a failure too: the failure stays on the tile while it is fresh.
   } else {

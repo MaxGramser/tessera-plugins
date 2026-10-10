@@ -1,5 +1,8 @@
 # Wijzigingen
 
+## 0.2.2 - 2026-10-10
+- Nieuwe geluiden voor wakker worden en nadenken. Het denkgeluid speelt opnieuw zodra het afgelopen is, dus de eigen lengte bepaalt het ritme.
+
 ## 0.2.1 - 2026-10-10
 - De geluiden spelen via de eigen geluidsspeler van Tessera; op een scherm waarvan de microfoon en de luidspreker een bus delen, valt een geluid weg dat niet kan spelen zolang hij luistert.
 

@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.2.2 - 2026-10-10
+- New wake and thinking sounds. The thinking sound plays again as soon as it ends, so its own length sets the rhythm.
+
 ## 0.2.1 - 2026-10-10
 - Its sounds play through Tessera's own sound player; on a screen whose microphone and speaker share one bus, a sound that cannot play while it listens is left out.
 

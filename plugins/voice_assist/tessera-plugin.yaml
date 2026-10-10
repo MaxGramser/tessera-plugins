@@ -2,10 +2,10 @@
 # micro_wake_word), then hands what it hears to Home Assistant's Assist pipeline (ESPHome's voice_assistant) and plays
 # the answer on its media player. Speech to text, the conversation agent and text to speech are whatever Home
 # Assistant is set up with: its own, Whisper and Piper, OpenAI, Claude. It plays a sound when it starts to listen and a
-# plop while Assist thinks (components/voice_assist/sounds). It needs a microphone, a speaker and a media player, which
+# sound while Assist thinks (components/voice_assist/sounds). It needs a microphone, a speaker and a media player, which
 # a board brings (features/audio.yaml) or a plugin.
 id: voice_assist
-version: 0.2.1
+version: 0.2.2
 api: "0.8"
 icon: robot
 maintainer: MaxGramser

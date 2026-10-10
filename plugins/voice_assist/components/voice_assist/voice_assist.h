@@ -78,7 +78,6 @@ class VoiceAssist : public Component, public tessera::Plugin {
 
   // Starts to listen: the wake sound, once, when it was not listening yet.
   void listening_();
-  uint32_t plopped_at_{0};      // millis() of the last plop while Assist thinks
 
   Phase phase_{Phase::IDLE};
   std::string heard_, answer_;

@@ -31,6 +31,6 @@
   "setting_wake_sound": "Wake sound",
   "setting_wake_sound_hint": "A short sound when the screen starts to listen, after the wake phrase or a tap.",
   "setting_thinking_sound": "Thinking sound",
-  "setting_thinking_sound_hint": "A soft plop, again and again, while Home Assistant works out the answer."
+  "setting_thinking_sound_hint": "A soft sound, again and again, while Home Assistant works out the answer."
  }
 }
