@@ -1,0 +1,16 @@
+{
+ "_meta": {
+  "name": "Nederlands"
+ },
+ "screen": {
+  "name": "Schermcamera",
+  "live": "Live",
+  "picture": "Camera"
+ },
+ "app": {
+  "name": "Schermcamera",
+  "summary": "De eigen camera van het scherm als camera in Home Assistant, met een camera in de bovenbalk zolang er iemand kijkt.",
+  "bar_watching": "Camera in gebruik",
+  "bar_example": "Live"
+ }
+}

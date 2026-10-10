@@ -1,0 +1,19 @@
+# What a screen gets when it takes this plugin: its camera sensor as ESPHome's camera, which Home Assistant shows as a
+# camera of the screen's device, and the camera in the top bar while Home Assistant takes pictures. The sensor is the
+# board's (the feature camera_sensor): the board file powers it and names its I2C bus in CAMERA_I2C, so nothing here
+# owns a pin.
+
+# The sensor through the ESP32-P4's camera interface, image processor and hardware JPEG encoder (Espressif's esp_video).
+# Pictures are made only while Home Assistant asks for them, at most five a second; the pipeline rests five seconds
+# after the last one.
+esp_video_camera:
+  id: ts_camera
+  name: "Camera"
+  i2c_id: ${CAMERA_I2C}
+  device: jpeg
+  resolution: auto
+  jpeg_quality: 12
+  max_framerate: 5
+
+screen_camera:
+  camera: ts_camera

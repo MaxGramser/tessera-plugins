@@ -1,0 +1,16 @@
+{
+ "_meta": {
+  "name": "English"
+ },
+ "screen": {
+  "name": "Screen camera",
+  "live": "Live",
+  "picture": "Camera"
+ },
+ "app": {
+  "name": "Screen camera",
+  "summary": "The screen's own camera as a camera in Home Assistant, with a camera in the top bar while it is watched.",
+  "bar_watching": "Camera in use",
+  "bar_example": "Live"
+ }
+}
