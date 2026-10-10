@@ -1,0 +1,95 @@
+# What a screen gets when it takes this plugin: a wake word that runs on the screen itself, Home Assistant's Assist
+# pipeline for everything after it, and two settings. The microphone and the media player are the screen's
+# (ts_microphone, ts_media_player: the features this plugin needs), so nothing here owns a bus or a pin.
+
+# The wake words, all three on the screen; Wake phrase chooses the one that listens.
+micro_wake_word:
+  id: va_wake
+  microphone:
+    microphone: ts_microphone
+    channels: 0
+  stop_after_detection: false
+  models:
+    - model: okay_nabu
+      id: va_okay_nabu
+    - model: hey_jarvis
+      id: va_hey_jarvis
+    - model: hey_mycroft
+      id: va_hey_mycroft
+  vad:
+  on_wake_word_detected:
+    - voice_assistant.start:
+        wake_word: !lambda return wake_word;
+
+# Home Assistant's Assist pipeline: what the screen hears goes to Home Assistant, the answer comes back on the screen's
+# media player, which ducks music for it.
+voice_assistant:
+  id: va_assistant
+  microphone:
+    microphone: ts_microphone
+    channels: 0
+  media_player: ts_media_player
+  micro_wake_word: va_wake
+  use_wake_word: false
+  noise_suppression_level: 2
+  auto_gain: 31dBFS
+  volume_multiplier: 2.0
+  on_client_connected:
+    - if:
+        condition:
+          switch.is_on: va_wake_word
+        then:
+          - lambda: 'id(va_wake)->start();'
+  on_client_disconnected:
+    - lambda: 'id(va_assistant)->request_stop(); id(va_wake)->stop();'
+  on_listening:
+    - lambda: 'id(va_plugin).phase(esphome::voice_assist::Phase::LISTENING);'
+  on_stt_vad_end:
+    - lambda: 'id(va_plugin).phase(esphome::voice_assist::Phase::THINKING);'
+  on_stt_end:
+    - lambda: 'id(va_plugin).heard(x);'
+  on_tts_start:
+    - lambda: 'id(va_plugin).answer(x);'
+  on_end:
+    - lambda: 'id(va_plugin).phase(esphome::voice_assist::Phase::IDLE);'
+  on_error:
+    - lambda: 'id(va_plugin).failed(code, message);'
+
+# The two settings, kept on the screen and shown in Home Assistant, on the screen's settings page and in the editor.
+switch:
+  - platform: template
+    id: va_wake_word
+    name: "Wake word"
+    icon: mdi:account-voice
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: config
+    on_turn_on:
+      - if:
+          condition:
+            api.connected:
+          then:
+            - lambda: 'id(va_wake)->start();'
+    on_turn_off:
+      - lambda: 'id(va_wake)->stop();'
+
+select:
+  - platform: template
+    id: va_wake_phrase
+    name: "Wake phrase"
+    icon: mdi:chat-processing
+    optimistic: true
+    restore_value: true
+    options: ["Okay Nabu", "Hey Jarvis", "Hey Mycroft"]
+    initial_option: "Okay Nabu"
+    entity_category: config
+    on_value:
+      - lambda: 'id(va_plugin).choose_phrase(i);'
+
+voice_assist:
+  id: va_plugin
+  assistant: va_assistant
+  wake_word: va_wake
+  wake_word_on: va_wake_word
+  wake_phrase: va_wake_phrase
+  phrases: [va_okay_nabu, va_hey_jarvis, va_hey_mycroft]

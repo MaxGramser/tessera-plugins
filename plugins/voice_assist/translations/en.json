@@ -1,0 +1,30 @@
+{
+ "_meta": {
+  "name": "English"
+ },
+ "screen": {
+  "name": "Voice assistant",
+  "listening": "Listening…",
+  "thinking": "Thinking…",
+  "answering": "Answering",
+  "failed": "That did not work",
+  "away": "Home Assistant is away",
+  "say_phrase": "Say “{phrase}”",
+  "tap_to_ask": "Tap to ask",
+  "wake_word": "Wake word",
+  "wake_phrase": "Wake phrase",
+  "ask": "Ask now"
+ },
+ "app": {
+  "name": "Voice assistant",
+  "summary": "Talk to Home Assistant's Assist from the screen: a wake word on the screen itself, the answer on its speaker.",
+  "tile_name": "Assistant",
+  "tile_example": "Say “Okay Nabu”",
+  "bar_busy": "Assistant",
+  "bar_example": "Listening…",
+  "setting_wake_word": "Wake word",
+  "setting_wake_word_hint": "Whether the screen listens for its wake phrase. Off, a tap on the assistant's tile still asks.",
+  "setting_wake_phrase": "Wake phrase",
+  "setting_wake_phrase_hint": "What you say to start a question. The screen recognises it itself, nothing leaves it until then."
+ }
+}

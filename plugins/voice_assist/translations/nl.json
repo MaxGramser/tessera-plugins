@@ -1,0 +1,30 @@
+{
+ "_meta": {
+  "name": "Nederlands"
+ },
+ "screen": {
+  "name": "Spraakassistent",
+  "listening": "Luistert…",
+  "thinking": "Denkt na…",
+  "answering": "Antwoordt",
+  "failed": "Dat lukte niet",
+  "away": "Home Assistant is weg",
+  "say_phrase": "Zeg “{phrase}”",
+  "tap_to_ask": "Tik om te vragen",
+  "wake_word": "Wekwoord",
+  "wake_phrase": "Wekzin",
+  "ask": "Nu vragen"
+ },
+ "app": {
+  "name": "Spraakassistent",
+  "summary": "Praat vanaf het scherm met Assist van Home Assistant: een wekwoord op het scherm zelf, het antwoord uit zijn speaker.",
+  "tile_name": "Assistent",
+  "tile_example": "Zeg “Okay Nabu”",
+  "bar_busy": "Assistent",
+  "bar_example": "Luistert…",
+  "setting_wake_word": "Wekwoord",
+  "setting_wake_word_hint": "Of het scherm luistert naar zijn wekzin. Uit vraagt een tik op de tegel van de assistent nog steeds.",
+  "setting_wake_phrase": "Wekzin",
+  "setting_wake_phrase_hint": "Wat je zegt om een vraag te beginnen. Het scherm herkent het zelf; tot dan verlaat er niets het scherm."
+ }
+}
