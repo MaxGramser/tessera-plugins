@@ -1,0 +1,3 @@
+repo: https://github.com/alexcoscia/tessera-film-stasera
+path: .                  # the folder with tessera-plugin.yaml
+maintainer: alexcoscia
