@@ -399,8 +399,8 @@ static esp_err_t ov02c10_apply_orientation(esp_cam_sensor_device_t *dev)
     uint8_t y_win = state->base_y_win;
 
     const bool true_view_bit = !state->hmirror;
-    // In a field of view's mode the offsets count binned or skipped pixels and the window has 8 and 16 of them to spare
-    // (968 x 544 for 960 x 528): its table's even offsets stay, the bits alone turn the picture. A Guition tester saw
+    // In a field of view's mode the offsets count binned or skipped pixels and the window has 8 columns to spare (968 x
+    // 544 for 960 x 544): its table's even offsets stay, the bits alone turn the picture. A Guition tester saw
     // the first build's picture moved and striped (2026-10-25); the log reads back what the ISP makes of it.
     const bool shift = !state->field_mode;
     if (((rotate & OV02C10_ROTATE_MIRROR) != 0) != true_view_bit) {
@@ -722,9 +722,11 @@ typedef struct {
     uint8_t val;
 } ov02c10_change_t;
 
-// Every other pair of columns and of lines (odd increment 3, even 1: the Bayer pairs stay whole), 960 x 528 out of the
-// 968 x 544 that leaves: its middle, in whole macroblocks for the video's encoder (a horizontal size must be a multiple
-// of 8, section 2.3), at even offsets (4 and 8) that a mirror or flip leaves where they are (field_mode).
+// Every other pair of columns and of lines (odd increment 3, even 1: the Bayer pairs stay whole), 960 x 544 out of the
+// 968 x 544 that leaves: every line, the columns' middle, in whole macroblocks for the video's encoder (a horizontal
+// size must be a multiple of 8, section 2.3), at even offsets (4 and 0) that a mirror or flip leaves where they are
+// (field_mode). With 528 of the 544 lines asked for, a Guition 10.1-inch gave one frame and stalled whenever the lines
+// were halved, while the columns halved alone ran at 29.8 frames a second (Jeroen Peters' test builds, 2026-10-25).
 // On the 1288x728 table, Sharp's: the same PLL, timing and lane rate as the 1920x1080 table, but that one turns the
 // stream on at its end (0x0100 0x01), while the driver still writes exposure and orientation and stops it again, and on
 // a Guition 4.3-inch no frame came after that (GitHub issue #326); the 1288x728 table leaves the stream to esp_video.
@@ -732,8 +734,8 @@ typedef struct {
 #define OV02C10_HALF_CHANGES                                                                    \
     {0x3800, 0x00}, {0x3801, 0x00}, {0x3802, 0x00}, {0x3803, 0x04},                             \
     {0x3804, 0x07}, {0x3805, 0x8f}, {0x3806, 0x04}, {0x3807, 0x43},                             \
-    {0x3808, 0x03}, {0x3809, 0xc0}, {0x380a, 0x02}, {0x380b, 0x10},                             \
-    {0x3810, 0x00}, {0x3811, 0x04}, {0x3812, 0x00}, {0x3813, 0x08},                             \
+    {0x3808, 0x03}, {0x3809, 0xc0}, {0x380a, 0x02}, {0x380b, 0x20},                             \
+    {0x3810, 0x00}, {0x3811, 0x04}, {0x3812, 0x00}, {0x3813, 0x00},                             \
     {0x3814, 0x03}, {0x3815, 0x01}, {0x3816, 0x03}, {0x3817, 0x01}
 // Full (binning): the pairs averaged, columns and lines (0x3820 0xa3: the table's 0xa0 with hbin2_o and vbinf_o; the
 // driver's mirror and flip keep bits 0 and 1; the table's 0x4501 0x00 averages).
@@ -802,11 +804,11 @@ const esp_cam_sensor_format_t *tessera_camera_field_format(int field)
     if (field == 1) {
         return ov02c10_build_field(index, &ov02c10_format_info[1], s_binned_changes,
                                    sizeof(s_binned_changes) / sizeof(s_binned_changes[0]),
-                                   "OV02C10_full_binned_960x528", 960, 528);
+                                   "OV02C10_full_binned_960x544", 960, 544);
     }
     return ov02c10_build_field(index, &ov02c10_format_info[1], s_skipped_changes,
                                sizeof(s_skipped_changes) / sizeof(s_skipped_changes[0]),
-                               "OV02C10_full_skipped_960x528", 960, 528);
+                               "OV02C10_full_skipped_960x544", 960, 544);
 }
 
 // What the sensor says it does, for the log ten seconds after a change: 0x3820 (FORMAT1) and the window offsets as
