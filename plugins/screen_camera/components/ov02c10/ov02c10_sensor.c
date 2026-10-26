@@ -745,7 +745,6 @@ static const ov02c10_change_t s_skipped_changes[] = {OV02C10_HALF_CHANGES};
 #define OV02C10_FIELD_REGS 320
 static ov02c10_reginfo_t s_field_regs[2][OV02C10_FIELD_REGS];
 static esp_cam_sensor_format_t s_field_format[2];
-static bool s_field_built[2];
 
 static const esp_cam_sensor_format_t *ov02c10_build_field(int index, const esp_cam_sensor_format_t *base,
                                                           const ov02c10_change_t *changes, size_t count,
@@ -785,30 +784,60 @@ static const esp_cam_sensor_format_t *ov02c10_build_field(int index, const esp_c
     s_field_format[index].height = height;
     s_field_format[index].regs = out;
     s_field_format[index].regs_size = (int)n;
-    s_field_built[index] = true;
     return &s_field_format[index];
 }
 
-// The sensor format for Screen camera's field of view: 1 Full (binning), 2 Full (skip); NULL for any other, or when no
-// OV02C10 answered. Asked for by esp_video_camera on its capture task, which then hands it to the sensor.
-const esp_cam_sensor_format_t *tessera_camera_field_format(int field)
+// The windows a Full mode tries in turn until one runs (esp_video_camera keeps the first that does): the output's
+// height and isp_y_win, then the same with isp_x_win 0. With every line halved a Guition 10.1-inch gave one frame and
+// then a MIPI frame boundary error (a frame start the sensor never ended, 2026-10-26) at 960 x 544 and at 960 x 528, so
+// how many halved lines the sensor's ISP closes a frame with is what the tries find. A height not in whole macroblocks
+// costs the video's encoder a cut.
+typedef struct {
+    uint16_t height;
+    uint8_t y_win;
+    uint8_t x_win;
+} ov02c10_try_t;
+static const ov02c10_try_t s_tries[] = {
+    {544, 0, 4}, {540, 0, 4}, {540, 2, 4}, {536, 4, 4}, {528, 6, 4}, {528, 8, 4},
+    {544, 0, 0}, {540, 0, 0}, {540, 2, 0}, {536, 4, 0}, {528, 6, 0}, {528, 8, 0},
+};
+#define OV02C10_TRIES ((int)(sizeof(s_tries) / sizeof(s_tries[0])))
+static char s_field_name[2][48];
+
+// How many windows a Full mode has to try; 0 without an OV02C10.
+int tessera_camera_field_tries(void)
 {
-    if (!s_detected || field < 1 || field > 2) {
+    return s_detected ? OV02C10_TRIES : 0;
+}
+
+// The sensor format for Screen camera's field of view, 1 Full (binning) or 2 Full (skip), in its window `attempt`;
+// NULL for any other, or when no OV02C10 answered. Built anew each time (the capture task asks right before it hands
+// the format to the sensor).
+const esp_cam_sensor_format_t *tessera_camera_field_format_try(int field, int attempt)
+{
+    if (!s_detected || field < 1 || field > 2 || attempt < 0 || attempt >= OV02C10_TRIES) {
         return NULL;
     }
     const int index = field - 1;
-    if (s_field_built[index]) {
-        return &s_field_format[index];
-    }
+    const ov02c10_change_t *base = field == 1 ? s_binned_changes : s_skipped_changes;
+    const size_t count = field == 1 ? sizeof(s_binned_changes) / sizeof(s_binned_changes[0])
+                                    : sizeof(s_skipped_changes) / sizeof(s_skipped_changes[0]);
     _Static_assert(sizeof(s_binned_changes) / sizeof(s_binned_changes[0]) <= 32, "changes fit the used marks");
-    if (field == 1) {
-        return ov02c10_build_field(index, &ov02c10_format_info[1], s_binned_changes,
-                                   sizeof(s_binned_changes) / sizeof(s_binned_changes[0]),
-                                   "OV02C10_full_binned_960x544", 960, 544);
+    ov02c10_change_t changes[32];
+    const ov02c10_try_t *w = &s_tries[attempt];
+    for (size_t c = 0; c < count; c++) {
+        changes[c] = base[c];
+        switch (changes[c].reg) {
+        case 0x380a: changes[c].val = (uint8_t)(w->height >> 8); break;
+        case 0x380b: changes[c].val = (uint8_t)(w->height & 0xff); break;
+        case 0x3811: changes[c].val = w->x_win; break;
+        case 0x3813: changes[c].val = w->y_win; break;
+        default: break;
+        }
     }
-    return ov02c10_build_field(index, &ov02c10_format_info[1], s_skipped_changes,
-                               sizeof(s_skipped_changes) / sizeof(s_skipped_changes[0]),
-                               "OV02C10_full_skipped_960x544", 960, 544);
+    snprintf(s_field_name[index], sizeof(s_field_name[index]), "OV02C10_full_%s_960x%u_at_%u_%u",
+             field == 1 ? "binned" : "skipped", (unsigned)w->height, (unsigned)w->x_win, (unsigned)w->y_win);
+    return ov02c10_build_field(index, &ov02c10_format_info[1], changes, count, s_field_name[index], 960, w->height);
 }
 
 // What the sensor says it does, for the log ten seconds after a change: 0x3820 (FORMAT1) and the window offsets as
