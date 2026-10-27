@@ -19,12 +19,11 @@ image tuning for esp_video's ISP pipeline. It was written and first tried on a G
 * Linux's drivers/media/i2c/ov02c10.c (GPL-2.0) was read as a reference for what the registers mean (exposure at
   0x3501, analog gain at 0x3508, mirror and flip in 0x3820, the window offsets and limits). No code and no register
   table was copied from it.
-* `ipa/ov02c10_p4_eco5.json` and `ipa/ov02c10_p4_eco4.json`: image tuning derived from Espressif's
-  `sc2336_default_p4_eco4.json` (esp_cam_sensor, Apache-2.0) under the name OV02C10, with a wider white balance search
-  and a neutral saturation. The eco5 file adds the black level and the gamma of Espressif's rev3 tunings
-  (`sc2336_default_p4_eco5.json`, `os02n10_default_p4_eco5.json`) and white balance gain scales; the eco4 file has
-  neither, since older chips correct no black level. `ipa/CMakeLists.txt`, `ipa/project_include.cmake` and
-  `__init__.py` are this plugin's own.
+* `ipa/ov02c10_p4_eco5.json` and `ipa/ov02c10_p4_eco4.json`: Guition's own image tuning for the OV02C10 of its
+  screens, the files `cfg/ov02c10_default_p4_eco5.json` and `cfg/ov02c10_default_p4_eco4.json` of the OV02C10 driver
+  package Guition shared with Tessera, unchanged under this plugin's names (since 0.6.5). Up to 0.6.4 they were derived
+  from Espressif's `sc2336_default_p4_eco4.json` and its rev3 tunings (esp_cam_sensor, Apache-2.0).
+  `ipa/CMakeLists.txt`, `ipa/project_include.cmake` and `__init__.py` are this plugin's own.
 
 ## MIT License of sullb/esphome-p4-csi-camera
 

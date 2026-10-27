@@ -70,8 +70,11 @@ void ScreenCamera::apply_sensing_() {
       ESP_LOGW(TAG, "The camera does not hand out its frames; no light level or motion");
       return;
     }
+    // A sample every 400 ms: the sensor may run slow for it while nobody watches (frame_hub.h).
+    frames_.ask(this, frame_rate::SENSE);
     ESP_LOGI(TAG, "Sensing light and motion");
   } else {
+    frames_.ask(this, frame_rate::NONE);
     frames_.set_on(this, false);
     ESP_LOGI(TAG, "Sensing stopped");
   }
@@ -93,13 +96,18 @@ void ScreenCamera::set_video_watched(bool watched) {
   show_dot_();
 }
 
-// The camera runs on the screen itself, for what never leaves it (sensing) or for the video while someone watches: the
-// core's dot shows while it does.
+// The camera runs on the screen itself, for the video while someone watches (the core's dot solid) or for what never
+// leaves it, sensing alone (the dot a ring, plugin API 0.20). Home Assistant's own pictures the core sees by itself.
 void ScreenCamera::show_dot_() {
-  const bool on = sensing_on_ || video_watched_;
-  if (on == dot_on_) return;
-  dot_on_ = on;
-  tessera::capturing(this, tessera::Capture::CAMERA, on);
+  const bool watched = video_watched_, sensing = sensing_on_ && !video_watched_;
+  if (watched != dot_watched_) {
+    dot_watched_ = watched;
+    tessera::capturing(this, tessera::Capture::CAMERA, watched);
+  }
+  if (sensing != dot_sensing_) {
+    dot_sensing_ = sensing;
+    tessera::capturing(this, tessera::Capture::SENSING, sensing);
+  }
 }
 
 void ScreenCamera::consume_raw_video_frame(const esp_video_camera::RawVideoFrame &frame) {
@@ -231,6 +239,8 @@ void ScreenCamera::publish_sensing_() {
 void ScreenCamera::on_interval(uint32_t now_ms) {
   // The picture's turn follows the screen's rotation, which the app changes without a build.
   frames_.turn(picture_turn(tessera::camera_turn(), upside_down_));
+  // The sensor's rate as the consumers and Home Assistant want it now (slower once nobody needed full speed a while).
+  frames_.tick(now_ms);
   publish_sensing_();
   // The camera went back to Sharp by itself (no such mode, or no frame in it): the setting says so.
   if (camera_ != nullptr && camera_->take_field_fallback()) {

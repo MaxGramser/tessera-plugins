@@ -65,7 +65,11 @@ void ScreenVideo::loop() {
   const bool watched = playing_.load();
   if (watched != watched_) {
     watched_ = watched;
-    if (screen_camera_ != nullptr) screen_camera_->set_video_watched(watched);
+    if (screen_camera_ != nullptr) {
+      // The sensor at full speed while anyone watches, at once; slow again a while after the last one went.
+      screen_camera_->frames().ask(this, watched ? screen_camera::frame_rate::FULL : screen_camera::frame_rate::NONE);
+      screen_camera_->set_video_watched(watched);
+    }
   }
 #ifdef USE_SCREEN_VIDEO_SOUND
   // The microphone starts and stops on the loop, as everything else that listens does. ESPHome counts its listeners,

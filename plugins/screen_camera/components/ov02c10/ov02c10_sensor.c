@@ -32,6 +32,7 @@
 #include "esp_cam_sensor_detect.h"
 #include "ov02c10_settings.h"
 #include "ov02c10.h"
+#include "../esp_video_camera/camera_sensor.h"
 
 #define OV02C10_PID         0x5602
 #define OV02C10_SENSOR_NAME "OV02C10"
@@ -42,11 +43,11 @@
 
 #define delay_ms(ms)  vTaskDelay((ms > portTICK_PERIOD_MS ? ms / portTICK_PERIOD_MS : 1))
 
-// Exposure in lines (0x3501..0x3502): at least 4, at most VTS - 8 (Linux ov02c10.c).
+// Exposure in lines (0x3501..0x3502): at least 4, at most VTS - 15 (OmniVision's OV02C10 datasheet, section 3.1).
 #define OV02C10_REG_EXPOSURE_H      0x3501
 #define OV02C10_REG_EXPOSURE_L      0x3502
 #define OV02C10_EXPOSURE_MIN        4
-#define OV02C10_EXPOSURE_MAX_MARGIN 8
+#define OV02C10_EXPOSURE_MAX_MARGIN 15
 #define OV02C10_EXPOSURE_DEFAULT    0x046c
 
 // Analog gain (0x3508..0x3509) holds gain x 256: Linux's control runs 0x10..0xf8 (1x to 15.5x in steps of 1/16) and
@@ -55,7 +56,15 @@
 #define OV02C10_REG_ANALOG_GAIN_L   0x3509
 #define OV02C10_GAIN_STEP_MIN       0x10
 #define OV02C10_GAIN_STEP_MAX       0xf8
-#define OV02C10_GAIN_COUNT          (OV02C10_GAIN_STEP_MAX - OV02C10_GAIN_STEP_MIN + 1)
+#define OV02C10_ANALOG_COUNT        (OV02C10_GAIN_STEP_MAX - OV02C10_GAIN_STEP_MIN + 1)
+// Digital gain (0x350a..0x350c, table 6-16) after the analog's 15.5x: 1024 x 64 is 1x, and the menu goes on in steps of
+// 1/64 up to 4.0625x, 63x in all. With the analog alone the picture stayed dark in a room a phone saw well lit
+// (2026-10-27).
+#define OV02C10_REG_DIGITAL_GAIN_H  0x350a
+#define OV02C10_REG_DIGITAL_GAIN_M  0x350b
+#define OV02C10_REG_DIGITAL_GAIN_L  0x350c
+#define OV02C10_DIGITAL_STEPS       196
+#define OV02C10_GAIN_COUNT          (OV02C10_ANALOG_COUNT + OV02C10_DIGITAL_STEPS)
 #define OV02C10_GAIN_DEFAULT_INDEX  (0x20 - OV02C10_GAIN_STEP_MIN)   // 2x, where auto exposure starts
 
 // Orientation (Linux ov02c10.c): 0x3820 bit 3 mirrors, bit 4 flips. Each moves the readout window by one pixel
@@ -357,13 +366,19 @@ static esp_err_t ov02c10_set_gain_index(esp_cam_sensor_device_t *dev, uint32_t i
 {
     ov02c10_state_t *state = (ov02c10_state_t *)dev->priv;
     index = MIN(index, OV02C10_GAIN_COUNT - 1);
-    uint32_t reg = (index + OV02C10_GAIN_STEP_MIN) << 4;
+    const uint32_t analog = index < OV02C10_ANALOG_COUNT ? index + OV02C10_GAIN_STEP_MIN : OV02C10_GAIN_STEP_MAX;
+    const uint32_t digital = index < OV02C10_ANALOG_COUNT ? 1024 : 1024 + (index - OV02C10_ANALOG_COUNT + 1) * 16;
+    uint32_t reg = analog << 4;
+    const uint32_t dreg = digital << 6;
 
     esp_err_t ret = ov02c10_write(dev->sccb_handle, OV02C10_REG_ANALOG_GAIN_H, (reg >> 8) & 0xff);
     ret |= ov02c10_write(dev->sccb_handle, OV02C10_REG_ANALOG_GAIN_L, reg & 0xff);
+    ret |= ov02c10_write(dev->sccb_handle, OV02C10_REG_DIGITAL_GAIN_H, (dreg >> 16) & 0xff);
+    ret |= ov02c10_write(dev->sccb_handle, OV02C10_REG_DIGITAL_GAIN_M, (dreg >> 8) & 0xff);
+    ret |= ov02c10_write(dev->sccb_handle, OV02C10_REG_DIGITAL_GAIN_L, dreg & 0xff);
     if (ret == ESP_OK) {
         state->gain_index = index;
-        s_gain_x16 = index + OV02C10_GAIN_STEP_MIN;
+        s_gain_x16 = analog * digital / 1024;
     }
     return ret;
 }
@@ -399,8 +414,8 @@ static esp_err_t ov02c10_apply_orientation(esp_cam_sensor_device_t *dev)
     uint8_t y_win = state->base_y_win;
 
     const bool true_view_bit = !state->hmirror;
-    // In a field of view's mode the offsets count binned or skipped pixels and the window has 8 columns to spare (968 x
-    // 544 for 960 x 544): its table's even offsets stay, the bits alone turn the picture. A Guition tester saw
+    // In the whole field of view's mode the offsets count pairs of columns and the window has 8 columns to spare (968 x
+    // 1080 for 960 x 1080): its table's even offsets stay, the bits alone turn the picture. A Guition tester saw
     // the first build's picture moved and striped (2026-10-25); the log reads back what the ISP makes of it.
     const bool shift = !state->field_mode;
     if (((rotate & OV02C10_ROTATE_MIRROR) != 0) != true_view_bit) {
@@ -557,8 +572,11 @@ static esp_err_t ov02c10_set_format(esp_cam_sensor_device_t *dev, const esp_cam_
     int window_h = ov02c10_table_value16(regs, 0x3806) - ov02c10_table_value16(regs, 0x3802) + 1;
     state->room_x = (uint16_t)MAX(window_w - (int)format->width, 0);
     state->room_y = (uint16_t)MAX(window_h - (int)format->height, 0);
-    ret = ov02c10_set_exposure(dev, format->isp_info->isp_v1_info.exp_def);
-    ret |= ov02c10_set_gain_index(dev, format->isp_info->isp_v1_info.gain_def);
+    // Exposure and gain stay where the ISP pipeline set them last (the defaults until it has): esp_video writes them
+    // only when its choice changes, so a new format that put the defaults back left the sensor there whenever auto
+    // exposure kept its choice (a Full mode stayed at 31.6 ms and 2x in a dark room, 2026-10-27).
+    ret = ov02c10_set_exposure(dev, state->exposure_val);
+    ret |= ov02c10_set_gain_index(dev, state->gain_index);
     ret |= ov02c10_apply_orientation(dev);
     ESP_RETURN_ON_FALSE(ret == ESP_OK, ret, TAG, "write exposure/orientation failed");
 
@@ -677,8 +695,8 @@ static esp_err_t ov02c10_power_off(esp_cam_sensor_device_t *dev)
     return ESP_OK;
 }
 
-// The sensor the field of view's status reads (below), forgotten when it goes.
-static bool s_detected;
+// The sensor this driver found (ov02c10_detect), for the frame rate and the field of view below; forgotten when it
+// goes.
 static esp_cam_sensor_device_t *s_device;
 
 static esp_err_t ov02c10_delete(esp_cam_sensor_device_t *dev)
@@ -686,7 +704,6 @@ static esp_err_t ov02c10_delete(esp_cam_sensor_device_t *dev)
     ESP_LOGD(TAG, "del ov02c10 (%p)", dev);
     if (dev != NULL && dev == s_device) {
         s_device = NULL;
-        s_detected = false;
     }
     if (dev) {
         free(dev->priv);
@@ -708,142 +725,155 @@ static const esp_cam_sensor_ops_t ov02c10_ops = {
     .del = ov02c10_delete
 };
 
-// ---- The field of view (Screen camera's setting "Field of view"; Tessera's docs/PLATFORM_PLAN.md 4.6) ----
-// Two modes over the whole array for a tester to try, each the 1288x728 table with a few registers changed, built once
-// when first asked for, after OmniVision's OV02C10 datasheet (v2.01): the sensor has no scaler, only a window, binning
-// and skipping (table 2-1: "sub2 ... bin2 or skip2"); 0x3814-0x3817 step the columns and lines, 0x3820 (FORMAT1) bit 1
-// bins two columns and bit 0 two lines, and 0x4501 (HBIN_CTRL) bits 3:2 at 00 average them (table 3-1). Neither is
-// proven on a Guition yet: both stay off until a tester says the picture is right.
-static bool s_detected = false;                   // an OV02C10 answered (ov02c10_detect)
-static esp_cam_sensor_device_t *s_device = NULL;  // and which, for the status the log reads back
-
+// ---- The whole field of view (Screen camera's setting "Field of view", Full; Tessera's docs/CAMERA.md) ----
+// The 1288x728 table, Sharp's, reads the middle of the array. Full is that table with the window opened to the whole
+// array (0..1935 x 8..1087), built once when first asked for, after OmniVision's OV02C10 datasheet (v2.01): the sensor
+// has no scaler, only a window, binning and skipping (table 2-1). Its columns go by pairs (0x3814 0x03 and 0x3815 0x01:
+// odd increment 3, even 1, so the Bayer pairs stay whole) and each two are averaged (0x3820 bit 1, with 0x4501 bits 3:2
+// at 00, table 3-1); every line is read. That is 960 x 1080 of the 968 x 1080 it leaves: the whole field at half its
+// width, a horizontal size a multiple of 8 (section 2.3), at even offsets (4 and 0) that a mirror or flip leaves where
+// they are (field_mode). Screen camera's frame hub halves the lines on the PPA, for every consumer (frame_hub.h). With
+// the lines binned in the sensor too, a Guition 10.1-inch gave one frame and then a MIPI frame boundary error, at 544
+// lines and at 528 (2026-10-26); the columns alone run. A frame is 2328 lines (VTS), twice the table's: 15 frames a
+// second, the video's own rate, so the exposure may take a frame twice as long in a dark room.
+// On the 1288x728 table, not the 1920x1080 one: that one has the same PLL, timing and lane rate but turns the stream on
+// at its end (0x0100 0x01), while the driver still writes exposure and orientation and stops it again, and on a
+// Guition 4.3-inch no frame came after that (GitHub issue #326); the 1288x728 table leaves the stream to esp_video.
 typedef struct {
     uint16_t reg;
     uint8_t val;
 } ov02c10_change_t;
 
-// Every other pair of columns and of lines (odd increment 3, even 1: the Bayer pairs stay whole), 960 x 544 out of the
-// 968 x 544 that leaves: every line, the columns' middle, in whole macroblocks for the video's encoder (a horizontal
-// size must be a multiple of 8, section 2.3), at even offsets (4 and 0) that a mirror or flip leaves where they are
-// (field_mode). With 528 of the 544 lines asked for, a Guition 10.1-inch gave one frame and stalled whenever the lines
-// were halved, while the columns halved alone ran at 29.8 frames a second (Jeroen Peters' test builds, 2026-10-25).
-// On the 1288x728 table, Sharp's: the same PLL, timing and lane rate as the 1920x1080 table, but that one turns the
-// stream on at its end (0x0100 0x01), while the driver still writes exposure and orientation and stops it again, and on
-// a Guition 4.3-inch no frame came after that (GitHub issue #326); the 1288x728 table leaves the stream to esp_video.
-// Its window opened to the whole array (0..1935 x 4..1091).
-#define OV02C10_HALF_CHANGES                                                                    \
-    {0x3800, 0x00}, {0x3801, 0x00}, {0x3802, 0x00}, {0x3803, 0x04},                             \
-    {0x3804, 0x07}, {0x3805, 0x8f}, {0x3806, 0x04}, {0x3807, 0x43},                             \
-    {0x3808, 0x03}, {0x3809, 0xc0}, {0x380a, 0x02}, {0x380b, 0x20},                             \
-    {0x3810, 0x00}, {0x3811, 0x04}, {0x3812, 0x00}, {0x3813, 0x00},                             \
-    {0x3814, 0x03}, {0x3815, 0x01}, {0x3816, 0x03}, {0x3817, 0x01}
-// Full (binning): the pairs averaged, columns and lines (0x3820 0xa3: the table's 0xa0 with hbin2_o and vbinf_o; the
-// driver's mirror and flip keep bits 0 and 1; the table's 0x4501 0x00 averages).
-static const ov02c10_change_t s_binned_changes[] = {OV02C10_HALF_CHANGES, {0x3820, 0xa3}, {0x4501, 0x00}};
-// Full (skip): the pairs read, the others skipped: fine patterns may shimmer.
-static const ov02c10_change_t s_skipped_changes[] = {OV02C10_HALF_CHANGES};
-#define OV02C10_FIELD_REGS 320
-static ov02c10_reginfo_t s_field_regs[2][OV02C10_FIELD_REGS];
-static esp_cam_sensor_format_t s_field_format[2];
+#define OV02C10_FULL_VTS 2328
+static const ov02c10_change_t s_full_changes[] = {
+    {0x3800, 0x00}, {0x3801, 0x00}, {0x3802, 0x00}, {0x3803, 0x08},  // the window, 0..1935 x 8..1087
+    {0x3804, 0x07}, {0x3805, 0x8f}, {0x3806, 0x04}, {0x3807, 0x3f},
+    {0x3808, 0x03}, {0x3809, 0xc0}, {0x380a, 0x04}, {0x380b, 0x38},  // the picture, 960 x 1080
+    {0x380e, OV02C10_FULL_VTS >> 8}, {0x380f, OV02C10_FULL_VTS & 0xff},
+    {0x3810, 0x00}, {0x3811, 0x04}, {0x3812, 0x00}, {0x3813, 0x00},  // its offsets in the window
+    {0x3814, 0x03}, {0x3815, 0x01}, {0x3816, 0x01}, {0x3817, 0x01},  // the columns by pairs, every line
+    {0x3820, 0xa2}, {0x4501, 0x00},                                  // each pair of columns averaged
+};
+#define OV02C10_FULL_CHANGES (sizeof(s_full_changes) / sizeof(s_full_changes[0]))
+#define OV02C10_FULL_REGS    320
+static ov02c10_reginfo_t s_full_regs[OV02C10_FULL_REGS];
+static esp_cam_sensor_isp_info_t s_full_isp;
+static esp_cam_sensor_format_t s_full_format;
+static bool s_full_built;
 
-static const esp_cam_sensor_format_t *ov02c10_build_field(int index, const esp_cam_sensor_format_t *base,
-                                                          const ov02c10_change_t *changes, size_t count,
-                                                          const char *name, uint16_t width, uint16_t height)
+// The 1288x728 table with the changes above: its registers in their order, each changed one in its place, any it lacks
+// added before its end.
+static const esp_cam_sensor_format_t *ov02c10_build_full(void)
 {
+    if (s_full_built) {
+        return &s_full_format;
+    }
+    const esp_cam_sensor_format_t *base = &ov02c10_format_info[1];
     const ov02c10_reginfo_t *regs = (const ov02c10_reginfo_t *)base->regs;
-    ov02c10_reginfo_t *out = s_field_regs[index];
-    bool used[32] = {false};
+    bool used[OV02C10_FULL_CHANGES] = {false};
     size_t n = 0;
     for (size_t i = 0; regs[i].reg != OV02C10_REG_END; i++) {
-        if (n + count + 1 >= OV02C10_FIELD_REGS) {
-            ESP_LOGE(TAG, "The table for %s is too long", name);
+        if (n + OV02C10_FULL_CHANGES + 1 >= OV02C10_FULL_REGS) {
+            ESP_LOGE(TAG, "The table for the whole field of view is too long");
             return NULL;
         }
-        out[n] = regs[i];
-        for (size_t c = 0; c < count; c++) {
-            if (changes[c].reg == regs[i].reg) {
-                out[n].val = changes[c].val;
+        s_full_regs[n] = regs[i];
+        for (size_t c = 0; c < OV02C10_FULL_CHANGES; c++) {
+            if (s_full_changes[c].reg == regs[i].reg) {
+                s_full_regs[n].val = s_full_changes[c].val;
                 used[c] = true;
             }
         }
         n++;
     }
-    for (size_t c = 0; c < count; c++) {
+    for (size_t c = 0; c < OV02C10_FULL_CHANGES; c++) {
         if (!used[c]) {
-            out[n].reg = changes[c].reg;
-            out[n].val = changes[c].val;
+            s_full_regs[n].reg = s_full_changes[c].reg;
+            s_full_regs[n].val = s_full_changes[c].val;
             n++;
         }
     }
-    out[n].reg = OV02C10_REG_END;
-    out[n].val = 0;
+    s_full_regs[n].reg = OV02C10_REG_END;
+    s_full_regs[n].val = 0;
     n++;
-    s_field_format[index] = *base;
-    s_field_format[index].name = name;
-    s_field_format[index].width = width;
-    s_field_format[index].height = height;
-    s_field_format[index].regs = out;
-    s_field_format[index].regs_size = (int)n;
-    return &s_field_format[index];
+    memcpy(&s_full_isp, base->isp_info, sizeof(s_full_isp));
+    s_full_isp.isp_v1_info.vts = OV02C10_FULL_VTS;
+    s_full_format = *base;
+    s_full_format.name = "OV02C10_full_960x1080";
+    s_full_format.width = 960;
+    s_full_format.height = 1080;
+    s_full_format.regs = s_full_regs;
+    s_full_format.regs_size = (int)n;
+    s_full_format.isp_info = &s_full_isp;
+    s_full_built = true;
+    return &s_full_format;
 }
 
-// The windows a Full mode tries in turn until one runs (esp_video_camera keeps the first that does): the output's
-// height and isp_y_win, then the same with isp_x_win 0. With every line halved a Guition 10.1-inch gave one frame and
-// then a MIPI frame boundary error (a frame start the sensor never ended, 2026-10-26) at 960 x 544 and at 960 x 528, so
-// how many halved lines the sensor's ISP closes a frame with is what the tries find. A height not in whole macroblocks
-// costs the video's encoder a cut.
-typedef struct {
-    uint16_t height;
-    uint8_t y_win;
-    uint8_t x_win;
-} ov02c10_try_t;
-static const ov02c10_try_t s_tries[] = {
-    {544, 0, 4}, {540, 0, 4}, {540, 2, 4}, {536, 4, 4}, {528, 6, 4}, {528, 8, 4},
-    {544, 0, 0}, {540, 0, 0}, {540, 2, 0}, {536, 4, 0}, {528, 6, 0}, {528, 8, 0},
-};
-#define OV02C10_TRIES ((int)(sizeof(s_tries) / sizeof(s_tries[0])))
-static char s_field_name[2][48];
-
-// How many windows a Full mode has to try; 0 without an OV02C10.
-int tessera_camera_field_tries(void)
+// The sensor's format for a field of view (camera_sensor.h): 1, the whole field; NULL for any other.
+static const esp_cam_sensor_format_t *ov02c10_field_format(int field)
 {
-    return s_detected ? OV02C10_TRIES : 0;
+    return s_device != NULL && field == 1 ? ov02c10_build_full() : NULL;
 }
 
-// The sensor format for Screen camera's field of view, 1 Full (binning) or 2 Full (skip), in its window `attempt`;
-// NULL for any other, or when no OV02C10 answered. Built anew each time (the capture task asks right before it hands
-// the format to the sensor).
-const esp_cam_sensor_format_t *tessera_camera_field_format_try(int field, int attempt)
+// ---- The frame rate while it streams (esp_video_camera's camera_sensor.h) ----
+// Slower by a longer frame: more lines of blanking (VTS, 0x380e..0x380f), written as a group the sensor takes at a
+// frame's end (OmniVision's OV02C10 datasheet, 2.11 and table 2-11: 0x3208 0x00 starts group 0, 0x10 ends it, 0xa0
+// launches it in the frame blanking), so no frame comes out half one length and half the other. Never faster than the
+// format's own VTS; at most 0x7fff lines. The exposure stays as the ISP pipeline set it, which this driver keeps within
+// the format's own VTS less 15 lines (ov02c10_set_exposure), so a frame turned short again never meets a longer one.
+#define OV02C10_REG_GROUP_ACCESS 0x3208
+#define OV02C10_REG_VTS_H        0x380e
+#define OV02C10_REG_VTS_L        0x380f
+static int ov02c10_set_fps(int fps)
 {
-    if (!s_detected || field < 1 || field > 2 || attempt < 0 || attempt >= OV02C10_TRIES) {
-        return NULL;
+    if (s_device == NULL || s_device->cur_format == NULL || s_device->cur_format->isp_info == NULL) {
+        return 0;
     }
-    const int index = field - 1;
-    const ov02c10_change_t *base = field == 1 ? s_binned_changes : s_skipped_changes;
-    const size_t count = field == 1 ? sizeof(s_binned_changes) / sizeof(s_binned_changes[0])
-                                    : sizeof(s_skipped_changes) / sizeof(s_skipped_changes[0]);
-    _Static_assert(sizeof(s_binned_changes) / sizeof(s_binned_changes[0]) <= 32, "changes fit the used marks");
-    ov02c10_change_t changes[32];
-    const ov02c10_try_t *w = &s_tries[attempt];
-    for (size_t c = 0; c < count; c++) {
-        changes[c] = base[c];
-        switch (changes[c].reg) {
-        case 0x380a: changes[c].val = (uint8_t)(w->height >> 8); break;
-        case 0x380b: changes[c].val = (uint8_t)(w->height & 0xff); break;
-        case 0x3811: changes[c].val = w->x_win; break;
-        case 0x3813: changes[c].val = w->y_win; break;
-        default: break;
-        }
+    const esp_cam_sensor_isp_info_t *isp = s_device->cur_format->isp_info;
+    const uint32_t own = (uint32_t)isp->isp_v1_info.vts;
+    const uint32_t line_ns = isp->isp_v1_info.tline_ns;
+    if (own == 0 || line_ns == 0) {
+        return 0;
     }
-    snprintf(s_field_name[index], sizeof(s_field_name[index]), "OV02C10_full_%s_960x%u_at_%u_%u",
-             field == 1 ? "binned" : "skipped", (unsigned)w->height, (unsigned)w->x_win, (unsigned)w->y_win);
-    return ov02c10_build_field(index, &ov02c10_format_info[1], changes, count, s_field_name[index], 960, w->height);
+    uint32_t vts = own;
+    if (fps > 0) {
+        const uint32_t wanted = (uint32_t)(1000000000ULL / ((uint64_t)fps * line_ns));
+        vts = MIN(MAX(wanted, own), 0x7fffu);
+    }
+    esp_sccb_io_handle_t sccb = s_device->sccb_handle;
+    esp_err_t ret = ov02c10_write(sccb, OV02C10_REG_GROUP_ACCESS, 0x00);
+    ret |= ov02c10_write(sccb, OV02C10_REG_VTS_H, (uint8_t)(vts >> 8));
+    ret |= ov02c10_write(sccb, OV02C10_REG_VTS_L, (uint8_t)(vts & 0xff));
+    ret |= ov02c10_write(sccb, OV02C10_REG_GROUP_ACCESS, 0x10);
+    ret |= ov02c10_write(sccb, OV02C10_REG_GROUP_ACCESS, 0xa0);
+    if (ret != ESP_OK) {
+        ESP_LOGW(TAG, "The frame length did not take (%u lines)", (unsigned)vts);
+        return 0;
+    }
+    return (int)(1000000000ULL / ((uint64_t)vts * line_ns));
 }
 
+// What the sensor holds now: its frame length (0x380e..0x380f) and exposure (0x3501..0x3502), in lines.
+static int ov02c10_frame_report(char *out, size_t size)
+{
+    if (s_device == NULL || s_device->cur_format == NULL || s_device->cur_format->isp_info == NULL || out == NULL) {
+        return 0;
+    }
+    uint8_t h = 0, l = 0, eh = 0, el = 0;
+    esp_err_t ret = ov02c10_read(s_device->sccb_handle, OV02C10_REG_VTS_H, &h);
+    ret |= ov02c10_read(s_device->sccb_handle, OV02C10_REG_VTS_L, &l);
+    ret |= ov02c10_read(s_device->sccb_handle, OV02C10_REG_EXPOSURE_H, &eh);
+    ret |= ov02c10_read(s_device->sccb_handle, OV02C10_REG_EXPOSURE_L, &el);
+    if (ret != ESP_OK) {
+        return snprintf(out, size, "nothing: it did not answer");
+    }
+    return snprintf(out, size, "a frame of %u lines (its format's %u), exposure %u lines", (unsigned)((h << 8) | l),
+                    (unsigned)s_device->cur_format->isp_info->isp_v1_info.vts, (unsigned)((eh << 8) | el));
+}
 // What the sensor says it does, for the log ten seconds after a change: 0x3820 (FORMAT1) and the window offsets as
 // written, and the ISP's own account (table 6-19, ISP_TOP_36 to 53, 0x5024 to 0x5035): binning, flip and mirror, the
 // array it reads, and the output's offset and size. The length written, 0 without an OV02C10.
-int tessera_camera_field_report(char *out, size_t size)
+static int ov02c10_field_report(char *out, size_t size)
 {
     if (s_device == NULL || out == NULL || size == 0) {
         return 0;
@@ -868,6 +898,14 @@ int tessera_camera_field_report(char *out, size_t size)
 #undef OV02C10_R11
 }
 
+static const tessera_camera_sensor_t s_camera_sensor = {
+    .name = "OV02C10",
+    .set_fps = ov02c10_set_fps,
+    .frame_report = ov02c10_frame_report,
+    .field_format = ov02c10_field_format,
+    .field_report = ov02c10_field_report,
+};
+
 esp_cam_sensor_device_t *ov02c10_detect(esp_cam_sensor_config_t *config)
 {
     if (config == NULL) {
@@ -879,7 +917,9 @@ esp_cam_sensor_device_t *ov02c10_detect(esp_cam_sensor_config_t *config)
     }
 
     for (uint32_t i = 0; i < OV02C10_GAIN_COUNT; i++) {
-        s_gain_values[i] = (i + OV02C10_GAIN_STEP_MIN) * 1000 / 16;
+        const uint32_t digital = i < OV02C10_ANALOG_COUNT ? 1024 : 1024 + (i - OV02C10_ANALOG_COUNT + 1) * 16;
+        const uint32_t analog = i < OV02C10_ANALOG_COUNT ? i + OV02C10_GAIN_STEP_MIN : OV02C10_GAIN_STEP_MAX;
+        s_gain_values[i] = analog * 1000 / 16 * digital / 1024;
     }
 
     esp_cam_sensor_device_t *dev = calloc(1, sizeof(esp_cam_sensor_device_t));
@@ -919,8 +959,8 @@ esp_cam_sensor_device_t *ov02c10_detect(esp_cam_sensor_config_t *config)
         goto err_free_handler;
     }
     ESP_LOGI(TAG, "Detected Camera sensor PID=0x%x", dev->id.pid);
-    s_detected = true;
     s_device = dev;
+    tessera_camera_add_sensor(&s_camera_sensor);
 
     return dev;
 

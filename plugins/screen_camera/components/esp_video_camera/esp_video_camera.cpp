@@ -5,7 +5,6 @@
 #include "i2c_helper.h"
 #include "esphome/core/log.h"
 #include "esphome/core/hal.h"
-#include "esphome/core/helpers.h"
 
 #include "esp_heap_caps.h"
 #include "esp_timer.h"
@@ -48,18 +47,13 @@ extern "C" {
 namespace esphome::esp_video_camera {
 
 static const char *const TAG = "esp_video_camera";
-// The windows the Full modes last ran in (field_found_), in flash, so a choice starts where it worked.
-struct FieldMemory {
-  uint8_t found[3];
-};
 // The field of view's names (set_field), for the log.
-static const char *const FIELD_NAMES[] = {"Sharp", "Full (binning)", "Full (skip)"};
-// A sensor driver that offers the modes defines these (components/ov02c10): how many windows a Full mode tries, and the
-// format of a mode in one of them; otherwise none is linked and the camera keeps its own mode.
-extern "C" int tessera_camera_field_tries(void) __attribute__((weak));
-extern "C" const esp_cam_sensor_format_t *tessera_camera_field_format_try(int field, int attempt) __attribute__((weak));
-// And what the sensor says it does, for the log ten seconds after a change (the OV02C10: binning, window and output).
-extern "C" int tessera_camera_field_report(char *out, size_t size) __attribute__((weak));
+static const char *const FIELD_NAMES[] = {"Sharp", "Full"};
+// The sensor that offers a field of view other than its format's own (camera_sensor.h), defined with the sensors below;
+// nullptr while none does, and the camera keeps its own mode.
+static const tessera_camera_sensor_t *field_sensor();
+// What that sensor says it does (the OV02C10: binning, window and output), into `report`; false when it says nothing.
+static bool field_report(char *report, size_t size);
 
 #if CONFIG_IDF_TARGET_ESP32P4
 // What the P4's MIPI receiver, CSI bridge and ISP saw when a field of view stalls (from a Guition tester's test
@@ -290,12 +284,6 @@ void ESPVideoCameraImageReader::return_image() {
 // ESPVideoCamera: setup and pipeline initialization
 // ===========================================================================
 void ESPVideoCamera::setup() {
-  for (auto &found : this->field_found_) found.store(0xff, std::memory_order_relaxed);
-  this->field_pref_ = global_preferences->make_preference<FieldMemory>(fnv1_hash("esp_video_camera_field_windows"));
-  FieldMemory memory{};
-  if (this->field_pref_.load(&memory)) {
-    for (int i = 0; i < 3; i++) this->field_found_[i].store(memory.found[i], std::memory_order_relaxed);
-  }
   if (!this->init_pipeline_()) {
     this->mark_failed();
     return;
@@ -509,11 +497,6 @@ void ESPVideoCamera::loop() {
   // iteration; disabling at the end loses that edge and can strand a pending
   // JPEG until an unrelated component update.
   this->disable_loop();
-  if (this->field_save_pending_.exchange(false, std::memory_order_acq_rel)) {
-    FieldMemory memory{};
-    for (int i = 0; i < 3; i++) memory.found[i] = this->field_found_[i].load(std::memory_order_acquire);
-    this->field_pref_.save(&memory);
-  }
   uint8_t *data = nullptr;
   size_t len = 0;
   uint8_t requesters = 0;
@@ -702,8 +685,10 @@ void ESPVideoCamera::capture_task_run_() {
       this->schedule_capture_retry_();
       continue;
     }
-    // Fresh descriptors require the current runtime controls.
+    // Fresh descriptors require the current runtime controls, and the sensor its frame rate again: a start hands it its
+    // format, which sets the format's own.
     this->ctrls_dirty_.store(true);
+    this->fps_active_ = -1;
     if (this->is_raw_csi_)
       this->raw_warmup_until_ms_ = millis() + RAW_WARMUP_MS;
     while (this->capture_task_running_.load(std::memory_order_acquire) &&
@@ -714,6 +699,7 @@ void ESPVideoCamera::capture_task_run_() {
       // exactly when a frame becomes ready.
       // Pick up HA/web control changes between frames.
       this->apply_runtime_ctrls_();
+      this->apply_frame_rate_();
       if (this->is_hw_jpeg_ || this->is_raw_csi_) {
         this->loop_jpeg_pipeline_();
       } else {
@@ -729,15 +715,7 @@ void ESPVideoCamera::capture_task_run_() {
         // Before the capture stops, while the receiver and the ISP still hold what they saw.
         log_p4_capture_state(FIELD_NAMES[this->field_active_]);
 #endif
-        const int tries = tessera_camera_field_tries != nullptr ? tessera_camera_field_tries() : 0;
-        if (this->field_searching_ && tries > 0 && ++this->field_tried_ < tries) {
-          // Still looking: the next window, from a fresh start (start_capture_ sees the try pending).
-          ESP_LOGW(TAG, "Field of view %s: window %d of %d gave %u frames; the next", FIELD_NAMES[this->field_active_],
-                   this->field_try_ + 1, tries, (unsigned) this->field_frames_);
-          this->field_try_ = (this->field_try_ + 1) % tries;
-        } else {
-          this->field_failed_(this->field_frames_ == 0 ? "no frame came in it" : "its frames stopped");
-        }
+        this->field_failed_(this->field_frames_ == 0 ? "no frame came in it" : "its frames stopped");
         this->capture_retry_attempts_.store(0, std::memory_order_release);
       }
       if (this->stop_capture_())
@@ -827,16 +805,6 @@ void ESPVideoCamera::loop_jpeg_pipeline_() {
     return;
   }
   this->field_frames_++;
-  if (this->field_searching_ && this->field_frames_ >= FIELD_RUNS_FRAMES) {
-    // This window runs: the mode keeps it, and the next choice of the mode starts from it (in flash, by loop()).
-    this->field_searching_ = false;
-    this->field_found_[this->field_active_].store(static_cast<uint8_t>(this->field_try_), std::memory_order_release);
-    this->field_save_pending_.store(true, std::memory_order_release);
-    this->enable_loop_soon_any_context();
-    ESP_LOGI(TAG, "Field of view %s: window %d runs (%u frames in %u ms), kept for next time",
-             FIELD_NAMES[this->field_active_], this->field_try_ + 1, (unsigned) this->field_frames_,
-             (unsigned) (millis() - this->field_since_ms_));
-  }
   // The first frames of a field of view of the driver's, as the capture got them.
   if (this->field_active_ != 0 && this->field_frames_ <= 3)
     ESP_LOGI(TAG, "Field of view %s: frame %u, %u bytes (%u expected), %u ms after the change",
@@ -848,7 +816,7 @@ void ESPVideoCamera::loop_jpeg_pipeline_() {
              this->field_frames_ * 1000.0f / (millis() - this->field_since_ms_), (unsigned) this->capture_width_,
              (unsigned) this->capture_height_);
     char report[256];
-    if (tessera_camera_field_report != nullptr && tessera_camera_field_report(report, sizeof(report)) > 0)
+    if (field_report(report, sizeof(report)))
       ESP_LOGI(TAG, "Field of view %s: the sensor says %s", FIELD_NAMES[this->field_active_], report);
   }
 
@@ -1225,6 +1193,78 @@ bool ESPVideoCamera::start_jpeg_frame_consumer(
 
 // Tessera: see the header. Exposure is in sensor lines (V4L2_CID_EXPOSURE), each the format's tline_ns long; gain is
 // either a number (relative to its minimum) or an index into a menu of gains (relative to the menu's first).
+// ---- The sensors (camera_sensor.h) ----
+// The drivers that found their sensor, in the order they added themselves: one camera on a board, so one in practice.
+static constexpr int MAX_SENSORS = 4;
+static const tessera_camera_sensor_t *s_sensors[MAX_SENSORS] = {};
+static std::atomic<int> s_sensor_count{0};
+
+extern "C" void tessera_camera_add_sensor(const tessera_camera_sensor_t *sensor) {
+  const int n = s_sensor_count.load(std::memory_order_acquire);
+  if (sensor == nullptr || n >= MAX_SENSORS) return;
+  for (int i = 0; i < n; ++i)
+    if (s_sensors[i] == sensor) return;
+  s_sensors[n] = sensor;
+  s_sensor_count.store(n + 1, std::memory_order_release);
+  ESP_LOGI(TAG, "Camera sensor %s: its frame rate %s, %s", sensor->name ? sensor->name : "?",
+           sensor->set_fps ? "can change while it streams" : "stays its format's own",
+           sensor->field_format ? "a mode over its whole field of view" : "its format's field of view only");
+}
+
+static const tessera_camera_sensor_t *field_sensor() {
+  const int n = s_sensor_count.load(std::memory_order_acquire);
+  for (int i = 0; i < n; ++i)
+    if (s_sensors[i]->field_format != nullptr) return s_sensors[i];
+  return nullptr;
+}
+
+static bool field_report(char *report, size_t size) {
+  const tessera_camera_sensor_t *sensor = field_sensor();
+  return sensor != nullptr && sensor->field_report != nullptr && sensor->field_report(report, size) > 0;
+}
+
+// On the capture task, between two frames: the sensor's frame rate as wanted, once per change and after every start.
+void ESPVideoCamera::apply_frame_rate_() {
+  if (this->fps_report_at_ms_ != 0 && static_cast<int32_t>(millis() - this->fps_report_at_ms_) >= 0) {
+    this->fps_report_at_ms_ = 0;
+    char report[128];
+    if (this->fps_sensor_->frame_report(report, sizeof(report)) > 0) {
+      if (this->fps_active_ == 0)
+        ESP_LOGI(TAG, "Camera at its format's own frame rate: the sensor holds %s", report);
+      else
+        ESP_LOGI(TAG, "Camera at %d frames a second asked: the sensor holds %s", this->fps_active_, report);
+    }
+  }
+  const int want = this->fps_wanted_.load(std::memory_order_acquire);
+  if (want == this->fps_active_) return;
+  this->fps_active_ = want;
+  // A capture that thins its frames itself (its JPEG device asks the receiver for fewer than the sensor makes) would
+  // thin a slower sensor once more: it keeps the sensor's own rate.
+  const bool thins = this->csi_divides_ && !this->is_raw_csi_;
+  const int n = s_sensor_count.load(std::memory_order_acquire);
+  for (int i = 0; i < n && !thins; ++i) {
+    const tessera_camera_sensor_t *sensor = s_sensors[i];
+    if (sensor->set_fps == nullptr) continue;
+    const int set = sensor->set_fps(want);
+    if (set <= 0) continue;
+    if (want == 0)
+      ESP_LOGI(TAG, "Camera at %d frames a second, its format's own (%s)", set, sensor->name);
+    else
+      ESP_LOGI(TAG, "Camera at %d frames a second in the sensor, %d asked (%s)", set, want, sensor->name);
+    // What took, read back once the sensor reached a frame's end.
+    if (sensor->frame_report != nullptr) {
+      this->fps_sensor_ = sensor;
+      this->fps_report_at_ms_ = millis() + 1000;
+    }
+    return;
+  }
+  if (want != 0 && !this->fps_told_) {
+    this->fps_told_ = true;
+    ESP_LOGI(TAG, "The camera keeps its sensor's own frame rate: %s",
+             thins ? "its picture device thins the frames itself" : "this sensor cannot change it while it streams");
+  }
+}
+
 bool ESPVideoCamera::read_sensor_exposure(float *exposure_us, float *gain) {
   if (this->capture_fd_ < 0)
     return false;
@@ -1451,6 +1491,7 @@ bool ESPVideoCamera::configure_capture_framerate_() {
     target_fps--;
 
   if (target_fps == reported_fps) {
+    this->csi_divides_ = false;
     ESP_LOGI(TAG, "Capture framerate: %u fps", (unsigned) reported_fps);
     return true;
   }
@@ -1473,6 +1514,7 @@ bool ESPVideoCamera::configure_capture_framerate_() {
       actual.parm.capture.timeperframe.denominator > 0) {
     const uint32_t actual_fps =
         actual.parm.capture.timeperframe.denominator;
+    this->csi_divides_ = actual_fps < source_fps;
     ESP_LOGI(TAG, "Capture framerate: %u fps (source %u fps)",
              (unsigned) actual_fps,
              (unsigned) source_fps);
@@ -1878,8 +1920,7 @@ static esp_cam_sensor_format_t s_own_format;
 static bool s_own_saved = false;
 
 void ESPVideoCamera::set_field(int field) {
-  if (field < 0 || field > 2) field = 0;
-  this->field_restart_.store(true, std::memory_order_release);
+  if (field < 0 || field > 1) field = 0;
   this->field_wanted_.store(field, std::memory_order_release);
   if (this->capture_task_ != nullptr) xTaskNotifyGive(this->capture_task_);
 }
@@ -1889,12 +1930,10 @@ void ESPVideoCamera::field_failed_(const char *why) {
     ESP_LOGW(TAG, "Field of view back to Sharp: %s", why);
     // What the sensor made of the mode that failed, for the tester's report.
     char report[256];
-    if (this->field_active_ != 0 && tessera_camera_field_report != nullptr &&
-        tessera_camera_field_report(report, sizeof(report)) > 0)
+    if (this->field_active_ != 0 && field_report(report, sizeof(report)))
       ESP_LOGW(TAG, "Field of view %s: the sensor said %s", FIELD_NAMES[this->field_active_], report);
     this->field_fell_back_.store(true, std::memory_order_release);
   }
-  this->field_searching_ = false;
 }
 
 // Capture task, before the capture's format: the sensor in the wanted mode. Sharp at the first start writes nothing.
@@ -1908,47 +1947,27 @@ void ESPVideoCamera::apply_field_() {
   }
   int want = this->field_wanted_.load(std::memory_order_acquire);
   const esp_cam_sensor_format_t *format = &s_own_format;
-  int attempt = -1;
-  const int tries = tessera_camera_field_tries != nullptr ? tessera_camera_field_tries() : 0;
   if (want != 0) {
-    if (tries <= 0 || tessera_camera_field_format_try == nullptr) {
+    const tessera_camera_sensor_t *sensor = field_sensor();
+    format = sensor != nullptr ? sensor->field_format(want) : nullptr;
+    if (format == nullptr) {
       this->field_failed_("this camera has no such mode");
       want = 0;
-    } else {
-      if (this->field_restart_.exchange(false, std::memory_order_acq_rel) || want != this->field_active_) {
-        // A new choice: from the window that ran last time, or the first.
-        const uint8_t found = this->field_found_[want].load(std::memory_order_acquire);
-        this->field_try_ = found < tries ? found : 0;
-        this->field_tried_ = 0;
-        this->field_searching_ = true;
-      }
-      attempt = this->field_try_;
-      format = tessera_camera_field_format_try(want, attempt);
-      if (format == nullptr) {
-        this->field_failed_("the camera gave no format for it");
-        want = 0;
-        attempt = -1;
-        format = &s_own_format;
-      }
+      format = &s_own_format;
     }
   }
-  if (want == this->field_active_ && attempt == this->field_active_try_) return;
+  if (want == this->field_active_) return;
   if (ioctl(this->capture_fd_, VIDIOC_S_SENSOR_FMT, format) != 0) {
     ESP_LOGW(TAG, "The sensor took no format %s: %s", format->name, strerror(errno));
     if (want != 0) this->field_failed_("the sensor took no such format");
     return;
   }
   this->field_active_ = want;
-  this->field_active_try_ = attempt;
   this->field_since_ms_ = millis();
   this->field_frames_ = 0;
   this->field_told_ = false;
-  if (want != 0 && this->field_searching_)
-    ESP_LOGI(TAG, "Field of view %s, window %d of %d: the sensor's format %s, %ux%u", FIELD_NAMES[want], attempt + 1,
-             tries, format->name, (unsigned) format->width, (unsigned) format->height);
-  else
-    ESP_LOGI(TAG, "Field of view %s: the sensor's format %s, %ux%u", FIELD_NAMES[want], format->name,
-             (unsigned) format->width, (unsigned) format->height);
+  ESP_LOGI(TAG, "Field of view %s: the sensor's format %s, %ux%u", FIELD_NAMES[want], format->name,
+           (unsigned) format->width, (unsigned) format->height);
 }
 
 bool ESPVideoCamera::start_jpeg_pipeline_() {

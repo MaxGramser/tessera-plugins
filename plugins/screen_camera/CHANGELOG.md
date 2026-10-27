@@ -1,5 +1,25 @@
 # Changelog
 
+## 0.6.5 - 2026-10-27
+- **Full is the default field of view** on the Guition screens' camera (OV02C10): the whole of what it sees, at half
+  the resolution, 15 pictures a second. The two Full modes are one now: the sensor averages each two columns and the
+  screen halves the lines, which runs where the sensor's own halving of the lines stopped after one frame. Sharp, the
+  middle at full resolution and 30 a second, is still there. A screen whose setting shows Sharp keeps it: choose Full
+  once to see the whole room.
+- **A brighter picture in a dim room**: auto exposure can now use the sensor's digital gain too, up to 63x instead of
+  15.5x. And since 0.6.0 a change of field of view put exposure and gain back to their start while auto exposure kept
+  its choice, so the picture could stay dark; they now stay where auto exposure set them.
+- **Guition's own image tuning** for the OV02C10 (colours, white balance, black level), for both chip revisions of the
+  ESP32-P4.
+- **The camera rests while nobody watches**: for the light level and motion, or with the part Video and nothing at
+  all, it makes 5 pictures a second (the OV02C10 of the Guition screens and the SC202CS of the reTerminal D1001), and
+  goes back to full speed at once when someone opens the video or Home Assistant asks for a picture, slowing down
+  again ten seconds after the last of those.
+- **The camera dot tells the two apart**: solid while the camera's picture goes somewhere, a ring while it only senses
+  the light and motion. This needs Tessera's dev firmware (plugin API 0.20), so this version is on the dev branch until
+  Tessera's next release.
+- The video keeps 15 pictures a second when the camera makes 15; before, it could skip every other one.
+
 ## 0.6.4 - 2026-10-26
 - Camera field of view on the Guition: with the lines halved the sensor still stopped after one frame at 960 x 544,
   and the P4 said why: a frame the sensor started and never ended. How many halved lines the sensor's own image

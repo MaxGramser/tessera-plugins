@@ -70,19 +70,19 @@ switch:
     turn_off_action:
       - lambda: id(screen_camera_plugin).set_upside_down(false);
 
-# How much of the room the camera shows (Tessera's docs/PLATFORM_PLAN.md 4.6): Sharp is the sensor's own mode, the
-# middle of its picture; the other two show the whole of it at half the resolution, the pixels averaged (binning) or
-# every other one read (skip). Only a camera whose driver offers
-# them takes them (the Guition's OV02C10), and they are tried by testers first; any other camera stays at Sharp, and a
-# mode that gives no picture goes back to Sharp by itself. The part Video only; the pictures without it keep Sharp.
+# How much of the room the camera shows (Tessera's docs/PLATFORM_PLAN.md 4.6): Full, the default, the whole of what the
+# sensor sees at half the resolution; Sharp the sensor's own mode, the middle of its picture. Only a camera whose driver
+# offers a mode over its whole field takes Full (esp_video_camera's camera_sensor.h; the Guition's OV02C10); any other
+# stays at Sharp, and a mode that gives no picture goes back to Sharp by itself. The part Video only; the pictures
+# without it keep Sharp.
 select:
   - platform: template
     id: screen_camera_field
     name: "Camera field of view"
     icon: mdi:fit-to-screen-outline
     optimistic: true
-    options: ["Sharp", "Full (binning)", "Full (skip)"]
-    initial_option: "Sharp"
+    options: ["Sharp", "Full"]
+    initial_option: "Full"
     restore_value: true
     entity_category: config
     on_value:

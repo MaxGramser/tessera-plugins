@@ -5,9 +5,9 @@
 #ifdef USE_ESP_IDF
 
 #include "esphome/core/component.h"
-#include "esphome/core/preferences.h"
 #include "esphome/components/camera/camera.h"
 #include "esphome/components/i2c/i2c.h"
+#include "camera_sensor.h"
 
 #include "driver/gpio.h"
 #include "driver/ppa.h"
@@ -178,10 +178,9 @@ class ESPVideoCamera : public camera::Camera {
   }
 
   // The field of view (Screen camera's setting "Field of view"; Tessera's docs/PLATFORM_PLAN.md 4.6): 0 the sensor's
-  // own mode (Sharp), 1 Full (binning), 2 Full (skip), the modes the sensor's driver offers
-  // (tessera_camera_field_format; the OV02C10's only, for now). Any thread: the capture task stops, hands the sensor
-  // its format and starts again, and goes back to the sensor's own mode by itself when the driver has no such mode or
-  // no frame comes in it.
+  // own mode (Sharp), 1 Full, the mode the sensor's driver offers over its whole field (camera_sensor.h, field_format;
+  // the OV02C10's only, for now). Any thread: the capture task stops, hands the sensor its format and starts again, and
+  // goes back to the sensor's own mode by itself when the driver has no such mode or no frame comes in it.
   void set_field(int field);
   // True once after such a fall back, for the setting to show Sharp again.
   bool take_field_fallback() { return this->field_fell_back_.exchange(false); }
@@ -204,6 +203,16 @@ class ESPVideoCamera : public camera::Camera {
   // through esp_video's V4L2 controls. Only from a raw frame consumer, which runs on the capture task, the one user
   // of the capture descriptor. False when the sensor does not report them.
   bool read_sensor_exposure(float *exposure_us, float *gain);
+  // Tessera: how many frames a second the sensor makes (camera_sensor.h), 0 for its format's own; any thread. The
+  // capture task hands it to the sensor between two frames, and again after every start and change of format. A sensor
+  // whose driver cannot (none added itself), and a camera that thins its frames itself (its JPEG device below the
+  // sensor's rate), keep the format's own rate.
+  void set_frame_rate(int fps) { this->fps_wanted_.store(fps < 0 ? 0 : fps, std::memory_order_release); }
+  // Home Assistant asks the camera for pictures or a stream (its JPEG device), any thread.
+  bool requested() const {
+    return this->stream_requesters_.load(std::memory_order_acquire) != 0 ||
+           this->single_requesters_.load(std::memory_order_acquire) != 0;
+  }
 
  protected:
   bool init_pipeline_();
@@ -278,6 +287,17 @@ class ESPVideoCamera : public camera::Camera {
   // being incidentally atomic on the P4.
   std::atomic<uint8_t> stream_requesters_{0};
   std::atomic<uint8_t> single_requesters_{0};
+  // The sensor's frame rate (set_frame_rate): wanted, and on the capture task the one in force (-1 before the sensor
+  // was told since its last start), whether the log said the sensor keeps its own, and whether the capture thins its
+  // frames itself (S_PARM below the sensor's rate), which a slower sensor would thin once more.
+  std::atomic<int> fps_wanted_{0};
+  int fps_active_{-1};
+  bool fps_told_{false};
+  bool csi_divides_{false};
+  // The sensor whose frame length changed last, and when to read back what took (0: nothing to read).
+  const tessera_camera_sensor_t *fps_sensor_{nullptr};
+  uint32_t fps_report_at_ms_{0};
+  void apply_frame_rate_();
   std::atomic<RawVideoFrameConsumer *> raw_frame_consumer_{nullptr};
   std::atomic<RawVideoPixelFormat> raw_frame_pixel_format_{
       RawVideoPixelFormat::RGB565_LE};
@@ -406,22 +426,9 @@ class ESPVideoCamera : public camera::Camera {
   uint32_t field_since_ms_{0};
   uint32_t field_frames_{0};
   bool field_told_{true};
-  // The windows a Full mode tries (tessera_camera_field_tries): the one in force, the one to try, how many were tried
-  // since the choice, whether it is still looking (a window runs once FIELD_RUNS_FRAMES came), and per mode the window
-  // that ran last, kept in flash (0xff for none). Capture task, but field_found_ and the save flag, which loop() reads.
-  static constexpr uint32_t FIELD_RUNS_FRAMES = 45;
-  int field_active_try_{-1};
-  int field_try_{0};
-  int field_tried_{0};
-  bool field_searching_{false};
-  std::atomic<bool> field_restart_{false};
-  std::atomic<uint8_t> field_found_[3];
-  std::atomic<bool> field_save_pending_{false};
-  ESPPreferenceObject field_pref_;
   // Only the raw capture (the part Video) takes another mode; the camera's JPEG device keeps its own.
   bool field_pending_() const {
-    return this->is_raw_csi_ && (this->field_wanted_.load(std::memory_order_acquire) != this->field_active_ ||
-                                 (this->field_active_ != 0 && this->field_try_ != this->field_active_try_));
+    return this->is_raw_csi_ && this->field_wanted_.load(std::memory_order_acquire) != this->field_active_;
   }
   void apply_field_();
   void field_failed_(const char *why);

@@ -123,6 +123,8 @@ class ScreenVideo : public Component, public esp_video_camera::RawVideoFrameCons
   std::atomic<uint32_t> encode_us_{0};    // and the encoding
   uint32_t reported_crop_us_{0}, reported_encode_us_{0};
   uint32_t last_frame_us_{0};
+  uint32_t last_arrival_us_{0};           // the camera's last frame, and its frame time smoothed (the video's pace)
+  uint32_t camera_us_{0};
   uint32_t seen_turns_{0};                // the hub's turns the stream follows (video_encoder.cpp)
   uint8_t idr_in_{0};                     // frames until the second key frame after a turn
   // The internal RAM the encoder took when it was made, for the loop's line (the camera's task writes it before its

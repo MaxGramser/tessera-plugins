@@ -39,9 +39,12 @@ app like any camera.
    itself, and nobody types a password: it is worked out from the screen's API key on both sides.
 
 With the part, the camera runs from the screen's start, and its pictures come from the video: the camera **Camera**
-leaves the screen's device, and **Video** gives the stills. Light level and motion keep working. The dot shows while
+leaves the screen's device, and **Video** gives the stills. Light level and motion keep working. The dot is solid while
 someone watches, and the microphone listens only then. The video needs an ESP32-P4 with a microphone; it was tried on
-the reTerminal D1001.
+the reTerminal D1001 and the Guition 10.1-inch.
+
+On the Guition screens the setting **Camera field of view** chooses how much of the room the camera shows: **Full**,
+the default, all it sees at half the resolution and 15 frames a second; **Sharp** the middle of it at full resolution.
 
 Tessera's docs/CAMERA.md, "The screen's own camera as video in Home Assistant", says how it works and what it takes.
 
@@ -56,9 +59,10 @@ Off until you switch it on. While it is on, the camera keeps running and the scr
   **Motion time-out** after (ten seconds to start with, five seconds to ten minutes). A light switched on or off (most of the picture brighter or darker at once) is not motion: for three
   seconds after it, while the camera adjusts, motion is not judged.
 
-No picture is encoded or sent for them: only the two values leave the screen. The dot in the top right corner shows
-while it runs. With **Motion wakes the screen** on (off to start with), someone moving in front of the screen wakes
-it, as a touch does.
+No picture is encoded or sent for them: only the two values leave the screen. The dot in the top right corner is a ring
+while it runs, and solid once someone watches. While nobody watches, the camera makes 5 pictures a second, enough for
+both, and goes back to full speed at once for the video or a picture. With **Motion wakes the screen** on (off to start
+with), someone moving in front of the screen wakes it, as a touch does.
 
 ## Privacy
 
@@ -79,7 +83,9 @@ The camera's raw frames go to one consumer of the camera, Screen camera's frame 
 which hands each to the light level and motion and to the video while they are on; a consumer reads a frame through
 `frame_reader.h` (`tests/test_frame_reader.cpp` checks it on a PC). The sensors the camera finds by itself, and the
 SC202CS's colour tuning, are the table in `components/screen_camera/sensors.py`: a sensor Espressif's camera library
-drives is a row there. The video is `components/screen_video`: the frame path and Espressif's esp_h264 in
+drives is a row there. What a sensor's driver can do beyond its format, a slower frame rate while the camera only senses
+and a mode over its whole field of view, it tells the camera through `components/esp_video_camera/camera_sensor.h`,
+whichever board it is on. The video is `components/screen_video`: the frame path and Espressif's esp_h264 in
 `video_encoder.cpp`, the RTSP server in `rtsp_server.cpp`, the microphone as Opus in `opus_sound.cpp`.
 The OmniVision OV02C10 of the Guition screens, which Espressif's camera library has no driver for, is a component of its
 own beside it, `components/ov02c10`: the sensor driver and its image tuning (one for rev3 chips, one for older ones),

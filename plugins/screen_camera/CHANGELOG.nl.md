@@ -1,5 +1,26 @@
 # Wijzigingen
 
+## 0.6.5 - 2026-10-27
+- **Full is het standaard beeldveld** van de camera van de Guition-schermen (OV02C10): alles wat hij ziet, op de halve
+  resolutie, 15 beelden per seconde. De twee Full-standen zijn er nu één: de sensor middelt telkens twee kolommen en
+  het scherm halveert de regels, wat loopt waar het halveren van de regels door de sensor zelf na één beeld stopte.
+  Sharp, het midden op volle resolutie en 30 per seconde, blijft beschikbaar. Een scherm waarvan de instelling Sharp
+  toont, houdt die: kies één keer Full om de hele kamer te zien.
+- **Een helderder beeld in een schemerige kamer**: de automatische belichting kan nu ook de digitale versterking van
+  de sensor gebruiken, tot 63x in plaats van 15,5x. En sinds 0.6.0 zette een wissel van beeldveld de belichting en
+  versterking terug naar hun begin terwijl de automatische belichting haar keuze hield, zodat het beeld donker kon
+  blijven; nu blijven ze waar de automatische belichting ze zette.
+- **De eigen beeldafstelling van Guition** voor de OV02C10 (kleuren, witbalans, zwartniveau), voor beide
+  chiprevisies van de ESP32-P4.
+- **De camera rust als niemand kijkt**: voor het lichtniveau en beweging, of met het onderdeel Video en verder niets,
+  maakt hij 5 beelden per seconde (de OV02C10 van de Guition-schermen en de SC202CS van de reTerminal D1001), en hij
+  gaat meteen terug naar volle snelheid als iemand de video opent of Home Assistant om een beeld vraagt, en tien
+  seconden na de laatste daarvan weer langzamer.
+- **De camerastip maakt het verschil zichtbaar**: dicht zolang het beeld van de camera ergens heen gaat, een ring als
+  hij alleen licht en beweging meet. Dit vraagt de dev-firmware van Tessera (plugin-API 0.20), dus deze versie staat
+  op de dev-branch tot de volgende release van Tessera.
+- De video houdt 15 beelden per seconde als de camera er 15 maakt; eerder kon hij er telkens één overslaan.
+
 ## 0.6.4 - 2026-10-26
 - Beeldveld camera op de Guition: met de regels gehalveerd stopte de sensor ook bij 960 x 544 na één beeld, en de P4
   zei waarom: een beeld dat de sensor begon en nooit afsloot. Met hoeveel gehalveerde regels de beeldverwerking van

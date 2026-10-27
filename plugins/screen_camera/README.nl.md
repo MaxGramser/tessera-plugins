@@ -41,8 +41,12 @@ de browserpagina en de app van Home Assistant zoals elke camera.
 
 Met het onderdeel loopt de camera vanaf de start van het scherm, en zijn foto's komen uit de video: de camera **Camera**
 verdwijnt van het apparaat van het scherm, en **Video** geeft de stilstaande beelden. Lichtniveau en beweging blijven
-werken. De stip staat er zolang iemand kijkt, en de microfoon luistert alleen dan. De video heeft een ESP32-P4 met een
-microfoon nodig; hij is geprobeerd op de reTerminal D1001.
+werken. De stip is dicht zolang iemand kijkt, en de microfoon luistert alleen dan. De video heeft een ESP32-P4 met een
+microfoon nodig; hij is geprobeerd op de reTerminal D1001 en de Guition 10.1-inch.
+
+Op de Guition-schermen kiest de instelling **Camera field of view** hoeveel van de kamer de camera toont: **Full**, de
+standaard, alles wat hij ziet op de halve resolutie en 15 beelden per seconde; **Sharp** het midden ervan op volle
+resolutie.
 
 docs/CAMERA.md van Tessera, "The screen's own camera as video in Home Assistant", zegt hoe het werkt en wat het vraagt.
 
@@ -59,8 +63,9 @@ Uit tot je het aanzet. Zolang het aan staat blijft de camera draaien en bepaalt 
   donkerder) is geen beweging: drie seconden daarna, terwijl de camera zich aanpast, wordt beweging niet beoordeeld.
 
 Hiervoor wordt geen beeld gemaakt of verstuurd: alleen de twee waarden verlaten het scherm. De stip in de
-rechterbovenhoek staat er zolang het draait. Met **Beweging wekt het scherm** aan (eerst uit) wekt iemand die voor het
-scherm beweegt het scherm, zoals een aanraking.
+rechterbovenhoek is een ring zolang het draait, en dicht zodra iemand kijkt. Zolang niemand kijkt maakt de camera 5
+beelden per seconde, genoeg voor allebei, en hij gaat meteen terug naar volle snelheid voor de video of een foto. Met
+**Beweging wekt het scherm** aan (eerst uit) wekt iemand die voor het scherm beweegt het scherm, zoals een aanraking.
 
 ## Privacy
 
@@ -80,4 +85,6 @@ heeft ook een kleine eigen component, `components/sc202cs`: Espressifs driver st
 255 dat de ISP eraf moet halen, wat een ESP32-P4 van voor rev3 niet kan, dus verlaagt de component het eigen
 zwartniveau van de sensor nadat de camera hem heeft gestart. De beelden van de camera gaan naar een verdeler van Screen
 camera (`components/screen_camera/frame_hub.h`) die ze doorgeeft aan lichtniveau en beweging en aan de video, en de
-sensoren die de camera zelf vindt staan in de tabel `components/screen_camera/sensors.py`.
+sensoren die de camera zelf vindt staan in de tabel `components/screen_camera/sensors.py`. Wat de driver van een
+sensor kan naast zijn formaat, een lager beeldtempo als de camera alleen meet en een stand over zijn hele beeldveld,
+vertelt hij de camera via `components/esp_video_camera/camera_sensor.h`, op welk bord hij ook zit.

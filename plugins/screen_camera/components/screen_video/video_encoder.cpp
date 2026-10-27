@@ -96,7 +96,14 @@ void ScreenVideo::consume_raw_video_frame(const esp_video_camera::RawVideoFrame 
   if (encoder_ == nullptr || !playing_.load()) return;
   if (frame.width < crop_x_ + width_ || frame.height < crop_y_ + height_) return;  // a frame of another size: not ours
   const uint32_t now = static_cast<uint32_t>(esp_timer_get_time());
-  if (last_frame_us_ != 0 && now - last_frame_us_ < 1000000U / FRAMERATE - 3000U) return;
+  // The camera's frame time, smoothed over the frames as they come: a frame may come a third of it early, so a camera
+  // at 30 frames a second gives the video every other frame and one at 15 (a Full field of view) every frame, however
+  // its frames jitter. A fixed 3 ms let a 15-a-second camera's frames fall through.
+  // A gap of half a second or more is a pause (nobody watched), not the camera's pace.
+  const uint32_t gap = now - last_arrival_us_;
+  if (last_arrival_us_ != 0 && gap < 500000U) camera_us_ = camera_us_ == 0 ? gap : (3 * camera_us_ + gap) / 4;
+  last_arrival_us_ = now;
+  if (last_frame_us_ != 0 && now - last_frame_us_ + camera_us_ / 3 < 1000000U / FRAMERATE) return;
   last_frame_us_ = now;
   // A frame dropped before it is encoded leaves the encoder's references whole: the stream goes on undamaged.
   int index = -1;
