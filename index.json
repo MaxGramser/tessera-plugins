@@ -1,6 +1,6 @@
 {
  "format": 1,
- "generated": "2026-10-25T12:37:28Z",
+ "generated": "2026-10-27T19:28:40Z",
  "plugin_api": "0.14",
  "blocked": [],
  "featured": [
@@ -2583,14 +2583,14 @@
    "label": "community",
    "status": "ok",
    "release": {
-    "version": "0.9.0",
-    "sha": "0f4665cfb79803a609419432ec62cd14a4ace819",
-    "date": "2026-10-25",
-    "tag": "v0.9.0"
+    "version": "0.10.0",
+    "sha": "7af4012e7dc7b79c98b9f7a48ad5134bf1c22447",
+    "date": "2026-10-27",
+    "tag": "v0.10.0"
    },
    "manifest": {
     "id": "electricity_price",
-    "version": "0.9.0",
+    "version": "0.10.0",
     "api": "0.12",
     "icon": "flash",
     "maintainer": "Heronimonimo",
@@ -2603,7 +2603,44 @@
      "esphome": "2026.6.2"
     },
     "boards": "any",
-    "flash_kb": 10,
+    "flash_kb": 16,
+    "permissions": {
+     "read_entities": [
+      "{price_sensor}"
+     ]
+    },
+    "inputs": [
+     {
+      "id": "price_sensor",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_price_sensor",
+      "hint": "input_price_sensor_hint"
+     }
+    ],
+    "bar_items": [
+     {
+      "id": "price",
+      "label": "bar_price",
+      "icon": "flash",
+      "example": "bar_example"
+     }
+    ],
+    "settings": [
+     {
+      "key": "price_bar_formula",
+      "label": "setting_bar_formula",
+      "hint": "setting_bar_formula_hint"
+     },
+     {
+      "key": "price_bar_unit",
+      "label": "setting_bar_unit",
+      "hint": "setting_bar_unit_hint"
+     }
+    ],
     "tiles": [
      {
       "id": "nordpool",
@@ -3029,7 +3066,15 @@
       "grid_hint": "Lines across the graph at the price labels it shows.",
       "grid_none": "None",
       "grid_solid": "Solid",
-      "grid_dotted": "Dotted"
+      "grid_dotted": "Dotted",
+      "input_price_sensor": "Price sensor for the top bar",
+      "input_price_sensor_hint": "The sensor of the price now, for the top bar item. Nord Pool: the same sensor as your tiles. ENTSO-e: its Current electricity market price sensor, not the average one your tiles use.",
+      "bar_price": "Electricity price",
+      "bar_example": "0.472 €/kWh",
+      "setting_bar_formula": "Top bar: price formula",
+      "setting_bar_formula_hint": "As on a tile: a formula in p, such as (p+0.12)*1.21, or a number for a fixed price. Empty: the sensor's price.",
+      "setting_bar_unit": "Top bar: unit",
+      "setting_bar_unit_hint": "EUR/kWh (0.472) or ct/kWh (47.2)."
      }
     },
     "nl": {
@@ -3077,15 +3122,23 @@
       "grid_hint": "Lijnen dwars door de grafiek bij de prijzen die hij toont.",
       "grid_none": "Geen",
       "grid_solid": "Doorgetrokken",
-      "grid_dotted": "Gestippeld"
+      "grid_dotted": "Gestippeld",
+      "input_price_sensor": "Prijssensor voor de bovenbalk",
+      "input_price_sensor_hint": "De sensor van de prijs nu, voor de bovenbalk. Nord Pool: dezelfde sensor als je tegels. ENTSO-e: zijn sensor voor de huidige marktprijs, niet de gemiddelde die je tegels gebruiken.",
+      "bar_price": "Stroomprijs",
+      "bar_example": "0,472 €/kWh",
+      "setting_bar_formula": "Bovenbalk: prijsformule",
+      "setting_bar_formula_hint": "Net als op een tegel: een formule met p, zoals (p+0,12)*1,21, of een getal voor een vaste prijs. Leeg: de prijs van de sensor.",
+      "setting_bar_unit": "Bovenbalk: eenheid",
+      "setting_bar_unit_hint": "EUR/kWh (0,472) of ct/kWh (47,2)."
      }
     }
    },
    "readme": {
-    "en": "# Electricity price\n\nThe electricity price now as a tile, with the graph of today and tomorrow on bigger tiles and on a card of its own.\nIt reads the price sensor of **Nord Pool** (HACS `nordpool`), **ENTSO-e** (`entsoe`) or **GE-Spot** (`ge_spot`) in Home Assistant. For GE-Spot, use its price sensor in a currency per kWh (not the cents display).\n\nIt runs on every board Tessera supports (`boards: any`), from the CYD to the 10.1-inch screens.\n\n## Set up\n\n1. In Tessera, open **Plugins** and choose **Electricity price**, or choose **Add with a link** and paste\n   `https://github.com/Heronimonimo/tessera-electricity-price`. Tick your screens; each builds once.\n2. In Layout, place the **Electricity price (Nord Pool)**, **Electricity price (ENTSO-e)** or **Electricity price\n   (GE-Spot)** tile from the library's Plugins group, at any size from 1x1 up to the whole page. A tile smaller than\n   2x2 shows the price with the meter bar; from 2x2 up it adds the graph.\n3. In the inspector, choose your price sensor. The list holds only the sensors that fit the tile you placed.\n4. Choose the unit, **EUR/kWh** (`0.273`) or **ct/kWh** (`27.3`), and the number of decimals (in ct/kWh at most one).\n5. Optionally set your tariff (below).\n6. Tap a bar of the graph to see its price and time slot for a few seconds, on a bigger tile and on the full screen card. On a tile, tap that bar again, or beside the bars, to open the card: the price now, the lowest and highest still to come, the day's average, and the graph.\n\n## Your tariff\n\nThe sensor gives the market price p. In the inspector you can type what you really pay, and what you get back, as a\nformula in p:\n\n| Field | Example | Means |\n|---|---|---|\n| **Delivery price** | `(p+0.12)*1.21` | Energy tax and surcharge on top, then 21% VAT |\n| | `0.25` | A fixed price |\n| **Feed-in price** | `p-0.02` | The market price minus your supplier's 2 cents |\n| | `0,07` | A fixed feed-in price |\n\nA formula has p, numbers (`0.12` or `0,12`), `+ - * /` and brackets. The numbers are in the sensor's currency per\nkWh (0.02, not 2), also when the tile shows cents. An empty delivery price is the sensor's own price; an empty feed-in\nprice is none. A formula with a typo shows \"Check the formula\" on the screen in place of the price; the editor\ncannot check it for you.\n\nWith a feed-in price each bar runs from the feed-in price to the delivery price, so you see the gap between the two\nover the day, also when feed-in is the higher one. The tile and the card show the feed-in price of now under the\nprice. The editor's preview shows the sensor's own price: it cannot work out the formula.\n\n## Bars or a stepped line\n\nIn the inspector, **Graph** chooses **Bars** or **Stepped line**. The stepped line follows the price slot by slot in\nthe same colours as the bars, with a dot for now. With a feed-in price it is a thin grey line under the delivery\nprice. **Fill under the line** adds a faint fill down to zero, or to the feed-in price. The card shows the graph of\nthe tile you open it from. **Grid lines** draws solid or dotted lines across the graph at its price labels.\n\n## Good to know\n\n- The graph has a bar for every quarter of an hour when the sensor has quarter prices, else for every hour. A tile\n  with more than 100 slots (quarters of today and tomorrow) joins neighbouring quarters into one bar; the card shows\n  them all. Past bars are grey, the bar now is the accent colour, and the bars to come are green, amber or red by their\n  place between the lowest and highest price. Prices below zero hang under the zero line.\n- Tomorrow's bars appear on their own as soon as the sensor has them (the day-ahead prices come in the afternoon).\n- The unit comes from the sensor (`EUR/kWh` shows as `€/kWh`). A sensor that reports per MWh is shown per kWh.\n- On the days the clock changes, the graph has 23 or 25 hours, each where it is on the clock.\n"
+    "en": "# Electricity price\n\nThe electricity price now as a tile, with the graph of today and tomorrow on bigger tiles and on a card of its own.\nIt reads the price sensor of **Nord Pool** (HACS `nordpool`), **ENTSO-e** (`entsoe`) or **GE-Spot** (`ge_spot`) in Home Assistant. For GE-Spot, use its price sensor in a currency per kWh (not the cents display).\n\nIt runs on every board Tessera supports (`boards: any`), from the CYD to the 10.1-inch screens.\n\n## Set up\n\n1. In Tessera, open **Plugins** and choose **Electricity price**, or choose **Add with a link** and paste\n   `https://github.com/Heronimonimo/tessera-electricity-price`. Tick your screens; each builds once.\n2. In Layout, place the **Electricity price (Nord Pool)**, **Electricity price (ENTSO-e)** or **Electricity price\n   (GE-Spot)** tile from the library's Plugins group, at any size from 1x1 up to the whole page. A tile smaller than\n   2x2 shows the price with the meter bar; from 2x2 up it adds the graph.\n3. In the inspector, choose your price sensor. The list holds only the sensors that fit the tile you placed.\n4. Choose the unit, **EUR/kWh** (`0.273`) or **ct/kWh** (`27.3`), and the number of decimals (in ct/kWh at most one).\n5. Optionally set your tariff (below).\n6. Tap a bar of the graph to see its price and time slot for a few seconds, on a bigger tile and on the full screen card. On a tile, tap that bar again, or beside the bars, to open the card: the price now, the lowest and highest still to come, the day's average, and the graph.\n\n## Your tariff\n\nThe sensor gives the market price p. In the inspector you can type what you really pay, and what you get back, as a\nformula in p:\n\n| Field | Example | Means |\n|---|---|---|\n| **Delivery price** | `(p+0.12)*1.21` | Energy tax and surcharge on top, then 21% VAT |\n| | `0.25` | A fixed price |\n| **Feed-in price** | `p-0.02` | The market price minus your supplier's 2 cents |\n| | `0,07` | A fixed feed-in price |\n\nA formula has p, numbers (`0.12` or `0,12`), `+ - * /` and brackets. The numbers are in the sensor's currency per\nkWh (0.02, not 2), also when the tile shows cents. An empty delivery price is the sensor's own price; an empty feed-in\nprice is none. A formula with a typo shows \"Check the formula\" on the screen in place of the price; the editor\ncannot check it for you.\n\nWith a feed-in price each bar runs from the feed-in price to the delivery price, so you see the gap between the two\nover the day, also when feed-in is the higher one. The tile and the card show the feed-in price of now under the\nprice. The editor's preview shows the sensor's own price: it cannot work out the formula.\n\n## Bars or a stepped line\n\nIn the inspector, **Graph** chooses **Bars** or **Stepped line**. The stepped line follows the price slot by slot in\nthe same colours as the bars, with a dot for now. With a feed-in price it is a thin grey line under the delivery\nprice. **Fill under the line** adds a faint fill down to zero, or to the feed-in price. The card shows the graph of\nthe tile you open it from. **Grid lines** draws solid or dotted lines across the graph at its price labels.\n\n## The price in the top bar\n\nPlace **Electricity price** on a page's top bar in the editor, under \"From plugins\". It shows the price now, from the\nsensor you chose as **Price sensor for the top bar** when you added the plugin (change it in the plugin's details on\nthe screen's Plugins tab, under \"When building\"). Two settings there, under \"On this screen\", change it without a\nbuild: **Top bar: price formula**, as on a tile (`(p+0.12)*1.21`; empty is the sensor's price), and **Top bar: unit**,\nEUR/kWh or ct/kWh. Both are also entities of the screen in Home Assistant.\n\n## Good to know\n\n- The graph has a bar for every quarter of an hour when the sensor has quarter prices, else for every hour. A tile\n  with more than 100 slots (quarters of today and tomorrow) joins neighbouring quarters into one bar; the card shows\n  them all. Past bars are grey, the bar now is the accent colour, and the bars to come are green, amber or red by their\n  place between the lowest and highest price. Prices below zero hang under the zero line.\n- Tomorrow's bars appear on their own as soon as the sensor has them (the day-ahead prices come in the afternoon).\n- The price of now is the current time slot of today's list, as the bar of now shows it, not the sensor's state.\n  For ENTSO-e, choose its average-price sensor for a tile: it is the one with the lists (the tile still shows the\n  price of now). For the top bar, which reads a state, choose its current-price sensor.\n- The unit comes from the sensor (`EUR/kWh` shows as `€/kWh`). A sensor that reports per MWh is shown per kWh.\n- On the days the clock changes, the graph has 23 or 25 hours, each where it is on the clock.\n"
    },
    "changelog": {
-    "en": "# Changelog\n\n## 0.9.0\n- Graph: bars or a stepped line, chosen per tile in the editor. The stepped line follows the price slot by slot in the\n  colours of the bars, with a dot for now; a feed-in price is a thin grey line under it. A tapped slot gets a line\n  down through it and a dot on each price.\n- Fill under the line (on by default): a faint fill down to zero, or to the feed-in price.\n- Grid lines (none by default): solid or dotted lines across the graph at the price labels it shows. The lines\n  that were there before were a pixel wide by mistake, so none showed.\n- The card shows the graph of the tile you open it from.\n\n## 0.8.1\n- A tapped bar shows its feed-in price too: after its time on a tile, where it fits, and on the card in the feed-in\n  line, with its time slot.\n\n## 0.8.0\n- The tariff is a formula you type, one for delivery and one for feed-in: `(p+0.12)*1.21`, `p-0.02`, or a number\n  alone for a fixed price. p is the sensor's price per kWh; + - * /, brackets and a decimal point or comma work.\n  A formula with a typo shows \"Check the formula\" in place of the price.\n- The a, b and c options of 0.7.0 are gone: type your tariff again as a formula.\n\n## 0.7.0\n- Your own tariff on top of the market price: the delivery price is (p + a) × b + c, with a for the energy tax and the\n  supplier's surcharge, b for the VAT and c added after it. b 0 and c your price make a fixed price.\n- An optional feed-in price, (p + a) × b + c with its own a, b and c. With it each bar of the graph runs from the\n  feed-in price up to the delivery price; the colours stay those of the delivery price.\n- The feed-in price of now under the price on the meter tile, where it has room, and under the price on the card.\n\n## 0.6.6\n- A sensor that reports per MWh shows its price per kWh, in EUR/kWh and in ct/kWh alike. Before, ct/kWh multiplied a\n  price per MWh by 100.\n- On the days the clock changes (23 or 25 hours), the bar of now, the times under the graph and the time slots of a\n  tapped bar and of the highest and lowest price are right. Before, they were an hour off after the change.\n- When tomorrow's prices come in another resolution than today's (hours beside quarters), the graph shows them in\n  today's, without gaps.\n- \"Choose a price sensor\" and \"No price\" fit on a small tile and on the card, in every language: without a price\n  the message takes the whole row, in a smaller font where needed. Before, it was cut off.\n\n## 0.6.5\n- The tiles also take the whole page (`full: true`): a tile as big as the grid, such as 5x5 on a 5x5 grid, was not offered before.\n- The editor shows the price with its unit.\n\n## 0.6.4\n- The tiles come in every size, from 1x1 up to 9x9 (before, at most 4x3).\n\n## 0.6.3\n- Graph: the bars share the whole width of the plot. Before, each bar had a whole number of pixels, so on a screen where 192 quarters did not divide the width the bars took only part of it.\n\n## 0.6.2\n- Card: the highest and the lowest price only count from now on, tomorrow included once it is known. A time slot of tomorrow says \"Tomorrow\" in front.\n\n## 0.6.1\n- The card is as wide as the glass, like Tessera's own graph.\n\n## 0.6.0\n- Card: the unit behind the average, the highest and the lowest. A tapped bar shows its price under its time slot in the middle, and the price of now stays at the left.\n\n## 0.5.4\n- Store picture (store.png) made on the bench.\n- Fixes found by the first real build: the GE-Spot tile is registered, no `strlcpy`, the Tomorrow label stays inside the card.\n- The name keeps the tile-label font, the price takes what is left.\n\n## 0.5.3\n- The graph shows from 2 wide and 2 high; smaller tiles show the price with the meter bar.\n\n## 0.5.2\n- Tile with a graph: the name at the left and the price of now at the right, like the small tile. A tapped bar shows its time in place of the name.\n\n## 0.5.1\n- Small tile like the meter bar tile: the name at the left, the price with its unit at the right.\n\n## 0.5.0\n- GE-Spot as a source: a third tile reads `today_interval_prices` and `tomorrow_interval_prices` (the `value` of each interval).\n\n## 0.4.1\n- Tapping a bar works on the full screen card too (needs API 0.12). High, low and average use the font of the history card.\n\n## 0.4.0\n- Tap a bar of the graph on a tile to see its price and time slot for a few seconds. Tap it again, or beside the bars, to open the card.\n\n## 0.3.1\n- Card header like the history card: price at the left, average in the middle, highest and lowest at the right with their time slot.\n\n## 0.3.0\n- Choose the unit: EUR/kWh or ct/kWh.\n- Time axis and price axis in the look of Tessera's history graph; the small tile is the meter's bar of cells.\n\n## 0.2.0\n- The graph shows quarter-hour prices when the sensor has them.\n- One tile per integration (Nord Pool, ENTSO-e), so the inspector lists only compatible sensors.\n\n## 0.1.0\n- First version: a tile with the electricity price now, a graph of today and tomorrow on bigger tiles and on a card.\n  Works with the Nord Pool and ENTSO-e sensors.\n"
+    "en": "# Changelog\n\n## 0.10.0\n- The price now in the top bar: place **Electricity price** on a page's top bar in the editor, under \"From plugins\".\n  It reads the price sensor chosen when the plugin is added (Price sensor for the top bar), through a formula of its\n  own and in EUR/kWh or ct/kWh: two settings in the plugin's details on the screen's Plugins tab, which change\n  without a build. A formula with a typo says \"Check the formula\".\n- The price of now comes from today's list at the current time slot, the same as the bar of now. The ENTSO-e tile\n  showed the day's average as the price of now: ENTSO-e keeps its lists only on its average-price sensor, whose\n  state is that average (issue #2). Without a list or a set clock, the sensor's state stays the price.\n\n## 0.9.0\n- Graph: bars or a stepped line, chosen per tile in the editor. The stepped line follows the price slot by slot in the\n  colours of the bars, with a dot for now; a feed-in price is a thin grey line under it. A tapped slot gets a line\n  down through it and a dot on each price.\n- Fill under the line (on by default): a faint fill down to zero, or to the feed-in price.\n- Grid lines (none by default): solid or dotted lines across the graph at the price labels it shows. The lines\n  that were there before were a pixel wide by mistake, so none showed.\n- The card shows the graph of the tile you open it from.\n\n## 0.8.1\n- A tapped bar shows its feed-in price too: after its time on a tile, where it fits, and on the card in the feed-in\n  line, with its time slot.\n\n## 0.8.0\n- The tariff is a formula you type, one for delivery and one for feed-in: `(p+0.12)*1.21`, `p-0.02`, or a number\n  alone for a fixed price. p is the sensor's price per kWh; + - * /, brackets and a decimal point or comma work.\n  A formula with a typo shows \"Check the formula\" in place of the price.\n- The a, b and c options of 0.7.0 are gone: type your tariff again as a formula.\n\n## 0.7.0\n- Your own tariff on top of the market price: the delivery price is (p + a) × b + c, with a for the energy tax and the\n  supplier's surcharge, b for the VAT and c added after it. b 0 and c your price make a fixed price.\n- An optional feed-in price, (p + a) × b + c with its own a, b and c. With it each bar of the graph runs from the\n  feed-in price up to the delivery price; the colours stay those of the delivery price.\n- The feed-in price of now under the price on the meter tile, where it has room, and under the price on the card.\n\n## 0.6.6\n- A sensor that reports per MWh shows its price per kWh, in EUR/kWh and in ct/kWh alike. Before, ct/kWh multiplied a\n  price per MWh by 100.\n- On the days the clock changes (23 or 25 hours), the bar of now, the times under the graph and the time slots of a\n  tapped bar and of the highest and lowest price are right. Before, they were an hour off after the change.\n- When tomorrow's prices come in another resolution than today's (hours beside quarters), the graph shows them in\n  today's, without gaps.\n- \"Choose a price sensor\" and \"No price\" fit on a small tile and on the card, in every language: without a price\n  the message takes the whole row, in a smaller font where needed. Before, it was cut off.\n\n## 0.6.5\n- The tiles also take the whole page (`full: true`): a tile as big as the grid, such as 5x5 on a 5x5 grid, was not offered before.\n- The editor shows the price with its unit.\n\n## 0.6.4\n- The tiles come in every size, from 1x1 up to 9x9 (before, at most 4x3).\n\n## 0.6.3\n- Graph: the bars share the whole width of the plot. Before, each bar had a whole number of pixels, so on a screen where 192 quarters did not divide the width the bars took only part of it.\n\n## 0.6.2\n- Card: the highest and the lowest price only count from now on, tomorrow included once it is known. A time slot of tomorrow says \"Tomorrow\" in front.\n\n## 0.6.1\n- The card is as wide as the glass, like Tessera's own graph.\n\n## 0.6.0\n- Card: the unit behind the average, the highest and the lowest. A tapped bar shows its price under its time slot in the middle, and the price of now stays at the left.\n\n## 0.5.4\n- Store picture (store.png) made on the bench.\n- Fixes found by the first real build: the GE-Spot tile is registered, no `strlcpy`, the Tomorrow label stays inside the card.\n- The name keeps the tile-label font, the price takes what is left.\n\n## 0.5.3\n- The graph shows from 2 wide and 2 high; smaller tiles show the price with the meter bar.\n\n## 0.5.2\n- Tile with a graph: the name at the left and the price of now at the right, like the small tile. A tapped bar shows its time in place of the name.\n\n## 0.5.1\n- Small tile like the meter bar tile: the name at the left, the price with its unit at the right.\n\n## 0.5.0\n- GE-Spot as a source: a third tile reads `today_interval_prices` and `tomorrow_interval_prices` (the `value` of each interval).\n\n## 0.4.1\n- Tapping a bar works on the full screen card too (needs API 0.12). High, low and average use the font of the history card.\n\n## 0.4.0\n- Tap a bar of the graph on a tile to see its price and time slot for a few seconds. Tap it again, or beside the bars, to open the card.\n\n## 0.3.1\n- Card header like the history card: price at the left, average in the middle, highest and lowest at the right with their time slot.\n\n## 0.3.0\n- Choose the unit: EUR/kWh or ct/kWh.\n- Time axis and price axis in the look of Tessera's history graph; the small tile is the meter's bar of cells.\n\n## 0.2.0\n- The graph shows quarter-hour prices when the sensor has them.\n- One tile per integration (Nord Pool, ENTSO-e), so the inspector lists only compatible sensors.\n\n## 0.1.0\n- First version: a tile with the electricity price now, a graph of today and tomorrow on bigger tiles and on a card.\n  Works with the Nord Pool and ENTSO-e sensors.\n"
    },
    "image": "store.png"
   },
@@ -4504,14 +4557,14 @@
    "label": "community",
    "status": "ok",
    "release": {
-    "version": "0.1.0",
-    "sha": "f424f3924ce63f49b76808cfe072fb2b07e3576e",
-    "date": "2026-10-19",
-    "tag": "v0.1.0"
+    "version": "0.2.0",
+    "sha": "985efe5993d62b44df697fb190e76ad4178c2283",
+    "date": "2026-10-27",
+    "tag": "v0.2.0"
    },
    "manifest": {
     "id": "waze_traveltime",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "api": "0.10",
     "icon": "car",
     "maintainer": "Heronimonimo",
@@ -4520,17 +4573,43 @@
     "topics": [
      "travel"
     ],
+    "attributes": [
+     "cloud"
+    ],
+    "privacy": "https://github.com/Heronimonimo/tessera-waze-traveltime#privacy",
     "requires": {
      "esphome": "2026.6.2"
     },
     "boards": "any",
-    "flash_kb": 16,
+    "flash_kb": 18,
     "permissions": {
      "ha_commands": [
       "history/history_during_period",
       "call_service:waze_travel_time.get_travel_times"
+     ],
+     "read_entities": [
+      "{sensor}"
      ]
     },
+    "inputs": [
+     {
+      "id": "sensor",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "in_sensor",
+      "hint": "in_sensor_hint"
+     }
+    ],
+    "settings": [
+     {
+      "key": "waze_usual_time",
+      "label": "setting_usual",
+      "hint": "setting_usual_hint"
+     }
+    ],
     "answers": [
      {
       "command": "history/history_during_period",
@@ -4636,6 +4715,14 @@
       "name": "card_name",
       "wide": true
      }
+    ],
+    "bar_items": [
+     {
+      "id": "travel",
+      "label": "bar_travel",
+      "icon": "car",
+      "example": "bar_example"
+     }
     ]
    },
    "translations": {
@@ -4658,7 +4745,10 @@
       "failed": "Waze did not answer",
       "no_routes": "No routes found",
       "fastest": "fastest",
-      "slower": "+{n} min"
+      "slower": "+{n} min",
+      "bar": "{n} min",
+      "bar_late": "{n} min +{d}",
+      "usual_time": "Usual travel time"
      },
      "app": {
       "name": "Waze travel time",
@@ -4676,7 +4766,13 @@
       "region_na": "North America",
       "region_il": "Israel",
       "region_au": "Australia",
-      "card_name": "Routes"
+      "card_name": "Routes",
+      "in_sensor": "Waze sensor for the top bar",
+      "in_sensor_hint": "The Waze Travel Time sensor the top bar's item shows. Tiles choose their own sensor in the inspector.",
+      "setting_usual": "Usual travel time in the top bar",
+      "setting_usual_hint": "Your time without traffic, in minutes: the top bar's car turns green, amber or red by the delay. 0 keeps it grey.",
+      "bar_travel": "Travel time",
+      "bar_example": "23 min +8"
      }
     },
     "nl": {
@@ -4698,7 +4794,10 @@
       "failed": "Waze gaf geen antwoord",
       "no_routes": "Geen routes gevonden",
       "fastest": "snelst",
-      "slower": "+{n} min"
+      "slower": "+{n} min",
+      "bar": "{n} min",
+      "bar_late": "{n} min +{d}",
+      "usual_time": "Normale reistijd"
      },
      "app": {
       "name": "Waze-reistijd",
@@ -4716,15 +4815,21 @@
       "region_na": "Noord-Amerika",
       "region_il": "Israël",
       "region_au": "Australië",
-      "card_name": "Routes"
+      "card_name": "Routes",
+      "in_sensor": "Waze-sensor voor de bovenbalk",
+      "in_sensor_hint": "De Waze Travel Time-sensor die het item in de bovenbalk toont. Tegels kiezen hun eigen sensor in de inspector.",
+      "setting_usual": "Normale reistijd in de bovenbalk",
+      "setting_usual_hint": "Je tijd zonder verkeer, in minuten: de auto in de bovenbalk wordt groen, oranje of rood naar de vertraging. 0 houdt hem grijs.",
+      "bar_travel": "Reistijd",
+      "bar_example": "23 min +8"
      }
     }
    },
    "readme": {
-    "en": "# Waze travel time\n\nYour travel time from Waze on a Tessera screen: how long the trip takes now, how far that is off your usual time, the\nroute Waze picks and when you arrive, with a line of how the travel time went over the last hours. A tap opens a card\nwith every route Waze offers right now, fastest first.\n\nIt reads a sensor of Home Assistant's own [Waze Travel Time](https://www.home-assistant.io/integrations/waze_travel_time)\nintegration. No key, no account and no web service of its own: Home Assistant asks Waze, the plugin asks Home Assistant.\n\n## Set up\n\n1. In Home Assistant, add the **Waze Travel Time** integration (Settings, Devices and services, Add integration) with\n   your two places, for example `zone.home` and your work address. It makes a sensor such as\n   `sensor.home_to_work`. Keep the **Recorder** on for it (it is by default): the line on the tile comes from its\n   history.\n2. In Tessera, open **Plugins**, choose **Waze travel time** and tick your screens. Each screen builds once with the\n   plugin.\n3. Put the tile **Travel time** on a page and choose the Waze sensor in its inspector.\n4. In the inspector, set:\n   - **Usual travel time**: your time without traffic, in minutes. The tile then shows the delay (\"+8\") in green,\n     amber or red, and the line gets a dashed line at that time. Leave it at 0 for no delay.\n   - **Hours on the line**: how far back the line goes, 1 to 8 hours (0 for no line).\n   - **Waze region**: the same region as your Waze Travel Time integration, for the routes on the card.\n\n## On the screen\n\n- **1x1**: the minutes, the delay top right, and when you arrive.\n- **2x1**: the same, with the route (\"via A12\").\n- **2 rows or more**: the line of the last hours under it, from green to red with the delay, and the usual time dashed.\n- **Tap**: the card with every route Waze offers now, each with its time, a bar, its distance and how much slower it is\n  than the fastest.\n\n## Good to know\n\n- The line comes from the sensor's history in Home Assistant (`history/history_during_period`), asked once when the\n  tile is made; every new travel time after that is added on the screen. The sensor updates every 5 minutes by\n  default, so the line moves in steps of about 5 minutes.\n- The card asks Waze through Home Assistant's `waze_travel_time.get_travel_times` action each time it opens, with live\n  traffic. It uses the sensor's own start and end, but not the sensor's other options (avoid tolls, filters).\n- Waze Travel Time is an unofficial client of Waze's live map: when Waze changes something, the integration (and so\n  this plugin) may stop until Home Assistant fixes it.\n- Works on every board, the CYD included: it shows no pictures.\n- Tried on Tessera's preview bench (the CYD, the Guition 4-inch, the Waveshare 4.3-inch standing up and the Guition\n  10.1-inch, light and dark), not yet on a real screen. Found something wrong? Open an issue.\n\n## How it works\n\n- `tessera-plugin.yaml`: a tile of a sensor with the attributes `route`, `distance`, `origin` and `destination`, a card,\n  and the two Home Assistant commands it may ask, with the history mapped to two lists of numbers.\n- `components/waze_traveltime/`: the tile (the line is drawn on the screen from the samples), the card, and the plugin\n  that hands each answer to the tile or card that asked.\n"
+    "en": "# Waze travel time\n\nYour travel time from Waze on a Tessera screen: how long the trip takes now, how far that is off your usual time, the\nroute Waze picks and when you arrive, with a line of how the travel time went over the last hours. A tap opens a card\nwith the routes Waze offers right now (up to six), fastest first.\n\nIt reads a sensor of Home Assistant's own [Waze Travel Time](https://www.home-assistant.io/integrations/waze_travel_time)\nintegration. No key, no account and no web service of its own: Home Assistant asks Waze, the plugin asks Home Assistant.\n\n## Set up\n\n1. In Home Assistant, add the **Waze Travel Time** integration (Settings, Devices and services, Add integration) with\n   your two places, for example `zone.home` and your work address. It makes a sensor such as\n   `sensor.home_to_work`. Keep the **Recorder** on for it (it is by default): the line on the tile comes from its\n   history.\n2. In Tessera, open **Plugins** and choose **Waze travel time**, or choose **Add with a link** and paste\n   `https://github.com/Heronimonimo/tessera-waze-traveltime`. Tick your screens and choose the **Waze sensor for the\n   top bar** (asked once per screen, also when you don't use the top bar); each screen builds once with the plugin.\n3. Put the tile **Travel time** on a page, at any size from 1x1 to 4x4, and choose the Waze sensor in its inspector.\n4. In the inspector, set:\n   - **Usual travel time**: your time without traffic, in minutes. The tile then shows the delay (\"+8\") in green,\n     amber or red, and the line gets a dashed line at that time. Leave it at 0 for no delay.\n   - **Hours on the line**: how far back the line goes, 1 to 8 hours (0 for no line).\n   - **Waze region**: the same region as your Waze Travel Time integration, for the routes on the card.\n5. Optional: add **Travel time** to a page's top bar (Top bar, Add, From plugins). It shows the sensor you chose in\n   step 2. For a coloured car, set the usual time: hold the top bar, then **Settings**, **Plugins**, **Waze travel\n   time**, **Usual travel time**, or the entity **Waze usual time** of the screen in Home Assistant.\n\n## On the screen\n\n- **1x1**: the minutes, the delay top right, and when you arrive.\n- **2x1**: the same, with the route (\"via A12\").\n- **2 rows or more**: the line of the last hours under it, in green, amber or red by the delay now (the accent colour\n  without a usual time), and the usual time dashed.\n- **Tap**: the card with the routes Waze offers now, as many as fit (up to six), each with its time, a bar, its distance and how much slower it is\n  than the fastest.\n- **Top bar**: \"23 min\" beside the page's name, or \"23 min +8\" when it is slower than the usual time, with the car in\n  green, amber or red by the delay (grey without a usual time). Hidden while the sensor has no travel time. A page can\n  show its icon alone.\n\n## Good to know\n\n- The line comes from the sensor's history in Home Assistant (`history/history_during_period`), asked once when the\n  tile is made; every new travel time after that is added on the screen. The sensor updates every 5 minutes by\n  default, so the line moves in steps of about 5 minutes.\n- The card asks Waze through Home Assistant's `waze_travel_time.get_travel_times` action each time it opens, with live\n  traffic. It uses the sensor's own start and end, but not the sensor's other options (avoid tolls, filters). Distances\n  on the card are in km.\n- Waze Travel Time is an unofficial client of Waze's live map: when Waze changes something, the integration (and so\n  this plugin) may stop until Home Assistant fixes it.\n- Works on every board, the CYD included: it shows no pictures.\n- Tried on Tessera's preview bench (the CYD, the Guition 4-inch, the Waveshare 4.3-inch standing up and the Guition\n  10.1-inch, light and dark), not yet on a real screen. Found something wrong? Open an issue.\n\n## Privacy\n\nThe plugin itself reaches nothing outside your home: the screen talks to Home Assistant only. Home Assistant's Waze\nTravel Time integration asks Waze's live map for the travel time, every 5 minutes, and once more each time the card\nopens. Waze then sees the two ends of your trip (often your home and your work, as coordinates) and the address of your\nHome Assistant. No account, key or other personal data is sent. What Waze does with it is in\n[Waze's privacy policy](https://www.waze.com/legal/privacy).\n\n## How it works\n\n- `tessera-plugin.yaml`: a tile of a sensor with the attributes `route`, `distance`, `origin` and `destination`, a card,\n  a top bar item, the input that chooses the top bar's sensor, the setting of its usual time, and the two Home Assistant\n  commands it may ask, with the history mapped to two lists of numbers.\n- `plugin.yaml`: a `homeassistant` sensor that reads the chosen sensor for the top bar, and the usual time as a\n  template number.\n- `components/waze_traveltime/`: the tile (the line is drawn on the screen from the samples), the card, the top bar\n  item, the settings row, and the plugin that hands each answer to the tile or card that asked.\n"
    },
    "changelog": {
-    "en": "# Changelog\n\n## 0.1.0\n- First version: a tile of a Waze Travel Time sensor with the travel time, the delay against your usual time, the\n  route, when you arrive and a line of the last hours from the sensor's history.\n- A card with every route Waze offers right now, fastest first.\n"
+    "en": "# Changelog\n\n## 0.2.0\n- New: the travel time in the top bar. Add **Travel time** to a page's top bar (Top bar, Add, From plugins): \"23 min\",\n  or \"23 min +8\" when it is slower than usual, with the car in green, amber or red.\n- Adding or updating the plugin now asks for the **Waze sensor for the top bar** once per screen.\n- The top bar's usual time is a setting of the screen: **Waze usual time** in Home Assistant, and on the screen's\n  settings page under Plugins.\n- The card asks Waze in the tile's own region in every case.\n- The Plugins page now says the plugin uses a service outside the home (Waze, through Home Assistant), with a privacy\n  note in the README.\n\n## 0.1.0\n- First version: a tile of a Waze Travel Time sensor with the travel time, the delay against your usual time, the\n  route, when you arrive and a line of the last hours from the sensor's history.\n- A card with every route Waze offers right now, fastest first.\n"
    },
    "image": "store.png"
   },
