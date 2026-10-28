@@ -73,7 +73,9 @@ void ScreenVideo::send_sound_() {
     esp_audio_enc_out_frame_t out{};
     out.buffer = opus_out_;
     out.len = opus_out_bytes_;
+    const int64_t encoding = esp_timer_get_time();
     const esp_audio_err_t err = esp_opus_enc_process(opus_, &in, &out);
+    opus_us_ += static_cast<uint32_t>(esp_timer_get_time() - encoding);
     sound_sent_ += sound_skipped_.exchange(0);  // the samples the microphone dropped: time passed without them
     const uint32_t ts = sound_start_ts_ + static_cast<uint32_t>(static_cast<uint64_t>(sound_sent_) * 48000 / sound_rate_);
     sound_sent_ += samples;

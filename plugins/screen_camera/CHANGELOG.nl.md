@@ -1,5 +1,11 @@
 # Wijzigingen
 
+## 0.6.9 - 2026-10-28
+- **Naar de video kijken laat het wake word niet meer struikelen.** Terwijl iemand de video van het scherm in Home
+  Assistant bekeek, kon het wake word vaak per uur de draad kwijtraken (217 keer per uur op een Guition 10.1 met één
+  kijker). Het geluid van de video gaat nu voor het wake word opzij: 0 keer in dezelfde test, de video nog steeds op 15
+  beelden per seconde. De Sound-regel in het log zegt ook hoe lang het coderen van elk stukje geluid duurt.
+
 ## 0.6.8 - 2026-10-28
 - **De eigen camera van het scherm op een tegel van dat scherm wordt op het scherm zelf getekend** (vraagt de dev-firmware
   en -app van Tessera, plugin-API 0.22): een live cameratile met de eigen camera van dit scherm krijgt zijn beelden

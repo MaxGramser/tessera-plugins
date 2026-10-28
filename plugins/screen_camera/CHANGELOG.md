@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.9 - 2026-10-28
+- **Watching the video no longer trips the wake word.** While someone watched the screen's video in Home Assistant, the
+  wake word could lose its place many times an hour (217 an hour on a Guition 10.1 with one viewer). The video's sound
+  now steps aside for the wake word: 0 in the same test, the video still at 15 frames a second. The log's Sound line also
+  says how long each piece of sound takes to encode.
+
 ## 0.6.8 - 2026-10-28
 - **The screen's own camera on a tile of its own is drawn on the screen itself** (needs Tessera's dev firmware and app,
   plugin API 0.22): a live camera tile that shows this screen's own camera gets its pictures straight from the camera,

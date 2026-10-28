@@ -11,6 +11,7 @@
 namespace esphome::screen_video {
 
 static constexpr uint32_t REPORT_MS = 60000;
+static constexpr UBaseType_t SERVER_PRIORITY = 2;  // below the wake word's 3 (setup)
 
 void ScreenVideo::setup() {
   const size_t internal_at_start = heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
@@ -40,8 +41,9 @@ void ScreenVideo::setup() {
   setup_sound_();
 #endif
   // Opus encodes on this task, and it takes a deep stack (about 27 KB): in PSRAM, as every big buffer of the video,
-  // since internal RAM is what the screen runs short of.
-  if (xTaskCreatePinnedToCoreWithCaps(server_task_, "screen_video", 32768, this, 4, nullptr, 0,
+  // since internal RAM is what the screen runs short of. It runs below the wake word (micro_wake_word's inference at 3),
+  // with the live tiles' streams (2): a viewer of the video on a D1001 cost the wake word 60 resets an hour at 4.
+  if (xTaskCreatePinnedToCoreWithCaps(server_task_, "screen_video", 32768, this, SERVER_PRIORITY, nullptr, 0,
                                       MALLOC_CAP_SPIRAM | MALLOC_CAP_8BIT) != pdPASS) {
     ESP_LOGE(TAG, "No memory for the video's server");
     mark_failed();
@@ -109,11 +111,13 @@ void ScreenVideo::loop() {
   reported_frames_ = frames;
   reported_bytes_ = bytes;
 #ifdef USE_SCREEN_VIDEO_SOUND
-  const uint32_t packets = sound_packets_.load();
+  const uint32_t packets = sound_packets_.load(), opus_us = opus_us_.load();
   if (packets != reported_sound_)
-    ESP_LOGI(TAG, "Sound: %u packets of 20 ms, %u bytes lost since boot", (unsigned) (packets - reported_sound_),
+    ESP_LOGI(TAG, "Sound: %u packets of 20 ms, %.1f ms encoding a packet, %u bytes lost since boot",
+             (unsigned) (packets - reported_sound_), (opus_us - reported_opus_us_) / 1000.0f / (packets - reported_sound_),
              (unsigned) sound_lost_.load());
   reported_sound_ = packets;
+  reported_opus_us_ = opus_us;
 #endif
 }
 

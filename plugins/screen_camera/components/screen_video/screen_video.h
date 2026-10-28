@@ -168,6 +168,8 @@ class ScreenVideo : public Component, public esp_video_camera::RawVideoFrameCons
   uint8_t opus_out_[1500];
   int opus_in_bytes_{0}, opus_out_bytes_{0};
   std::atomic<uint32_t> sound_packets_{0}, sound_lost_{0}, sound_skipped_{0};
+  std::atomic<uint32_t> opus_us_{0};  // what the Opus encoder took, for the loop's Sound line
+  uint32_t reported_opus_us_ = 0;
   uint32_t reported_sound_{0};
   // The sound's clock: when the first packet's samples were heard (esp_timer, us) and its RTP timestamp (48 kHz).
   int64_t sound_start_us_{0};
