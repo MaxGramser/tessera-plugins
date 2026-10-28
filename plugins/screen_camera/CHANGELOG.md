@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.8 - 2026-10-28
+- **The screen's own camera on a tile of its own is drawn on the screen itself** (needs Tessera's dev firmware and app,
+  plugin API 0.22): a live camera tile that shows this screen's own camera gets its pictures straight from the camera,
+  without the video, Home Assistant or the network in between. The picture is as new as the camera's, and while nobody
+  watches the video in Home Assistant the screen's video encoder stays off. Nothing to do; the camera's dot shows while
+  the tile is on the glass, as it does while someone watches the video.
+
 ## 0.6.7 - 2026-10-28
 - **Gives way on a busy screen** (needs Tessera's dev firmware, plugin API 0.21): while a finger is on the glass or
   the screen shows signs of trouble, the video sends every other frame or one in four, and light level and motion are

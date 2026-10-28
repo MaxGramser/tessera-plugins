@@ -47,7 +47,24 @@ void ScreenCamera::setup() {
   // Video added itself first, RGB565 otherwise.
   // Light level and motion read any frame: a Full field of view's halved or not (frame_hub.h).
   added_ = camera_ != nullptr && frames_.add(this, esp_video_camera::RawVideoPixelFormat::RGB565_LE, true, true);
+  // The own tile reads either layout too, and takes the picture at its true shape, only while a tile of it shows.
+  own_added_ = camera_ != nullptr && frames_.add(&own_tile_, esp_video_camera::RawVideoPixelFormat::RGB565_LE, true);
+  if (own_added_) {
+    frames_.wants(&own_tile_, false);
+    tessera::offer_own_frames();
+  }
   apply_sensing_();
+}
+
+void ScreenCamera::OwnTile::consume_raw_video_frame(const esp_video_camera::RawVideoFrame &frame) {
+  if (frame.data == nullptr || !tessera::own_tile_wants()) return;
+  tessera::OwnFrame own;
+  own.data = frame.data;
+  own.width = static_cast<uint16_t>(frame.width);
+  own.height = static_cast<uint16_t>(frame.height);
+  own.format = frame.pixel_format == esp_video_camera::RawVideoPixelFormat::YUV420_OUYY_EVYY ? tessera::FrameFormat::YUV420
+                                                                                              : tessera::FrameFormat::RGB565;
+  tessera::own_frame(own);
 }
 
 void ScreenCamera::set_sensing(bool on) {
@@ -100,7 +117,8 @@ void ScreenCamera::set_video_watched(bool watched) {
 // The camera runs on the screen itself, for the video while someone watches (the core's dot solid) or for what never
 // leaves it, sensing alone (the dot a ring, plugin API 0.20). Home Assistant's own pictures the core sees by itself.
 void ScreenCamera::show_dot_() {
-  const bool watched = video_watched_, sensing = sensing_on_ && !video_watched_;
+  // A tile of the camera on the glass shows the camera as much as a viewer of the video does.
+  const bool watched = video_watched_ || own_shown_, sensing = sensing_on_ && !watched;
   if (watched != dot_watched_) {
     dot_watched_ = watched;
     tessera::capturing(this, tessera::Capture::CAMERA, watched);
@@ -241,6 +259,16 @@ void ScreenCamera::publish_sensing_() {
 }
 
 void ScreenCamera::on_interval(uint32_t now_ms) {
+  // A tile of the camera came onto the glass or went: its frames at full speed while it shows, none after.
+  const bool own = own_added_ && tessera::own_tile_wants();
+  if (own != own_shown_) {
+    own_shown_ = own;
+    frames_.wants(&own_tile_, own);
+    frames_.ask(&own_tile_, own ? frame_rate::FULL : frame_rate::NONE);
+    frames_.set_on(&own_tile_, own);
+    show_dot_();
+    ESP_LOGI(TAG, own ? "A tile of this camera shows: its frames go to it" : "No tile of this camera shows any more");
+  }
   // The picture's turn follows the screen's rotation, which the app changes without a build.
   frames_.turn(picture_turn(tessera::camera_turn(), upside_down_));
   // The sensor's rate as the consumers and Home Assistant want it now (slower once nobody needed full speed a while).

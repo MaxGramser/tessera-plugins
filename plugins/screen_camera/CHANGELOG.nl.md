@@ -1,5 +1,22 @@
 # Wijzigingen
 
+## 0.6.8 - 2026-10-28
+- **De eigen camera van het scherm op een tegel van dat scherm wordt op het scherm zelf getekend** (vraagt de dev-firmware
+  en -app van Tessera, plugin-API 0.22): een live cameratile met de eigen camera van dit scherm krijgt zijn beelden
+  rechtstreeks van de camera, zonder de video, Home Assistant of het netwerk ertussen. Het beeld is zo vers als dat van
+  de camera, en zolang niemand de video in Home Assistant bekijkt, blijft de video-encoder van het scherm uit. Er is
+  niets te doen; de camerastip brandt zolang de tegel op het scherm staat, net als wanneer iemand de video bekijkt.
+
+## 0.6.7 - 2026-10-28
+- **Geeft mee op een druk scherm** (vraagt de dev-firmware van Tessera, plugin-API 0.21): zolang een vinger op het
+  scherm ligt of het scherm tekenen van drukte geeft, stuurt de video om het andere beeld of één op de vier, en worden
+  lichtniveau en beweging half of een kwart zo vaak gemeten. Daarna vanzelf weer volledig. Er is niets te doen.
+
+## 0.6.6 - 2026-10-28
+- **Minder werk terwijl niemand kijkt** op de camera van de Guition-schermen met het beeldveld Full: het scherm halveert
+  de regels van een beeld alleen nog terwijl iemand de video bekijkt. Lichtniveau en beweging lezen het beeld zoals de
+  camera het maakt.
+
 ## 0.6.5 - 2026-10-27
 - **Full is het standaard beeldveld** van de camera van de Guition-schermen (OV02C10): alles wat hij ziet, op de halve
   resolutie, 15 beelden per seconde. De twee Full-standen zijn er nu één: de sensor middelt telkens twee kolommen en

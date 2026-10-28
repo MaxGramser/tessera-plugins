@@ -72,6 +72,14 @@ class ScreenCamera : public Component,
   // Someone watches the video, or nobody any more: the core's dot, as for sensing (from the loop).
   void set_video_watched(bool watched);
 
+  // The screen's own camera on a live tile of its own (plugin API 0.22): the hub's consumer that hands the core each
+  // frame, as the camera gave it, while such a tile is on the glass. The core draws the tile from it, so the video's
+  // encoder, the app and the network have no part in it.
+  class OwnTile : public esp_video_camera::RawVideoFrameConsumer {
+   public:
+    void consume_raw_video_frame(const esp_video_camera::RawVideoFrame &frame) override;
+  };
+
  protected:
   // The coarse grid sensing reads: 32 x 18 cells, each the mean of 4 x 4 points.
   static constexpr int GRID_W = 32;
@@ -85,6 +93,9 @@ class ScreenCamera : public Component,
   esp_video_camera::ESPVideoCamera *camera_{};
   FrameHub frames_;
   bool added_{false};  // sensing is one of the hub's consumers
+  OwnTile own_tile_;
+  bool own_added_{false};  // the own tile's feed is one of them too, offered to the core
+  bool own_shown_{false};  // a tile of the camera is on the glass, as the loop last saw
 #ifdef USE_SENSOR
   sensor::Sensor *illuminance_{};
 #endif
