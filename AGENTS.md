@@ -144,6 +144,8 @@ pictures, every board), [`plugins/vinyl_deck/`](plugins/vinyl_deck) (a face of t
 - **Home Assistant is the backend.** No plugin code runs in the Tessera app. What needs a server goes into Home
   Assistant: an existing integration, or one of your own.
 - **Plain English in READMEs**, with a `## Set up` section of numbered steps a person can follow in the Tessera app.
+  A quote (`> ...`) right under the title is a notice: the app shows it as a box at the top of the plugin's details,
+  for what the plugin costs the screen or what to do before adding it (the Bluetooth proxy's README has one).
 - **A picture for the Plugins page.** Every plugin has a `store.png` beside its manifest, made with
   `tools/store_image.py` once the bench passes, and made again when what the plugin shows changes. It is a thumbnail:
   the name and the `summary` of `translations/en.json` (part `app`) large on the left, the plugin on three screens on

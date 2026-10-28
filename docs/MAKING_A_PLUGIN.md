@@ -40,7 +40,7 @@ plugins/my_idea/
   translations/
     en.json                    every word: part "screen" (on the glass) and part "app" (in the editor)
     nl.json                    more languages, optional
-  README.md                    what it does and how to set it up; the app shows it
+  README.md                    what it does and how to set it up; the app shows it (a > quote under the title: a notice box)
   README.nl.md                 optional, per language
   CHANGELOG.md                 what each version changed; the app shows it with an update
   store.png                    optional: its picture on the Plugins page (tools/store_image.py, docs/PUBLISHING.md)
