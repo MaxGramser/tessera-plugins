@@ -8,7 +8,7 @@ namespace esphome::screen_camera {
 
 static const char *const TAG = "frame_hub";
 
-bool FrameHub::add(Consumer *consumer, Format format, bool either) {
+bool FrameHub::add(Consumer *consumer, Format format, bool either, bool any_size) {
   if (consumer == nullptr || camera_ == nullptr) return false;
   if (!registered_) {
     if (!camera_->register_raw_frame_consumer(this, format)) return false;
@@ -21,8 +21,13 @@ bool FrameHub::add(Consumer *consumer, Format format, bool either) {
   if (find_(consumer) != nullptr) return true;
   if (n >= MAX_CONSUMERS) return false;
   entries_[n].consumer.store(consumer, std::memory_order_relaxed);
+  entries_[n].any_size = any_size;
   count_.store(n + 1, std::memory_order_release);
   return true;
+}
+
+void FrameHub::wants(Consumer *consumer, bool wants) {
+  if (Entry *entry = find_(consumer)) entry->wants.store(wants, std::memory_order_release);
 }
 
 FrameHub::Entry *FrameHub::find_(Consumer *consumer) {
@@ -69,11 +74,14 @@ void FrameHub::tick(uint32_t now_ms) {
     counting_ = true;
     count_from_ms_ = now_ms | 1;
     counted_ = frames_.load(std::memory_order_relaxed);
+    halved_counted_ = halved_.load(std::memory_order_relaxed);
   } else if (now_ms - count_from_ms_ >= 10000) {
     // Only while it runs: a camera no consumer has on makes none, whatever its rate.
     const uint32_t frames = frames_.load(std::memory_order_relaxed) - counted_;
+    const uint32_t halved = halved_.load(std::memory_order_relaxed) - halved_counted_;
     if (any_on_())
-      ESP_LOGI(TAG, "The camera made %.1f frames a second over 10 s", frames * 1000.0f / (now_ms - count_from_ms_));
+      ESP_LOGI(TAG, "The camera made %.1f frames a second over 10 s, %.1f of them halved on the PPA",
+               frames * 1000.0f / (now_ms - count_from_ms_), halved * 1000.0f / (now_ms - count_from_ms_));
     count_from_ms_ = 0;
   }
 }
@@ -168,14 +176,23 @@ bool FrameHub::halve_(const esp_video_camera::RawVideoFrame &frame, esp_video_ca
 void FrameHub::consume_raw_video_frame(const esp_video_camera::RawVideoFrame &frame) {
   frames_.fetch_add(1, std::memory_order_relaxed);
   const int n = count_.load(std::memory_order_acquire);
+  // Whether a consumer of the picture takes this frame: only then is a Full field of view's frame halved.
+  bool picture = false;
+  for (int i = 0; i < n; ++i)
+    picture |= entries_[i].on.load(std::memory_order_acquire) && !entries_[i].any_size &&
+               entries_[i].wants.load(std::memory_order_acquire);
   const esp_video_camera::RawVideoFrame *out = &frame;
   esp_video_camera::RawVideoFrame half;
-  if (frame.height >= frame.width && frame.width >= 16) {
+  const bool tall = frame.height >= frame.width && frame.width >= 16;
+  if (tall && picture) {
     if (!halve_(frame, half)) return;
+    halved_.fetch_add(1, std::memory_order_relaxed);
     out = &half;
   }
   for (int i = 0; i < n; ++i) {
     if (!entries_[i].on.load(std::memory_order_acquire)) continue;
+    // A consumer of the picture gets the frame while it wants it, and never a tall one unhalved.
+    if (!entries_[i].any_size && (!entries_[i].wants.load(std::memory_order_acquire) || (tall && out == &frame))) continue;
     Consumer *consumer = entries_[i].consumer.load(std::memory_order_relaxed);
     if (consumer != nullptr) consumer->consume_raw_video_frame(*out);
   }

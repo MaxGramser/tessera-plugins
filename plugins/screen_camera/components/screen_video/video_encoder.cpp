@@ -83,6 +83,7 @@ void ScreenVideo::consume_raw_video_frame(const esp_video_camera::RawVideoFrame 
     }
     const int kept = (int) internal_before - (int) heap_caps_get_free_size(MALLOC_CAP_INTERNAL);
     encoder_internal_ = kept;
+    encoder_made_.store(true, std::memory_order_release);
     if (crop_ != nullptr) {
       ESP_LOGW(TAG, "H.264 encoder ready at %ux%u, the middle of the camera's %ux%u; it keeps %d bytes of internal RAM. "
                "The cut costs the camera's task about 60 ms a frame (fewer frames a second): a camera mode in whole "

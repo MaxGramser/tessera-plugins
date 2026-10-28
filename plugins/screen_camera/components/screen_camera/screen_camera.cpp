@@ -45,7 +45,8 @@ void ScreenCamera::setup() {
   set_up_ = true;
   // Sensing reads either layout, so it takes the frames as the camera hands them out: the video's YUV420 when the part
   // Video added itself first, RGB565 otherwise.
-  added_ = camera_ != nullptr && frames_.add(this, esp_video_camera::RawVideoPixelFormat::RGB565_LE, true);
+  // Light level and motion read any frame: a Full field of view's halved or not (frame_hub.h).
+  added_ = camera_ != nullptr && frames_.add(this, esp_video_camera::RawVideoPixelFormat::RGB565_LE, true, true);
   apply_sensing_();
 }
 

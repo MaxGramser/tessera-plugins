@@ -63,6 +63,13 @@ void ScreenVideo::dump_config() {
 void ScreenVideo::loop() {
   // Screen camera's dot while anyone watches (the core sees Home Assistant's own pictures by itself, not this).
   const bool watched = playing_.load();
+  // Frames for the encoder only while someone watches, and until it is made at the camera's first frame: else the
+  // frame hub halves no Full field of view's frame for it (frame_hub.h).
+  const bool picture = watched || !encoder_made_.load(std::memory_order_acquire);
+  if (picture != picture_said_ && screen_camera_ != nullptr) {
+    picture_said_ = picture;
+    screen_camera_->frames().wants(this, picture);
+  }
   if (watched != watched_) {
     watched_ = watched;
     if (screen_camera_ != nullptr) {

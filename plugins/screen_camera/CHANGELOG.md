@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.6 - 2026-10-28
+- **Less work while nobody watches** on the Guition screens' camera with Full field of view: the screen halves a
+  picture's lines only while someone watches the video. Light level and motion read the picture as the camera makes
+  it, so the screen's picture engine and memory are free for the live tiles the rest of the time. Nothing to do.
+
 ## 0.6.5 - 2026-10-27
 - **Full is the default field of view** on the Guition screens' camera (OV02C10): the whole of what it sees, at half
   the resolution, 15 pictures a second. The two Full modes are one now: the sensor averages each two columns and the

@@ -141,6 +141,9 @@ class ScreenVideo : public Component, public esp_video_camera::RawVideoFrameCons
   uint32_t ssrc_{0x54455353};
 
   std::atomic<bool> playing_{false};  // a viewer plays: the camera's task encodes
+  // The encoder is made (camera's task); and whether the frame hub was last told the video takes frames (main loop).
+  std::atomic<bool> encoder_made_{false};
+  bool picture_said_{true};
   std::atomic<bool> want_idr_{false};
   bool watched_{false};                // what the loop last told Screen camera (its dot)
 
