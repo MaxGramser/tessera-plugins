@@ -106,6 +106,15 @@ void ScreenVideo::consume_raw_video_frame(const esp_video_camera::RawVideoFrame 
   last_arrival_us_ = now;
   if (last_frame_us_ != 0 && now - last_frame_us_ + camera_us_ / 3 < 1000000U / FRAMERATE) return;
   last_frame_us_ = now;
+  // A busy screen (plugin API 0.21): every other frame of the video's own pace, or one in four, while a finger is on
+  // the glass or the screen shows signs of trouble. After the pace above, which already leaves out every other frame of
+  // a camera at 30 frames a second. The viewer sees fewer frames a second, never a broken one: the encoder only gets
+  // fewer.
+  const uint8_t squeeze = tessera::squeeze(tessera::Work::OWN_CAMERA);
+  if (squeeze > 0 && (squeeze == 1 ? offered_++ % 2 : offered_++ % 4) != 0) {
+    left_out_.fetch_add(1, std::memory_order_relaxed);
+    return;
+  }
   // A frame dropped before it is encoded leaves the encoder's references whole: the stream goes on undamaged.
   int index = -1;
   for (int i = 0; i < SLOTS && index < 0; ++i) {

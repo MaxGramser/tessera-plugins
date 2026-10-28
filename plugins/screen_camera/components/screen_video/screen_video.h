@@ -144,6 +144,10 @@ class ScreenVideo : public Component, public esp_video_camera::RawVideoFrameCons
   // The encoder is made (camera's task); and whether the frame hub was last told the video takes frames (main loop).
   std::atomic<bool> encoder_made_{false};
   bool picture_said_{true};
+  // The frames a busy screen asked the video to leave out (plugin API 0.21, tessera::squeeze), counted on the camera's
+  // task: the n-th frame offered, and how many were left out since boot.
+  uint32_t offered_{0};
+  std::atomic<uint32_t> left_out_{0};
   std::atomic<bool> want_idr_{false};
   bool watched_{false};                // what the loop last told Screen camera (its dot)
 

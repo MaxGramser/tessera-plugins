@@ -1,4 +1,4 @@
-# The firmware API (plugin API 0.20)
+# The firmware API (plugin API 0.21)
 
 A plugin's code runs on the screen as an ESPHome component. It talks to Tessera's core through one header:
 
@@ -9,8 +9,8 @@ A plugin's code runs on the screen as an ESPHome component. It talks to Tessera'
 The header lives in the Tessera repository at `components/smart_display/plugin_api.h`; it is the reference, and this
 page explains it. Everything is in namespace `tessera`.
 
-A manifest names the plugin API it was written for: `api: "0.8"`, or `"0.9"` up to `"0.20"` for the parts those
-brought; the plugin API 0.20 is the one the core offers now (on Tessera's dev branch; the release has an older one until
+A manifest names the plugin API it was written for: `api: "0.8"`, or `"0.9"` up to `"0.21"` for the parts those
+brought; the plugin API 0.21 is the one the core offers now (on Tessera's dev branch; the release has an older one until
 the next). Which cores a plugin builds on is under "Versions" at the end of this page.
 
 A plugin adds to the screen in a few kinds of parts: tiles on a page, cards over the page, tap actions for Tessera's own
@@ -715,6 +715,7 @@ The screen's look is the same on every tile, so a plugin draws with the core's s
 | `ui::picture(parent)`, `ui::set_picture(place, url, fit)`, `ui::pictures()`, `ui::slide_pictures(dx, ms)` | Pictures on a tile (0.10), on a card (0.13) and on a screensaver (0.14), above. |
 | `ui::picture(parent, Placeholder::NONE)`, `on_picture(place, PictureState)`, `ui::live(place)` (0.17) | A place without its block, what came of a place's picture, and a tile's place that streams its camera, above. |
 | `tessera::capturing(plugin, Capture::CAMERA, on)` (0.17) | The plugin uses the screen's own camera on the screen itself ("The screen's own camera", below); `Capture::SENSING` (0.20) when it only senses and nobody watches. |
+| `tessera::squeeze(Work)` (0.21) | How much of its work a busy screen asks the plugin to give up now: 0 none, 1 half, 2 three quarters, for `Work::OWN_CAMERA` (the screen's own camera's video), `Work::SENSING` (a light level, motion) and `Work::BACKGROUND` (work done ahead). Any task may ask; the screen sets it while a finger is on the glass and from what it measures, and it goes back by itself. |
 | `tessera::camera_turn()` (0.19) | How far the screen's own camera turns its picture to stand upright, 0 or 180 ("The screen's own camera", below). |
 | `ui::takes_taps(part)` (0.14) | A part of a screensaver a finger may tap without waking the screen ("A screensaver", above). |
 | `ui::animate(part, Motion, period_ms, delay_ms)`, `ui::still(part)` (0.18) | A part of a popup that pulses, spins or ripples while something goes on, and stops ("A popup", above). Only in a popup. |
@@ -866,7 +867,7 @@ readout by it, so the pictures, a video and whatever reads the frames all stand 
 
 ## Versions
 
-A manifest names the plugin API it was written for: `api: "0.8"` up to `"0.20"`; the plugin API 0.20 is the one the core offers now (on Tessera's dev branch; the release has an older one until the next). When a
+A manifest names the plugin API it was written for: `api: "0.8"` up to `"0.21"`; the plugin API 0.21 is the one the core offers now (on Tessera's dev branch; the release has an older one until the next). When a
 screen is built, `smart_display.register_plugin()` compares it with the core's and stops the build with one sentence
 when it does not fit. A plugin fits a core when all three hold:
 
@@ -928,6 +929,7 @@ brought:
 | 0.18 | Popups: `Popup`, `PopupContext`, `PopupWidth`, `tessera::show_popup`, `close_popup` and `popup_shown`; `ui::animate` with `Motion` and `ui::still`, a part that pulses, spins or ripples. `tools/check.py` refuses these parts in a plugin of an older `api`. |
 | 0.19 | `tessera::camera_turn()`, how far the screen's own camera turns its picture to stand upright, 0 or 180; `hw::caps()`, what the screen's hardware can do in one record (a live camera stream, a speaker, a microphone, echo cancellation, a camera of its own, how many live tiles, its memory). |
 | 0.20 | `Capture::SENSING`: the screen's own camera used for what never leaves the screen and nobody watches (a light level, motion); the dot is a ring then, and solid while anything watches. |
+| 0.21 | `tessera::squeeze(Work)`: the screen's governor asks a plugin to give up half or three quarters of its video, its sensing or its background work while a finger is on the glass or the screen shows signs of trouble. |
 
 A minor of the app's or the manifest's side only still counts: a plugin that uses what it brought needs an app that
 knows it ([MANIFEST.md](MANIFEST.md), "Which minor brought a field").

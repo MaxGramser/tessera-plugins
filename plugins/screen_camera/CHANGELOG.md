@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.7 - 2026-10-28
+- **Gives way on a busy screen** (needs Tessera's dev firmware, plugin API 0.21): while a finger is on the glass or
+  the screen shows signs of trouble, the video sends every other frame or one in four, and light level and motion are
+  sampled half or a quarter as often. Back to full by itself a moment later. Nothing to do.
+
 ## 0.6.6 - 2026-10-28
 - **Less work while nobody watches** on the Guition screens' camera with Full field of view: the screen halves a
   picture's lines only while someone watches the video. Light level and motion read the picture as the camera makes

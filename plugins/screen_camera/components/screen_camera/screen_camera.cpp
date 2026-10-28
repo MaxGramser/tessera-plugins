@@ -113,7 +113,10 @@ void ScreenCamera::show_dot_() {
 
 void ScreenCamera::consume_raw_video_frame(const esp_video_camera::RawVideoFrame &frame) {
   const uint32_t now = millis();
-  if (last_sample_ms_ != 0 && now - last_sample_ms_ < SAMPLE_MS) return;
+  // A busy screen (plugin API 0.21) samples half or a quarter as often: a light level and motion a second later.
+  const uint8_t squeeze = tessera::squeeze(tessera::Work::SENSING);
+  const uint32_t every = squeeze == 0 ? SAMPLE_MS : squeeze == 1 ? SAMPLE_MS * 2 : SAMPLE_MS * 4;
+  if (last_sample_ms_ != 0 && now - last_sample_ms_ < every) return;
   const bool yuv = frame.pixel_format == esp_video_camera::RawVideoPixelFormat::YUV420_OUYY_EVYY;
   if ((!yuv && frame.pixel_format != esp_video_camera::RawVideoPixelFormat::RGB565_LE) || frame.width < GRID_W * 4 ||
       frame.height < GRID_H * 4 || frame.data == nullptr) {
