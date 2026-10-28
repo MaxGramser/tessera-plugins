@@ -1,5 +1,11 @@
 # Bluetooth-proxy
 
+> **Let op: de proxy gaat ten koste van hoe vlot het scherm reageert.** Wifi en Bluetooth delen één radio, en het scherm
+> vraagt al veel van zijn wifi. Met de proxy aan kunnen tikken en pagina's trager reageren, wordt de wifi zwakker, en
+> kunnen live verbindingen zoals camerabeelden en video haperen of wegvallen. Voeg hem alleen toe waar je daarmee kunt
+> leven, en zet hem uit met de instelling **Bluetooth-proxy** als het scherm eronder lijdt. Een losse ESP32 als
+> Bluetooth-proxy kost een paar euro en neemt niets van het scherm.
+
 Maakt van het scherm een Bluetooth-proxy voor Home Assistant, dezelfde die een kant-en-klare ESPHome Bluetooth-proxy
 draait. Home Assistant hoort dan Bluetooth-apparaten bij het scherm (thermometers, plantsensoren, tags voor
 aanwezigheid met [Bermuda](https://github.com/agittins/bermuda)) en kan via het scherm met sommige verbinden (een slot,

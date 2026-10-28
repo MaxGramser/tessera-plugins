@@ -1,5 +1,11 @@
 # Bluetooth proxy
 
+> **Warning: the proxy costs the screen's responsiveness.** Wi-Fi and Bluetooth share one radio, and the screen already
+> asks a lot of its Wi-Fi. With the proxy on, taps and pages can answer more slowly, the Wi-Fi gets weaker, and live
+> links such as camera streams and video can stutter or drop. Add it only where you can live with that, and turn it off
+> with the setting **Bluetooth proxy** when the screen suffers. A separate ESP32 as a Bluetooth proxy costs a few euros
+> and takes nothing from the screen.
+
 Turns the screen into a Bluetooth proxy for Home Assistant, the same one a ready-made ESPHome Bluetooth proxy runs.
 Home Assistant then hears Bluetooth devices near the screen (thermometers, plant sensors, tags for presence with
 [Bermuda](https://github.com/agittins/bermuda)) and can connect to some of them through it (a lock, a light), up to

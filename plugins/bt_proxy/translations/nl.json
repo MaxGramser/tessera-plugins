@@ -11,7 +11,7 @@
   },
   "app": {
     "name": "Bluetooth-proxy",
-    "summary": "Home Assistant bereikt Bluetooth-apparaten bij het scherm. Deelt de radio met wifi.",
+    "summary": "Home Assistant bereikt Bluetooth-apparaten bij het scherm. Kost wifi: trager scherm, haperende video.",
     "setting_proxy": "Bluetooth-proxy",
     "setting_proxy_hint": "Uit geeft de radio alleen aan wifi, voor vlottere plaatjes en camerabeelden. Zonder opnieuw bouwen.",
     "part_c6": "Update van de wifichip",
