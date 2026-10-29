@@ -54,6 +54,29 @@ bool ScreenVideo::send_all_(int fd, const uint8_t *data, size_t length) {
   return true;
 }
 
+// Whether a viewer's connection has room for a picture: lwIP says a socket is writable while more than half of its send
+// buffer is free (TCP_SNDLOWAT), so this is true while less than about 32 KB waits unsent on it, a third of a second of
+// video. Beyond that a picture would wait in send() for the Wi-Fi, and the sound with it: on a reTerminal D1001 whose
+// uplink stalled behind four live tiles the sound reached the app in bursts a second late (2.4 s at most) and the
+// viewing screen cut most of it away (2026-10-29). A picture that finds no room is left behind instead; the sound goes.
+bool ScreenVideo::writable_(int fd) {
+  fd_set writable;
+  FD_ZERO(&writable);
+  FD_SET(fd, &writable);
+  timeval now{0, 0};
+  return ::select(fd + 1, nullptr, &writable, nullptr, &now) > 0 && FD_ISSET(fd, &writable);
+}
+
+// Whether an access unit holds a key frame (a NAL unit of type 5): what a viewer left behind starts again from.
+static bool has_idr(const uint8_t *d, size_t len) {
+  for (size_t i = 0; i + 3 < len; ++i)
+    if (d[i] == 0 && d[i + 1] == 0 && d[i + 2] == 1) {
+      if ((d[i + 3] & 0x1F) == 5) return true;
+      i += 2;
+    }
+  return false;
+}
+
 // The value of a header line, found without regard to case.
 static std::string header(const std::string &request, const char *name) {
   const std::string key = std::string("\r\n") + name + ":";
@@ -131,8 +154,27 @@ void ScreenVideo::serve_() {
       if (holding_) {
         held_++;
       } else {
-        for (auto &v : viewers_)
-          if (v.fd >= 0 && v.playing && !send_access_unit_(v, slot)) drop_(v);
+        // A viewer whose connection is full gets no picture until it has room again, and then a key frame first: the
+        // pictures in between are gone for it. Its sound goes on in between (send_sound_: small packets, sent as the
+        // pictures are, every dozen packets of one as well).
+        const bool idr = has_idr(slot.data, slot.length);
+        for (auto &v : viewers_) {
+          if (v.fd < 0 || !v.playing) continue;
+          if (!writable_(v.fd)) {
+            if (!v.left_behind) want_idr_ = true;
+            v.left_behind = true;
+            behind_++;
+            continue;
+          }
+          if (v.left_behind) {
+            if (!idr) {
+              behind_++;
+              continue;
+            }
+            v.left_behind = false;
+          }
+          if (!send_access_unit_(v, slot)) drop_(v);
+        }
       }
       slot.state = 0;
     }
@@ -327,6 +369,7 @@ bool ScreenVideo::send_access_unit_(Viewer &v, const Slot &slot) {
   if (count == 0) return true;
   ends[count - 1] = len;
   uint8_t packet[4 + 12 + 2 + RTP_PAYLOAD];
+  int since_sound = 0;
   auto rtp = [&](const uint8_t *payload_head, size_t head_len, const uint8_t *payload, size_t payload_len,
                  bool marker) -> bool {
     const size_t rtp_len = 12 + head_len + payload_len;
@@ -352,7 +395,18 @@ bool ScreenVideo::send_access_unit_(Viewer &v, const Slot &slot) {
     memcpy(h + 12 + head_len, payload, payload_len);
     v.video_packets++;
     v.video_octets += head_len + payload_len;
-    return queue_(fd, packet, 4 + rtp_len);
+    if (!queue_(fd, packet, 4 + rtp_len)) return false;
+#ifdef USE_SCREEN_VIDEO_SOUND
+    // The sound between the packets of a long picture (a key frame is 50 to 200 KB, a second of video or more on a
+    // slow uplink), so it never waits for a whole picture to pass.
+    if (++since_sound >= 12 && wants_sound_.load()) {
+      since_sound = 0;
+      if (!flush_(fd)) return false;
+      send_sound_();
+      if (v.fd < 0) return false;  // its own sound could not be sent: the viewer is gone
+    }
+#endif
+    return true;
   };
   for (int k = 0; k < count; ++k) {
     const uint8_t *nal = d + starts[k];

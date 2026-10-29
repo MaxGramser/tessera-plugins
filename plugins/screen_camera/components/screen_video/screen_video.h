@@ -86,6 +86,7 @@ class ScreenVideo : public Component, public esp_video_camera::RawVideoFrameCons
     uint16_t seq{0}, sound_seq{0};
     uint32_t video_packets{0}, video_octets{0};
     uint32_t silent_since{0}, reports_at{0};
+    bool left_behind{false};  // its connection was full: no picture until a key frame finds room (serve_)
   };
 
   static void server_task_(void *self);
@@ -96,6 +97,7 @@ class ScreenVideo : public Component, public esp_video_camera::RawVideoFrameCons
   void drop_(Viewer &v);
   bool anyone_playing_() const;
   bool send_all_(int fd, const uint8_t *data, size_t length);
+  bool writable_(int fd);
   bool queue_(int fd, const uint8_t *data, size_t length);
   bool flush_(int fd);
   bool send_access_unit_(Viewer &v, const Slot &slot);
@@ -119,6 +121,7 @@ class ScreenVideo : public Component, public esp_video_camera::RawVideoFrameCons
   uint16_t crop_x_{0}, crop_y_{0};        // where the stream's frame starts in the camera's, 0 when they are one
   uint8_t *crop_{nullptr};                // the cut frame, in PSRAM, only when the camera's size needs cutting
   ppa_client_handle_t ppa_{nullptr};      // what cuts it: the P4's pixel DMA engine (a memcpy took 77 ms a frame)
+  std::atomic<uint32_t> behind_{0};       // pictures a viewer did not get for a full connection (serve_)
   std::atomic<uint32_t> crop_us_{0};      // what the cutting costs, for the loop's line
   std::atomic<uint32_t> encode_us_{0};    // and the encoding
   uint32_t reported_crop_us_{0}, reported_encode_us_{0};

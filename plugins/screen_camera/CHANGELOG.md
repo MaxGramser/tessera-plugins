@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.6.10 - 2026-10-29
+- **The sound no longer waits for the picture on a slow connection.** Picture and sound leave the screen over one
+  connection, and when the screen's Wi-Fi uplink stalled (a reTerminal D1001 showing four live tiles while its camera
+  was watched) a picture waited in the connection for seconds and the sound behind it: it reached Home Assistant in
+  bursts a second late, 2.4 s at most, and the screen that played it cut more than half of it away (words gone, bits
+  doubled). After 2 s of waiting the viewer was dropped and go2rtc connected anew. Now a picture that finds the
+  connection full (more than half of its send buffer waiting) is left behind, the viewer gets a key frame first when
+  there is room again, and the sound goes between the packets of a long picture. On the bench, a viewer that stopped
+  reading for 3 s of every 6: 0 bytes of sound lost, the viewer kept, 232 pictures left behind in 40 s; before, the
+  same viewer was dropped at 2 s. The log's line every minute counts the pictures left behind for a full connection.
+
 ## 0.6.9 - 2026-10-28
 - **Watching the video no longer trips the wake word.** While someone watched the screen's video in Home Assistant, the
   wake word could lose its place many times an hour (217 an hour on a Guition 10.1 with one viewer). The video's sound

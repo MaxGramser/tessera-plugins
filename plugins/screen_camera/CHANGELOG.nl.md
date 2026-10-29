@@ -1,5 +1,17 @@
 # Wijzigingen
 
+## 0.6.10 - 2026-10-29
+- **Het geluid wacht op een trage verbinding niet meer op het beeld.** Beeld en geluid verlaten het scherm over één
+  verbinding, en als de Wi-Fi-uplink van het scherm stokte (een reTerminal D1001 met vier live tegels terwijl zijn camera
+  bekeken werd) wachtte een beeld seconden in de verbinding en het geluid erachter: het kwam in bursts een seconde te
+  laat bij Home Assistant aan, hoogstens 2,4 s, en het scherm dat het afspeelde knipte er meer dan de helft van weg
+  (woorden weg, stukjes dubbel). Na 2 s wachten werd de kijker weggegooid en verbond go2rtc opnieuw. Nu blijft een beeld
+  dat de verbinding vol vindt (meer dan de helft van de zendbuffer wacht nog) achter, de kijker krijgt eerst een
+  keyframe als er weer ruimte is, en het geluid gaat tussen de pakketten van een lang beeld door. Op de bench, met een
+  kijker die elke 6 s 3 s niet las: 0 bytes geluid verloren, de kijker bleef, 232 beelden achtergebleven in 40 s;
+  daarvoor werd dezelfde kijker na 2 s weggegooid. De logregel per minuut telt de beelden die achterbleven voor een
+  volle verbinding.
+
 ## 0.6.9 - 2026-10-28
 - **Naar de video kijken laat het wake word niet meer struikelen.** Terwijl iemand de video van het scherm in Home
   Assistant bekeek, kon het wake word vaak per uur de draad kwijtraken (217 keer per uur op een Guition 10.1 met één
