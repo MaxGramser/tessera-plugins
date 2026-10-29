@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.12 - 2026-10-29
+- **The screen slows its own live tiles while someone hears its microphone** (needs Tessera's dev firmware, plugin API
+  0.23). Four live tiles on a reTerminal D1001 crowded its Wi-Fi so much that its video's sound reached the viewer in
+  bursts a second late; while a viewer has the sound, the screen now keeps its live camera tiles at a quarter of their
+  pictures a second, so the conversation goes first.
+
 ## 0.6.11 - 2026-10-29
 - **The video keeps to its bitrate in a busy picture.** The encoder could make a frame only so coarse (quantiser 42 at
   most), so a picture with much detail or movement came out larger than the 1 Mbit/s the video is meant to send: a

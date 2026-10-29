@@ -82,7 +82,8 @@ void ScreenVideo::loop() {
   }
 #ifdef USE_SCREEN_VIDEO_SOUND
   // The microphone starts and stops on the loop, as everything else that listens does. ESPHome counts its listeners,
-  // so the voice assistant keeps it while it listens too.
+  // so the voice assistant keeps it while it listens too. And the screen hears of it (plugin API 0.23): while a viewer
+  // has the sound, the screen keeps its live tiles at a quarter, so they do not starve this video's uplink.
   if (mic_ != nullptr && wants_sound_.load() != listening_) {
     listening_ = !listening_;
     if (listening_) {
@@ -90,6 +91,7 @@ void ScreenVideo::loop() {
     } else {
       mic_->stop();
     }
+    if (screen_camera_ != nullptr) screen_camera_->set_sound_heard(listening_);
   }
 #endif
   const uint32_t now = millis();

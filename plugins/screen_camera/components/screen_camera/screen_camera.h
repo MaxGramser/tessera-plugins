@@ -75,6 +75,8 @@ class ScreenCamera : public Component,
   void consume_raw_video_frame(const esp_video_camera::RawVideoFrame &frame) override;
   // Someone watches the video, or nobody any more: the core's dot, as for sensing (from the loop).
   void set_video_watched(bool watched);
+  // Someone hears the microphone through the video, or nobody any more (plugin API 0.23, from the loop).
+  void set_sound_heard(bool heard);
 
   // The screen's own camera on a live tile of its own (plugin API 0.22): the hub's consumer that hands the core each
   // frame, as the camera gave it, while such a tile is on the glass. The core draws the tile from it, so the video's

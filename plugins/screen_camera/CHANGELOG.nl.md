@@ -1,5 +1,11 @@
 # Wijzigingen
 
+## 0.6.12 - 2026-10-29
+- **Het scherm vertraagt zijn eigen live tegels zolang iemand zijn microfoon hoort** (vereist Tessera's dev-firmware,
+  plugin API 0.23). Vier live tegels op een reTerminal D1001 maakten zijn Wi-Fi zo druk dat het geluid van zijn video in
+  bursts een seconde te laat bij de kijker aankwam; zolang een kijker het geluid heeft, houdt het scherm zijn live
+  camerategels nu op een kwart van hun beelden per seconde, zodat het gesprek voorgaat.
+
 ## 0.6.11 - 2026-10-29
 - **De video houdt zich aan zijn bitrate in een druk beeld.** De encoder kon een beeld maar tot een bepaalde grofheid
   maken (quantiser hoogstens 42), dus een beeld met veel detail of beweging werd groter dan de 1 Mbit/s die de video

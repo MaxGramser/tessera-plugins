@@ -114,6 +114,10 @@ void ScreenCamera::set_video_watched(bool watched) {
   show_dot_();
 }
 
+// Someone hears what the microphone hears (the video's sound): the screen keeps its live tiles at a quarter while it
+// lasts (plugin API 0.23, the governor), so they do not starve the video's uplink; no dot changes.
+void ScreenCamera::set_sound_heard(bool heard) { tessera::capturing(this, tessera::Capture::SOUND, heard); }
+
 // The camera runs on the screen itself, for the video while someone watches (the core's dot solid) or for what never
 // leaves it, sensing alone (the dot a ring, plugin API 0.20). Home Assistant's own pictures the core sees by itself.
 void ScreenCamera::show_dot_() {
