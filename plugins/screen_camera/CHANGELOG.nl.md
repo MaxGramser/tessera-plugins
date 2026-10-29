@@ -1,5 +1,12 @@
 # Wijzigingen
 
+## 0.6.11 - 2026-10-29
+- **De video houdt zich aan zijn bitrate in een druk beeld.** De encoder kon een beeld maar tot een bepaalde grofheid
+  maken (quantiser hoogstens 42), dus een beeld met veel detail of beweging werd groter dan de 1 Mbit/s die de video
+  hoort te sturen: een reTerminal D1001 stuurde 1,6 tot 2,1 Mbit/s, en 30 tot 70 beelden per minuut kwamen niet aan.
+  Hij mag nu het hele bereik van H.264 gebruiken (tot 51), zodat hij rond 1 Mbit/s blijft en een druk moment
+  iets zachter oogt in plaats van te haperen.
+
 ## 0.6.10 - 2026-10-29
 - **Het geluid wacht op een trage verbinding niet meer op het beeld.** Beeld en geluid verlaten het scherm over één
   verbinding, en als de Wi-Fi-uplink van het scherm stokte (een reTerminal D1001 met vier live tegels terwijl zijn camera

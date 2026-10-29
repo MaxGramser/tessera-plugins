@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.11 - 2026-10-29
+- **The video keeps to its bitrate in a busy picture.** The encoder could make a frame only so coarse (quantiser 42 at
+  most), so a picture with much detail or movement came out larger than the 1 Mbit/s the video is meant to send: a
+  reTerminal D1001 sent 1.6 to 2.1 Mbit/s, and 30 to 70 frames a minute did not arrive. It may now use H.264's
+  whole range (up to 51), so it stays near 1 Mbit/s and a busy moment looks a little softer instead of stalling.
+
 ## 0.6.10 - 2026-10-29
 - **The sound no longer waits for the picture on a slow connection.** Picture and sound leave the screen over one
   connection, and when the screen's Wi-Fi uplink stalled (a reTerminal D1001 showing four live tiles while its camera

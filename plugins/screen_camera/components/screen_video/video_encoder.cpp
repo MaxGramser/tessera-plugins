@@ -72,7 +72,9 @@ void ScreenVideo::consume_raw_video_frame(const esp_video_camera::RawVideoFrame 
     cfg.res.height = height_;
     cfg.rc.bitrate = BITRATE;
     cfg.rc.qp_min = 25;
-    cfg.rc.qp_max = 42;
+    // H.264's whole range above qp_min, so the rate control can hold BITRATE in a busy picture: capped at 42 a reTerminal
+    // D1001 sent 1.6 to 2.1 Mbit/s for 1.0 and 30 to 70 frames a minute did not arrive (2026-10-28).
+    cfg.rc.qp_max = 51;
     if (esp_h264_enc_hw_new(&cfg, &encoder_) != ESP_H264_ERR_OK || encoder_ == nullptr ||
         esp_h264_enc_open(encoder_) != ESP_H264_ERR_OK) {
       ESP_LOGE(TAG, "The H.264 encoder did not start (internal RAM free: %u bytes)",
