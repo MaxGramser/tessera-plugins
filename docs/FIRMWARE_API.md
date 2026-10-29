@@ -878,11 +878,12 @@ when it does not fit. A plugin fits a core when all three hold:
 
 **From 1.0 on** a minor only adds, so the third rule never stops a plugin: only a break raises the major.
 
-**While the major is 0** a minor may still change a name or a signature as the API settles. The core lists those
-minors in `PLUGIN_API_BREAKS`, in `screen_manager/app/plugin_manifest.py` and in `components/smart_display/__init__.py`
-(a test keeps the two equal). Today the list holds one: 0.4, where `Plugin::on_tick` became `on_interval`. A minor that
-only takes away a second form of something nearly no plugin used is not listed, so every other plugin keeps building
-(0.24: a plugin that used one of them gets a compiler error instead of the sentence). So with a core of 0.24:
+**While the major is 0** a minor may still change a name or a signature as the API settles, or take a form away: a
+plugin that still uses it fails its build with the compiler's error at that call (0.24). A minor after which an older
+plugin would still build but work wrongly is listed in `PLUGIN_API_BREAKS`, in `screen_manager/app/plugin_manifest.py`
+and in `components/smart_display/__init__.py` (a test keeps the two equal), and such a plugin is refused in one
+sentence. Today the list holds one: 0.4, where `Plugin::on_tick` changed its meaning and the old one became
+`on_interval`. So with a core of 0.24:
 
 | The manifest says | Builds? | Why |
 |---|---|---|

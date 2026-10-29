@@ -29,9 +29,10 @@ plugin is done.
    `ui::animate`), `"0.19"` for `tessera::camera_turn`, `"0.20"` for `Capture::SENSING` (the camera only sensing,
    the dot a ring), `"0.21"` for `tessera::squeeze` (a busy screen's governor), and `"0.22"` for `tessera::own_frame` (the screen's own
    camera on a tile of its own), `"0.23"` for `Capture::SOUND` (someone hears the microphone: the live tiles slow). A plugin builds on a core with the
-   same major and at least its minor, unless a minor after its own changed a name: while the major is 0 that may
-   happen, and the core lists those minors (only 0.4 so far). So a plugin of 0.7 builds on a core of 0.24, one of 0.3
-   does not (`docs/FIRMWARE_API.md`, "Versions"). 0.24 took away a second form of four things without listing it
+   same major and at least its minor, unless a minor after its own is listed as a break: while the major is 0 a name may
+   change its meaning, and the core lists those minors (only 0.4 so far); a form a minor takes away fails in the
+   compiler at its call instead. So a plugin of 0.7 builds on a core of 0.24, one of 0.3
+   does not (`docs/FIRMWARE_API.md`, "Versions"). 0.24 took away a second form of four things
    (`on_touch`, the key and value `tessera::action`, `saver:picture`, `memory: { bytes }`): one form for each thing. A tile's entity of a domain Tessera draws no tile for (`plant`,
    `todo`) reaches `TileContext::entity` and `tessera::action` only with the firmware after 0.56.0, on Tessera's dev
    branch until its next release (`docs/FIRMWARE_API.md`, "A tile of an entity").
