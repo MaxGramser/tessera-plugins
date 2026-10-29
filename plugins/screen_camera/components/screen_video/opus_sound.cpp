@@ -98,6 +98,15 @@ void ScreenVideo::send_sound_() {
     memcpy(hd + 12, opus_out_, out.encoded_bytes);
     for (auto &v : viewers_) {
       if (v.fd < 0 || !v.playing || v.sound_channel < 0) continue;
+      // A viewer whose connection is full gets no sound packet either: send() would wait for the Wi-Fi (SO_SNDTIMEO, two
+      // seconds) and hold the whole loop, every viewer's pictures and sound with it, which then came in one burst (a
+      // reTerminal D1001 streaming to a Guition 10.1 while it showed the 10.1 full screen, 2026-10-29: sound 0.8 s
+      // behind on average, 2.4 s at most). This viewer misses 20 ms of sound instead; the pictures already wait the
+      // same way (serve_, left_behind).
+      if (v.left_behind || !writable_(v.fd)) {
+        sound_behind_++;
+        continue;
+      }
       packet[1] = static_cast<uint8_t>(v.sound_channel);
       hd[2] = v.sound_seq >> 8;
       hd[3] = v.sound_seq & 0xFF;
