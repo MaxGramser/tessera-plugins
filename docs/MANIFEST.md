@@ -87,7 +87,7 @@ fetch:
       label: [LinePublicNumber, DestinationName50]
 ```
 
-It names `api: "0.7"` and builds on today's core, which offers plugin API 0.23: no minor after 0.7 changed a name
+It names `api: "0.7"` and builds on today's core, which offers plugin API 0.24: no minor after 0.7 changed a name
 ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). The fetch is plain `http` because OVapi offers nothing else and the
 fetch carries no secret.
 
@@ -109,7 +109,7 @@ fetch carries no secret.
 |---|---|---|
 | `id` | yes | The plugin's id. Unique in the index, the same as its folder and its component, and never changed. |
 | `version` | yes | Three numbers, `1.0.0`. Raise it for every change that reaches screens, and give it a `## 1.0.0` heading with its lines at the top of `CHANGELOG.md` ([MAKING_A_PLUGIN.md](MAKING_A_PLUGIN.md#the-changelog)). |
-| `api` | yes | The plugin API it was written for, as major and minor in quotes: `"0.8"`; the plugin API 0.23 is the one the core offers now (on Tessera's dev branch; the release has an older one until the next). Without quotes YAML reads a number, which the check refuses. It builds on a core with the same major and at least that minor, unless a minor after its own up to the core's changed a name (0.4 did); `tools/check.py` refuses an `api` newer than the core it checks against, and one from before such a minor ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
+| `api` | yes | The plugin API it was written for, as major and minor in quotes: `"0.8"`; the plugin API 0.24 is the one the core offers now (on Tessera's dev branch; the release has an older one until the next). Without quotes YAML reads a number, which the check refuses. It builds on a core with the same major and at least that minor, unless a minor after its own up to the core's changed a name (0.4 did); `tools/check.py` refuses an `api` newer than the core it checks against, and one from before such a minor ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
 | `icon` | yes | <a id="icon"></a>A Material Design Icons name from Tessera's icon set (`screen_manager/app/tile_icons.py` in the Tessera repository, such as `bus`, `train`, `calendar`, `thermometer`, `lightbulb`). The screen's icon font holds only that set. Tiles and top bar items take it when they name no icon of their own. |
 | `maintainer` | yes | The GitHub name of whoever looks after the plugin, 1 to 39 characters. `tools/check.py` refuses the template's `your-github-name` in any folder but `template/`. |
 | `license` | yes | An SPDX name that goes with AGPL-3.0: `MIT`, `Apache-2.0`, `BSD-2-Clause`, `BSD-3-Clause`, `ISC`, `MPL-2.0`, `LGPL-2.1-or-later`, `LGPL-3.0-or-later`, `GPL-3.0-or-later`, `GPL-3.0-only`, `AGPL-3.0-or-later`, `AGPL-3.0-only`, `Unlicense`, `0BSD`, `CC0-1.0`. |
@@ -274,7 +274,7 @@ At most 8.
 | `name` | yes | Text key: what the library and the inspector call it. |
 | `icon` | no | From Tessera's icon set; the plugin's icon when left out. The editor shows it, and a screen without the plugin draws it on its placeholder. |
 | `sizes` | yes | `{ min: 1x1, max: 2x2 }`, columns x rows, each 1 to 9; `min` is not larger than `max` in either. The editor offers the sizes in between that fit the screen's grid. `full: true` is accepted, but neither the app nor the editor uses it yet. |
-| `memory` | yes | What one tile costs of the screen's layout memory, a whole number of bytes from 64 to 16384 (also written `{ bytes: 1200 }`). The screen and the app add it to the layout's budget, and the build refuses a value outside that range too. About 400 for a few labels, 1200 for a list. |
+| `memory` | yes | What one tile costs of the screen's layout memory, a whole number of bytes from 64 to 16384. The screen and the app add it to the layout's budget, and the build refuses a value outside that range too. About 400 for a few labels, 1200 for a list. |
 | `domains` | no | Up to 8 domains of the entity the tile belongs to (0.2), `[calendar]`, as a tap action and an input of kind `entity` name theirs. The inspector offers the entities of those domains, also of a domain Tessera draws no tile for; the tile gets the entity's state, name and `attributes`, again at every change. Its entity id in `TileContext::entity`, for such a domain, needs the firmware after 0.56.0 ([FIRMWARE_API.md](FIRMWARE_API.md), "A tile of an entity"). |
 | `attributes` | no | With `domains`: the attributes the tile gets, at most 16, each a name of `a-z`, `0-9` and `_` of up to 48 characters, not starting with a digit. One named `..._at`, `..._time` or `...date` that holds a moment comes as seconds since 1970. A list comes whole when it fits: texts and numbers, not objects. |
 | `fields` | no | With `domains` (0.5): values taken out of the entity's attributes with the paths and kinds of a fetch's map ([FETCH.md](FETCH.md)), 1 to 8, each named apart from `attributes`, `state` and `name`. `{ prices: { path: "raw_today[*].value", as: numbers } }` turns a list of 96 objects into one list of 96 numbers, which fits where the objects would not. |
@@ -445,7 +445,7 @@ most 4. A manifest with `savers` names `api: "0.14"` or later.
 | `icon` | no | From Tessera's icon set; the plugin's icon when left out. |
 | `step` | yes | `clock`, `media` or `photos` for a face of that step, `own` for a step of its own. The C++ registers it with the same step (`SaverStep::CLOCK`, `MEDIA`, `PHOTOS`, `OWN`). |
 | `memory` | yes | What the saver costs while it is on the glass, a whole number of bytes from 64 to 16384, as a tile's `memory`: about 100 a label, 80 a block. |
-| `pictures` | no | Places for pictures, 0 to 8 (default 0): how many the saver makes at most with `ui::picture`. The address `step:` (`saver:picture` before 0.17, still read) is the step's own picture (the cover of the music, the photo of the photos), for a face of `media` or `photos`; any other address is on a host of `permissions.network`, or Home Assistant's own picture of a step of its own's entity. |
+| `pictures` | no | Places for pictures, 0 to 8 (default 0): how many the saver makes at most with `ui::picture`. The address `step:` is the step's own picture (the cover of the music, the photo of the photos), for a face of `media` or `photos`; any other address is on a host of `permissions.network`, or Home Assistant's own picture of a step of its own's entity. |
 | `taps` | no | `true` when the saver has parts made with `ui::takes_taps`, which a finger taps without waking the screen (default `false`): keys of a player, a switch. Say it whenever the code calls `ui::takes_taps`. |
 | `moves` | no | `true` when the saver moves itself so nothing stands on the same pixels for hours (a clock that turns, a picture that changes every minute); the screen then leaves it where it draws. Default `false`: the screen moves the whole saver up to a millimetre every minute. |
 | `backdrop` | no | (0.14) `true` for a face of the music or the photos that draws over the step's own picture: the screen shows the cover or the photo over the whole glass under the saver, the photo moving slowly when the person chose Motion: Slow, and the saver's glass is clear. Only for `step: media` or `photos`. |

@@ -16,7 +16,7 @@ plugin is done.
    carries out the plugin's `fetch` (JSON from a web service) with its own code.
 4. A tile of a plugin is `plugin:<plugin id>.<tile id>` in a screen's layout. The core gives it a card's drawing area
    while its page is on the glass, hands it the data the app sent (`on_state`), and ticks it once a second (`on_tick`).
-5. The plugin API is 0.23 on Tessera's dev branch; the release, Tessera 0.4.89 (firmware 0.57.0), has 0.14 until the
+5. The plugin API is 0.24 on Tessera's dev branch; the release, Tessera 0.4.89 (firmware 0.57.0), has 0.14 until the
    next one. A manifest names the lowest minor whose
    parts it uses: `api: "0.8"`, `"0.9"` for `Font::DIGITS`, `ui::covers`, `Tone::GOOD`, `ui::set_fill` and
    `ui::tone_color`, `"0.10"` for pictures on a tile, `ui::text` and `tap_point()`, `"0.11"` for `on_press` and
@@ -30,8 +30,9 @@ plugin is done.
    the dot a ring), `"0.21"` for `tessera::squeeze` (a busy screen's governor), and `"0.22"` for `tessera::own_frame` (the screen's own
    camera on a tile of its own), `"0.23"` for `Capture::SOUND` (someone hears the microphone: the live tiles slow). A plugin builds on a core with the
    same major and at least its minor, unless a minor after its own changed a name: while the major is 0 that may
-   happen, and the core lists those minors (only 0.4 so far). So a plugin of 0.7 builds on a core of 0.23, one of 0.3
-   does not (`docs/FIRMWARE_API.md`, "Versions"). A tile's entity of a domain Tessera draws no tile for (`plant`,
+   happen, and the core lists those minors (only 0.4 so far). So a plugin of 0.7 builds on a core of 0.24, one of 0.3
+   does not (`docs/FIRMWARE_API.md`, "Versions"). 0.24 took away a second form of four things without listing it
+   (`on_touch`, the key and value `tessera::action`, `saver:picture`, `memory: { bytes }`): one form for each thing. A tile's entity of a domain Tessera draws no tile for (`plant`,
    `todo`) reaches `TileContext::entity` and `tessera::action` only with the firmware after 0.56.0, on Tessera's dev
    branch until its next release (`docs/FIRMWARE_API.md`, "A tile of an entity").
 

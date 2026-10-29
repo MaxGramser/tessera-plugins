@@ -1,4 +1,4 @@
-# The firmware API (plugin API 0.23)
+# The firmware API (plugin API 0.24)
 
 A plugin's code runs on the screen as an ESPHome component. It talks to Tessera's core through one header:
 
@@ -9,8 +9,8 @@ A plugin's code runs on the screen as an ESPHome component. It talks to Tessera'
 The header lives in the Tessera repository at `components/smart_display/plugin_api.h`; it is the reference, and this
 page explains it. Everything is in namespace `tessera`.
 
-A manifest names the plugin API it was written for: `api: "0.8"`, or `"0.9"` up to `"0.23"` for the parts those
-brought; the plugin API 0.23 is the one the core offers now (on Tessera's dev branch; the release has an older one until
+A manifest names the plugin API it was written for: `api: "0.8"`, or `"0.9"` up to `"0.24"` for the parts those
+brought; the plugin API 0.24 is the one the core offers now (on Tessera's dev branch; the release has an older one until
 the next). Which cores a plugin builds on is under "Versions" at the end of this page.
 
 A plugin adds to the screen in a few kinds of parts: tiles on a page, cards over the page, tap actions for Tessera's own
@@ -85,7 +85,6 @@ The moments every plugin can hear (override what you need; each has an empty def
 | `on_message(message)` | An answer of the app to `tessera::send()` (below). |
 | `on_cards_closed()` | The cards closed: Back, standby, Back to page 1, another card. |
 | `on_alert()` | An alert is about to show, a doorbell for example. |
-| `on_touch()` | A tap the screen took, after the touch filter: a tile, a key, a button, a row of the settings, Back or the pager. It comes as the finger lets go, with the tap's action; for a click that answers the finger, take `on_press`. It runs inside the touch event, so start a sound there and never wait for it. A slider's release, a refused tap and the repeat of a held key do not count. |
 | `on_press()` | A finger came down on something that takes a tap or a drag: a tile, a key, a slider, a row of the settings, the top bar (0.11). At once, before the screen knows whether it becomes a tap, a hold or a swipe: the moment for a click or a buzz that answers the finger. Not for the push that wakes a dimmed screen, nor between the tiles. Start a sound, never wait for one. |
 | `on_step(step)` | A value under the finger stepped (0.11): a dragged slider, dial or seek bar passed a step (every 5 % of its range, or every position of one with 20 or fewer), or a key held down stepped once more. Once for every step, two at most for one move, as a detent clicks; not for the jump of a slider to where the finger lands. `step.direction` is +1 towards the larger end of the range, -1 towards the smaller, 0 when not known; `step.edge` says it reached either end, for a firmer click there. Play a click with `SoundPlayer::add()` (below), which spaces a run evenly. Every slider and dial of the screen says its steps, a plugin's own LVGL sliders on its cards too, without a line of code. |
 
@@ -218,8 +217,9 @@ object whole: `hs_color` as `[20, 100]`, several speakers as an `entity_id` list
 also a text from the internet with `{{` in it. `entity` is the action's `entity_id`, whose tiles on the screen wait for
 the answer as for a tap on them; pass `""` when the fields name their own target (an `entity_id` list, an `area_id`) or
 the action has none. Up to 16 fields, each named with `a-z`, `0-9` and `_`, together at most 1 KB; `entity_id` in the
-fields beside a non-empty `entity` is refused. When it is not sent, the screen's log says why. A text-only field is
-cheapest as the older form, `tessera::action(service, entity, key, value)`.
+fields beside a non-empty `entity` is refused. When it is not sent, the screen's log says why. Without fields,
+`tessera::action(service, entity)`, it sends only the entity (0.24 took away a second form with one field as a key and
+a value: write that field in the object).
 
 An entity of a domain Tessera draws no tile for (`plant`, `todo`, `calendar`, ...) works the same, with the firmware
 after 0.56.0: up to 0.56.0 the tile gets that entity's state, name and attributes but an empty `entity`, and
@@ -379,7 +379,7 @@ tessera::Sound tick_;           // set_tick() keeps it
 tessera::SoundPlayer sounds_;   // set_speaker() hands it the speaker
 
 void loop() override { sounds_.loop(); }       // hands the speaker what it takes now, never waits
-void on_press() override { sounds_.play(tick_); }  // since API 0.11; on_touch() before it
+void on_press() override { sounds_.play(tick_); }  // since API 0.11
 ```
 
 `play()` starts a sound in place of the one that plays, `stop()` ends it, `playing(sound)` says which one plays.
@@ -526,9 +526,9 @@ add_saver("dial", tessera::SaverStep::CLOCK, []() { return new Dial(); });   // 
 | `SaverContext` (0.14) | `parent` (the whole glass: everything goes in here), `width` and `height` (the glass in pixels), `step`, `level` (the backlight in percent, the standby or the night level, never 0), `night` (the night levels hold now: a face may go darker still) and `options` (the person's options of the saver; valid during `show()` only, copy what you keep). |
 | `ui::takes_taps(part)` (0.14) | A part a finger may tap without waking the screen: its taps go to `on_tap`, a hold to `on_hold`. Call it in `show()`, for a saver of the manifest's `taps: true` (the screen refuses it for any other, and logs why). |
 | `tessera::drift(epoch)` (0.14) | Where Tessera's slow circle against burn-in stands this minute, an offset of at most a millimetre. For a saver of `moves: true` that moves only some of its parts. |
-| manifest `backdrop: true` (0.14) | A face of the music or the photos gets the step's own picture under it, over the whole glass: the cover, or the photo, moving slowly when the person chose Motion: Slow (a pixel every 1.5 s; the 10-inch screens keep it still). The saver's glass is clear and it draws only what goes over the picture; it needs no `saver:picture` place for it. The way to make a slideshow face (the `photo_clock` plugin). |
+| manifest `backdrop: true` (0.14) | A face of the music or the photos gets the step's own picture under it, over the whole glass: the cover, or the photo, moving slowly when the person chose Motion: Slow (a pixel every 1.5 s; the 10-inch screens keep it still). The saver's glass is clear and it draws only what goes over the picture; it needs no `step:` place for it. The way to make a slideshow face (the `photo_clock` plugin). |
 | `tessera::wish(entity, field, value)` (0.14) | A value a finger changed (`Wish::PLAYING` "1" or "0", `Wish::MUTED` "1" or "0", `Wish::ON_OFF` "on" or "off"): it shows at once and Home Assistant squares it. False when it was not sent. |
-| `"step:"` (0.17), `"saver:picture"` (0.14) | The address of the step's own picture for `ui::set_picture`: the cover of the music on the glass, the photo of the photos step. A plugin of 0.14 to 0.16 names it `saver:picture`, which every app still reads. |
+| `"step:"` (0.17) | The address of the step's own picture for `ui::set_picture`: the cover of the music on the glass, the photo of the photos step. A plugin of 0.14 to 0.16 names it `step:`, which every app still reads. |
 
 **When a saver shows, and when it goes.** Only in standby, with a backlight level above 0, without Sleep pressed in Home
 Assistant, with the cards closed and no alert on the glass. It goes, and its object is deleted, when a finger wakes the
@@ -569,7 +569,7 @@ for any other entity (a step of its own's light), on the tiles of the layout tha
 the change when Home Assistant reports it, in `on_state`.
 
 **Pictures.** A saver lays out places with `ui::picture` and `ui::set_picture` as a tile does ("Pictures on a tile"),
-in `show()`, and the manifest's `pictures` of the saver says how many (at most 8). The address `saver:picture` is the
+in `show()`, and the manifest's `pictures` of the saver says how many (at most 8). The address `step:` is the
 step's own picture, which the app cuts to the place: the cover of the player on the glass for a face of the music, the
 photo on the glass for a face of the photos. The contract hands it as `picture` (`""` while there is none), and the
 next cover or photo comes under the same address by itself. Any other address is on a host of `permissions.network`,
@@ -582,9 +582,9 @@ taken away.
 
 | Step | `on_state` gets |
 |---|---|
-| media | `entity`, `name` (the player's), `title`, `artist`, `album`, `state` (`playing`, `paused`, ...), `features` (Home Assistant's `supported_features`: PAUSE 1, VOLUME_SET 4, VOLUME_MUTE 8, VOLUME_STEP 1024, PLAY 16384), `muted`, `volume` (0 to 1), `duration`, `position`, `position_at` (seconds since 1970), `picture` (`saver:picture` while there is a cover), `mark` (the cover's mark), `colour` (`#rrggbb`, the cover's own) |
+| media | `entity`, `name` (the player's), `title`, `artist`, `album`, `state` (`playing`, `paused`, ...), `features` (Home Assistant's `supported_features`: PAUSE 1, VOLUME_SET 4, VOLUME_MUTE 8, VOLUME_STEP 1024, PLAY 16384), `muted`, `volume` (0 to 1), `duration`, `position`, `position_at` (seconds since 1970), `picture` (`step:` while there is a cover), `mark` (the cover's mark), `colour` (`#rrggbb`, the cover's own) |
 | clock | `temperature` (`21°`, `""` for none), `items` (`[{icon, text, since?}]`: the clock's row of entities, each with a codepoint of Tessera's set, its words, or the moment it counts from) |
-| photos | `picture` (`saver:picture`), `mark`, `index`, `count`, `album` |
+| photos | `picture` (`step:`), `mark`, `index`, `count`, `album` |
 | own | the fetch's answer and the entity's `state`, `name`, `attributes` and fields, as a plugin tile's `on_state` |
 
 **Options.** `SaverContext::options` holds what the person set in the editor, as the app keeps it: an option the
@@ -609,7 +609,7 @@ a label, 80 a block, plus its members. A saver is made in PSRAM by itself (`oper
 
 The examples: [`plugins/flip_clock/`](../plugins/flip_clock) (a face of the clock that paints only what changed each
 minute, no pictures, every board), [`plugins/vinyl_deck/`](../plugins/vinyl_deck) (a face of the music: the cover by
-`saver:picture`, keys with `ui::takes_taps`, play and mute with `wish()`, the volume with `action()`) and
+`step:`, keys with `ui::takes_taps`, play and mute with `wish()`, the volume with `action()`) and
 [`plugins/photo_clock/`](../plugins/photo_clock) (a face of the photos: the photo over the whole glass, the time in a
 corner).
 
@@ -868,7 +868,7 @@ readout by it, so the pictures, a video and whatever reads the frames all stand 
 
 ## Versions
 
-A manifest names the plugin API it was written for: `api: "0.8"` up to `"0.23"`; the plugin API 0.23 is the one the core offers now (on Tessera's dev branch; the release has an older one until the next). When a
+A manifest names the plugin API it was written for: `api: "0.8"` up to `"0.24"`; the plugin API 0.24 is the one the core offers now (on Tessera's dev branch; the release has an older one until the next). When a
 screen is built, `smart_display.register_plugin()` compares it with the core's and stops the build with one sentence
 when it does not fit. A plugin fits a core when all three hold:
 
@@ -880,25 +880,16 @@ when it does not fit. A plugin fits a core when all three hold:
 
 **While the major is 0** a minor may still change a name or a signature as the API settles. The core lists those
 minors in `PLUGIN_API_BREAKS`, in `screen_manager/app/plugin_manifest.py` and in `components/smart_display/__init__.py`
-(a test keeps the two equal). Today the list holds one: 0.4, where `Plugin::on_tick` became `on_interval`. So with a
-core of 0.18:
+(a test keeps the two equal). Today the list holds one: 0.4, where `Plugin::on_tick` became `on_interval`. A minor that
+only takes away a second form of something nearly no plugin used is not listed, so every other plugin keeps building
+(0.24: a plugin that used one of them gets a compiler error instead of the sentence). So with a core of 0.24:
 
 | The manifest says | Builds? | Why |
 |---|---|---|
-| `api: "0.18"` | Yes | The core's own. |
-| `api: "0.17"` | Yes | Same major, an older minor, and no break after 0.17. |
-| `api: "0.16"` | Yes | Same major, an older minor, and no break after 0.16. |
-| `api: "0.15"` | Yes | Same major, an older minor, and no break after 0.15. |
-| `api: "0.14"` | Yes | Same major, an older minor, and no break after 0.14. |
-| `api: "0.13"` | Yes | Same major, an older minor, and no break after 0.13. |
-| `api: "0.12"` | Yes | Same major, an older minor, and no break after 0.12. |
-| `api: "0.11"` | Yes | Same major, an older minor, and no break after 0.11. |
-| `api: "0.10"` | Yes | Same major, an older minor, and no break after 0.10. |
-| `api: "0.9"` | Yes | Same major, an older minor, and no break after 0.9. |
-| `api: "0.8"` | Yes | Same major, an older minor, and no break after 0.8. |
-| `api: "0.7"` | Yes | Same major, an older minor, and no break after 0.7. |
+| `api: "0.24"` | Yes | The core's own. |
+| `api: "0.5"` up to `"0.23"` | Yes | Same major, an older minor, and no break after it (unless it uses a form 0.24 took away). |
 | `api: "0.3"` | No | 0.4 changed a name it may use; the build says so in one sentence and asks to update the plugin. |
-| `api: "0.18"` | No | Newer than the core; the build asks to update the plugin or the screen's firmware. |
+| `api: "0.25"` | No | Newer than the core; the build asks to update the plugin or the screen's firmware. |
 | `api: "1.0"` | No | Another major. |
 
 `tools/check.py` applies the same rules against the core it checks with (`api_fits` of `plugin_manifest.py`), so a
@@ -923,16 +914,17 @@ brought:
 | 0.11 | `on_press`, a finger landing on something that takes a tap or a drag, at once (for a click that answers the finger; `on_touch` comes as the finger lets go), `on_step(Step)`, a value under the finger stepping (a dragged slider, dial or seek bar, a held key), and `SoundPlayer::add()`, sounds evenly spaced one after another. |
 | 0.12 | A card's `on_tap()`, with `tessera::tap_point()` in the card's own pixels. Values of JSON: an option that keeps several values (`multiple`: texts, or picks `{value, label}`), a choice found by searching (`search`), a fetch once per value of a list (`each`, `{ each: label }`) or with the list joined (`{name\|,}`), and `tessera::action(service, entity, fields)` with fields of any JSON type. |
 | 0.13 | Pictures on a card over the page: `ui::picture`, `ui::set_picture` and `ui::slide_pictures` in a card's calls, and the manifest's `pictures` of a card. |
-| 0.14 | Screensavers: `Saver`, `SaverContext`, `SaverStep`, `Plugin::add_saver`, a face of the clock, the music or the photos or a step of its own, and the manifest's `savers`; `ui::takes_taps`, a part of a saver a finger taps in standby; the address `saver:picture`, the step's own picture; `tessera::wish()` and `Wish`, a value a finger changed. `tools/check.py` refuses these parts in a plugin of an older `api`. |
+| 0.14 | Screensavers: `Saver`, `SaverContext`, `SaverStep`, `Plugin::add_saver`, a face of the clock, the music or the photos or a step of its own, and the manifest's `savers`; `ui::takes_taps`, a part of a saver a finger taps in standby; the address `saver:picture`, the step's own picture (`step:` from 0.17); `tessera::wish()` and `Wish`, a value a finger changed. `tools/check.py` refuses these parts in a plugin of an older `api`. |
 | 0.15 | Nothing new in the C++: a tile's options of kind `entity` (the manifest) bring the chosen entities to `on_state` under `entities` ("What `on_state` gets"). `tools/check.py` refuses such an option in a plugin of an older `api`. |
 | 0.16 | `tessera::wake(plugin)`: the screen wakes as Home Assistant's Wake button does, for a plugin that senses someone come (an option of its own, off by default; at most once a second or two, from the screen's loop). |
-| 0.17 | Pictures in one system: `ui::picture(parent, Placeholder::NONE)`, a place without its block; `on_picture(place, PictureState)` on a tile, a card and a saver; the addresses `cover:`, `camera:` and `entity:` of the tile's own entity, and `step:` for the step's own picture (`saver:picture` still read); `ui::live`, a tile's place that streams its camera; and `tessera::capturing()` with the camera's dot. |
+| 0.17 | Pictures in one system: `ui::picture(parent, Placeholder::NONE)`, a place without its block; `on_picture(place, PictureState)` on a tile, a card and a saver; the addresses `cover:`, `camera:` and `entity:` of the tile's own entity, and `step:` for the step's own picture (`saver:picture` still read until 0.24); `ui::live`, a tile's place that streams its camera; and `tessera::capturing()` with the camera's dot. |
 | 0.18 | Popups: `Popup`, `PopupContext`, `PopupWidth`, `tessera::show_popup`, `close_popup` and `popup_shown`; `ui::animate` with `Motion` and `ui::still`, a part that pulses, spins or ripples. `tools/check.py` refuses these parts in a plugin of an older `api`. |
 | 0.19 | `tessera::camera_turn()`, how far the screen's own camera turns its picture to stand upright, 0 or 180; `hw::caps()`, what the screen's hardware can do in one record (a live camera stream, a speaker, a microphone, echo cancellation, a camera of its own, how many live tiles, its memory). |
 | 0.20 | `Capture::SENSING`: the screen's own camera used for what never leaves the screen and nobody watches (a light level, motion); the dot is a ring then, and solid while anything watches. |
 | 0.21 | `tessera::squeeze(Work)`: the screen's governor asks a plugin to give up half or three quarters of its video, its sensing or its background work while a finger is on the glass or the screen shows signs of trouble. |
 | 0.22 | `tessera::offer_own_frames`, `own_tile_wants`, `own_frame`: the screen's own camera drawn on a live tile of its own from the camera's frames, with no encoder, app or network between. |
 | 0.23 | `Capture::SOUND` for `tessera::capturing`: someone hears what the screen's microphone hears (its video with sound, a call); the screen keeps its live tiles at a quarter while it lasts, so a conversation goes before the tiles on the sending side too. |
+| 0.24 | One form for each thing; taken away, each beside a newer form: `on_touch` (use `on_press`), `tessera::action(service, entity, key, value)` (use `tessera::action(service, entity, fields)`, or no fields), the address `saver:picture` (use `step:`) and a tile's `memory: { bytes: n }` (write the number). `ui::picture` and `ui::set_picture` are one signature each, with defaults. |
 
 A minor of the app's or the manifest's side only still counts: a plugin that uses what it brought needs an app that
 knows it ([MANIFEST.md](MANIFEST.md), "Which minor brought a field").

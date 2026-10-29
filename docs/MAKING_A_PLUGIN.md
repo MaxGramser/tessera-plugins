@@ -229,8 +229,8 @@ screensaver", has the whole contract, [MANIFEST.md](MANIFEST.md), "savers", ever
 | You want | Kind | Example |
 |---|---|---|
 | Another clock (flip cards, a word clock, a dial) | A face of the clock: `step: clock`. It gets the temperature and the row of entities the person chose for the clock, and works on every board, the CYD too. | [`plugins/flip_clock/`](../plugins/flip_clock) |
-| Another look for the music that plays, with its cover and keys | A face of the music: `step: media`, `pictures: 1` for the cover (`saver:picture`), `taps: true` for keys. Screens with pictures only. | [`plugins/vinyl_deck/`](../plugins/vinyl_deck) |
-| Another look for the photos of a folder | A face of the photos: `step: photos`, `pictures: 1` for the photo (`saver:picture`). Screens with pictures only. | [`plugins/photo_clock/`](../plugins/photo_clock) |
+| Another look for the music that plays, with its cover and keys | A face of the music: `step: media`, `pictures: 1` for the cover (`step:`), `taps: true` for keys. Screens with pictures only. | [`plugins/vinyl_deck/`](../plugins/vinyl_deck) |
+| Another look for the photos of a folder | A face of the photos: `step: photos`, `pictures: 1` for the photo (`step:`). Screens with pictures only. | [`plugins/photo_clock/`](../plugins/photo_clock) |
 | Something no step shows: the rain radar while it rains, a quote of the day, the bins on the evening before | A step of its own: `step: own`, with a `fetch` (`data`) or an entity (`domains`), and `when` to say when it has something to show. | [MANIFEST.md](MANIFEST.md), "savers" |
 
 A face is the safer choice: a screen without your plugin shows the step's own face, and the person keeps the steps and
@@ -407,7 +407,7 @@ came along is offered to go as well.
 | What happens | Why | Fix |
 |---|---|---|
 | The build says "No tessera-plugin.yaml above ..." | The component is not in `components/<id>/` next to the manifest. | Keep the folder layout of the template. |
-| The build says the plugin wants another plugin API | `api:` in the manifest is newer than the screen's core. | Name the lowest API whose parts you use; the core offers plugin API 0.23 now (on Tessera's dev branch; the release has an older one until the next). Or update the screen's firmware. |
+| The build says the plugin wants another plugin API | `api:` in the manifest is newer than the screen's core. | Name the lowest API whose parts you use; the core offers plugin API 0.24 now (on Tessera's dev branch; the release has an older one until the next). Or update the screen's firmware. |
 | The build says a newer API "changed a name it may use" | `api:` is from before a minor that renamed something (0.4: `Plugin::on_tick` became `on_interval`). | Move the code to the new name and raise `api` ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
 | `check.py` says a key "belongs to the core" or "opens the screen" | `plugin.yaml` sets something a plugin never sets, such as `wifi:` or `http_request:`. | Leave it to the core; data comes through a `fetch` ([LIMITS.md](LIMITS.md), "plugin.yaml"). |
 | `check.py` says "provides speaker, so it makes a speaker: with id: ts_speaker" | The plugin promises a feature it does not make, or gives it another id. | Give the component the feature's id. |

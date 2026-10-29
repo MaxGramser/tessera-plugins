@@ -2,7 +2,7 @@
 
 > Plugins for Tessera, the ESP32 touch screens for Home Assistant. A plugin is an ESPHome component (C++) built into a
 > screen's firmware plus a manifest the Tessera app reads; the app fetches web data for it. It adds tiles, cards, top bar
-> items, tap actions, settings rows, (0.14) screensavers and (0.18) popups. The plugin API is 0.23 now (on Tessera's dev; the release has an older one until the next);
+> items, tap actions, settings rows, (0.14) screensavers and (0.18) popups. The plugin API is 0.24 now (on Tessera's dev; the release has an older one until the next);
 > a plugin builds on the same major from its own minor up, unless a listed minor after it changed a name (only 0.4).
 > Home Assistant is the backend: no plugin code runs in the app.
 
@@ -32,7 +32,7 @@ Start with AGENTS.md (rules for AI assistants), then docs/MAKING_A_PLUGIN.md.
 - [plugins/cinema/](plugins/cinema): a cover flow of film posters from a fetch with a secret key, places that overlap, turn and mirror
 - [plugins/new_music/](plugins/new_music): a cover flow of releases from a fetch per picked artist (each, search), a card with a picture, a tap that plays through Music Assistant (action with fields)
 - [plugins/flip_clock/](plugins/flip_clock): the smallest screensaver, a face of the clock: two flip cards that paint only what changed, every board
-- [plugins/vinyl_deck/](plugins/vinyl_deck): a face of the music: the cover by saver:picture, keys with ui::takes_taps, play and mute with tessera::wish, the volume with an action
+- [plugins/vinyl_deck/](plugins/vinyl_deck): a face of the music: the cover by step:, keys with ui::takes_taps, play and mute with tessera::wish, the volume with an action
 - [plugins/photo_clock/](plugins/photo_clock): a face of the photos: the photo over the whole glass, the time in a corner, moved by the screen
 
 ## Tools
