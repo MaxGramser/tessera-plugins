@@ -1,7 +1,7 @@
 {
  "format": 1,
- "generated": "2026-10-29T09:14:47Z",
- "plugin_api": "0.23",
+ "generated": "2026-10-29T09:18:24Z",
+ "plugin_api": "0.24",
  "blocked": [],
  "featured": [
   "ov_departures",
@@ -2020,8 +2020,8 @@
    "status": "ok",
    "release": {
     "version": "0.1.0",
-    "sha": "b41c300c7e438fea719d1ab9d8c7a2d52b21b49d",
-    "date": "2026-10-17"
+    "sha": "5af8e0524835d44394ecd4374c1d0847ddf72a2f",
+    "date": "2026-10-29"
    },
    "manifest": {
     "id": "vinyl_deck",
