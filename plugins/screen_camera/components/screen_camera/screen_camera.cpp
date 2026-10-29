@@ -282,4 +282,6 @@ void ScreenCamera::on_interval(uint32_t now_ms) {
   }
 }
 
+uint8_t ScreenCamera::video_squeeze() const { return tessera::squeeze(tessera::Work::OWN_CAMERA); }
+
 }  // namespace esphome::screen_camera

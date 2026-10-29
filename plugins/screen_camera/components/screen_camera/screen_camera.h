@@ -45,6 +45,10 @@ class ScreenCamera : public Component,
   }
   // The camera's frames, for every consumer on the screen (the part Video's encoder adds itself here too).
   FrameHub &frames() { return frames_; }
+  // How much a busy screen asks the video to give way (plugin API 0.21, tessera::squeeze): 0 as it is, 1 every other
+  // frame, 2 one in four. Asked here, so the video's driver beside this plugin uses none of the screen's API itself
+  // (tools/check.py: a driver may run a task of its own); from any task.
+  uint8_t video_squeeze() const;
 #ifdef USE_SENSOR
   void set_illuminance(sensor::Sensor *s) { illuminance_ = s; }
 #endif

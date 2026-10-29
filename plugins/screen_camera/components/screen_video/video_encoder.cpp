@@ -110,7 +110,7 @@ void ScreenVideo::consume_raw_video_frame(const esp_video_camera::RawVideoFrame 
   // the glass or the screen shows signs of trouble. After the pace above, which already leaves out every other frame of
   // a camera at 30 frames a second. The viewer sees fewer frames a second, never a broken one: the encoder only gets
   // fewer.
-  const uint8_t squeeze = tessera::squeeze(tessera::Work::OWN_CAMERA);
+  const uint8_t squeeze = screen_camera_->video_squeeze();
   if (squeeze > 0 && (squeeze == 1 ? offered_++ % 2 : offered_++ % 4) != 0) {
     left_out_.fetch_add(1, std::memory_order_relaxed);
     return;
