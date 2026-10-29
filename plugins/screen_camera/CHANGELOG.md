@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.6.13 - 2026-10-29
+- **The video's quantiser is capped at 42 again.** 0.6.11 let the encoder use H.264's whole range to stay near its
+  1 Mbit/s in a busy picture. Measured, it already does at 42: on a Guition 10.1 with fresh noise over half of every
+  frame it sent 983 to 1006 kbit/s at 42 and 1001 to 1002 at 51, and as many pictures were left behind on the
+  connection either way. So the setting goes back to what it was.
+
 ## 0.6.12 - 2026-10-29
 - **The screen slows its own live tiles while someone hears its microphone** (needs Tessera's dev firmware, plugin API
   0.23). Four live tiles on a reTerminal D1001 crowded its Wi-Fi so much that its video's sound reached the viewer in

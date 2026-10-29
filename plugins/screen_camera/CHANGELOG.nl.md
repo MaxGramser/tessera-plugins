@@ -1,5 +1,11 @@
 # Wijzigingen
 
+## 0.6.13 - 2026-10-29
+- **De quantiser van de video staat weer op hoogstens 42.** 0.6.11 liet de encoder het hele bereik van H.264 gebruiken
+  om in een druk beeld rond zijn 1 Mbit/s te blijven. Gemeten doet hij dat bij 42 al: op een Guition 10.1 met verse
+  ruis over de helft van elk beeld stuurde hij 983 tot 1006 kbit/s bij 42 en 1001 tot 1002 bij 51, en er bleven in
+  beide gevallen evenveel beelden achter op de verbinding. Dus de instelling gaat terug naar wat hij was.
+
 ## 0.6.12 - 2026-10-29
 - **Het scherm vertraagt zijn eigen live tegels zolang iemand zijn microfoon hoort** (vereist Tessera's dev-firmware,
   plugin API 0.23). Vier live tegels op een reTerminal D1001 maakten zijn Wi-Fi zo druk dat het geluid van zijn video in
