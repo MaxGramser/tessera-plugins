@@ -87,6 +87,9 @@ class ScreenVideo : public Component, public esp_video_camera::RawVideoFrameCons
     uint32_t video_packets{0}, video_octets{0};
     uint32_t silent_since{0}, reports_at{0};
     bool left_behind{false};  // its connection was full: no picture until a key frame finds room (serve_)
+    // The rest of a sound packet the connection took only part of (send_sound_, MSG_DONTWAIT): it goes first, before
+    // anything else, so the interleaved stream stays whole (unsent_first_).
+    std::string sound_unsent;
   };
 
   static void server_task_(void *self);
@@ -98,6 +101,7 @@ class ScreenVideo : public Component, public esp_video_camera::RawVideoFrameCons
   bool anyone_playing_() const;
   bool send_all_(int fd, const uint8_t *data, size_t length);
   bool writable_(int fd);
+  bool unsent_first_(Viewer &v);
   bool queue_(int fd, const uint8_t *data, size_t length);
   bool flush_(int fd);
   bool send_access_unit_(Viewer &v, const Slot &slot);

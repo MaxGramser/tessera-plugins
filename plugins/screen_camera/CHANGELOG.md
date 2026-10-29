@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6.15 - 2026-10-29
+- **A sound packet goes whenever the connection has room for it.** 0.6.14 held it back whenever the connection was not
+  "writable", which lwIP says only with half of the send buffer free: a fifth of a second of video in flight, normal
+  on Wi-Fi, so one to three packets of 20 ms a second were left out and the sound broke into snippets (heard on both
+  a reTerminal D1001 and a Guition 10.1 hearing each other). It is now sent without waiting; only a packet the
+  connection takes no part of is left out, and a part it did take goes first next time, so the stream stays whole.
+
 ## 0.6.14 - 2026-10-29
 - **A viewer whose connection is full misses a moment of sound instead of holding everyone up.** The video already left
   such a viewer's pictures behind until a key frame found room (0.6.10); its sound packets still went into send(), which
