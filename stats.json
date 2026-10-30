@@ -7,6 +7,12 @@
    "ratings": 1,
    "homes": 1
   },
+  "buienradar": {
+   "likes": 0,
+   "rating": null,
+   "ratings": 1,
+   "homes": 1
+  },
   "cinema": {
    "likes": 2,
    "rating": null,
@@ -17,7 +23,7 @@
    "likes": 9,
    "rating": null,
    "ratings": 1,
-   "homes": 3
+   "homes": 5
   },
   "electricity_price": {
    "likes": 1,
@@ -29,13 +35,13 @@
    "likes": 3,
    "rating": null,
    "ratings": 1,
-   "homes": 2
+   "homes": 7
   },
   "new_music": {
    "likes": 2,
    "rating": null,
    "ratings": 0,
-   "homes": 0
+   "homes": 1
   },
   "ov_departures": {
    "likes": 2,
@@ -59,13 +65,19 @@
    "likes": 1,
    "rating": null,
    "ratings": 0,
-   "homes": 1
+   "homes": 2
   },
   "screen_camera": {
-   "likes": 0,
+   "likes": 1,
    "rating": null,
    "ratings": 1,
    "homes": 1
+  },
+  "tankerkoenig": {
+   "likes": 1,
+   "rating": null,
+   "ratings": 0,
+   "homes": 0
   },
   "tap_sound": {
    "likes": 1,
@@ -83,12 +95,12 @@
    "likes": 1,
    "rating": null,
    "ratings": 0,
-   "homes": 0
+   "homes": 1
   },
   "voice_assist": {
    "likes": 3,
    "rating": null,
-   "ratings": 1,
+   "ratings": 2,
    "homes": 1
   },
   "waste_collection": {
@@ -119,7 +131,7 @@
    "likes": 2,
    "rating": null,
    "ratings": 0,
-   "homes": 1
+   "homes": 2
   }
  }
 }
