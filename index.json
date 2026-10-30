@@ -1,6 +1,6 @@
 {
  "format": 1,
- "generated": "2026-10-30T07:42:40Z",
+ "generated": "2026-10-30T07:44:27Z",
  "plugin_api": "0.24",
  "blocked": [],
  "featured": [
@@ -12,6 +12,11 @@
    "repo": "https://github.com/maxgramser/tessera-plugins",
    "repo_id": 1408945265,
    "path": "plugins/bt_proxy"
+  },
+  "buienradar": {
+   "repo": "https://github.com/heronimonimo/tessera-buienradar",
+   "repo_id": 1427704630,
+   "path": "."
   },
   "cinema": {
    "repo": "https://github.com/maxgramser/tessera-plugins",
@@ -78,14 +83,29 @@
    "repo_id": 1408945265,
    "path": "plugins/picture_frame"
   },
+  "pollen": {
+   "repo": "https://github.com/hflocki/tessera-pollenprognos",
+   "repo_id": 1424507029,
+   "path": "."
+  },
   "screen_camera": {
    "repo": "https://github.com/maxgramser/tessera-plugins",
    "repo_id": 1408945265,
    "path": "plugins/screen_camera"
   },
+  "status_tile": {
+   "repo": "https://github.com/hflocki/tessera-status",
+   "repo_id": 1427953388,
+   "path": "."
+  },
   "sweden_public_transport": {
    "repo": "https://github.com/exhalesthlm/tessera-plugin-sweden-public-transport",
    "repo_id": 1423224231,
+   "path": "."
+  },
+  "tankerkoenig": {
+   "repo": "https://github.com/hflocki/tessera-tankerkoenig",
+   "repo_id": 1424424293,
    "path": "."
   },
   "tap_sound": {
@@ -96,6 +116,11 @@
   "timers": {
    "repo": "https://github.com/heronimonimo/tessera-timers",
    "repo_id": 1426167553,
+   "path": "."
+  },
+  "toothbrush": {
+   "repo": "https://github.com/heronimonimo/tessera-toothbrush",
+   "repo_id": 1424210507,
    "path": "."
   },
   "vinyl_deck": {
@@ -113,9 +138,19 @@
    "repo_id": 1408945265,
    "path": "plugins/waste_collection"
   },
+  "waste_overview": {
+   "repo": "https://github.com/hflocki/tessera-waste",
+   "repo_id": 1424449437,
+   "path": "."
+  },
   "waze_traveltime": {
    "repo": "https://github.com/heronimonimo/tessera-waze-traveltime",
    "repo_id": 1425525382,
+   "path": "."
+  },
+  "weather_warnings": {
+   "repo": "https://github.com/hflocki/tessera-weather-warnings",
+   "repo_id": 1425997636,
    "path": "."
   },
   "world_clock": {
@@ -2479,6 +2514,307 @@
    "image": "store.png"
   },
   {
+   "id": "buienradar",
+   "repo": "https://github.com/heronimonimo/tessera-buienradar",
+   "repo_id": 1427704630,
+   "path": ".",
+   "label": "community",
+   "status": "ok",
+   "release": {
+    "version": "0.5.0",
+    "sha": "a62a75ab3b25697c6295c4d600367c05780385fe",
+    "date": "2026-10-27",
+    "tag": "v0.5.0"
+   },
+   "manifest": {
+    "id": "buienradar",
+    "version": "0.5.0",
+    "api": "0.14",
+    "icon": "weather-pouring",
+    "maintainer": "Heronimonimo",
+    "license": "MIT",
+    "stage": "beta",
+    "topics": [
+     "weather"
+    ],
+    "requires": {
+     "esphome": "2026.6.2"
+    },
+    "boards": "any",
+    "flash_kb": 14,
+    "permissions": {
+     "network": [
+      "graphdata.buienradar.nl",
+      "processing-cdn.buienradar.nl",
+      "cdn.buienradar.nl"
+     ]
+    },
+    "attributes": [
+     "cloud"
+    ],
+    "privacy": "https://github.com/Heronimonimo/tessera-buienradar#privacy",
+    "tiles": [
+     {
+      "id": "rain",
+      "name": "tile_name",
+      "icon": "weather-pouring",
+      "sizes": {
+       "min": "1x1",
+       "max": "4x4"
+      },
+      "memory": 4900,
+      "pictures": 2,
+      "data": "rain",
+      "example": "tile_example",
+      "options": [
+       {
+        "id": "latitude",
+        "kind": "text",
+        "default": "52.1",
+        "label": "latitude",
+        "hint": "latitude_hint"
+       },
+       {
+        "id": "longitude",
+        "kind": "text",
+        "default": "5.18",
+        "label": "longitude",
+        "hint": "longitude_hint"
+       },
+       {
+        "id": "map",
+        "kind": "toggle",
+        "default": true,
+        "label": "map",
+        "hint": "map_hint"
+       },
+       {
+        "id": "play",
+        "kind": "choice",
+        "default": "all",
+        "label": "play",
+        "hint": "play_hint",
+        "choices": [
+         {
+          "value": "all",
+          "label": "play_all"
+         },
+         {
+          "value": "forecast",
+          "label": "play_forecast"
+         },
+         {
+          "value": "still",
+          "label": "play_still"
+         }
+        ]
+       },
+       {
+        "id": "pace",
+        "kind": "number",
+        "min": 1,
+        "max": 10,
+        "step": 1,
+        "unit": "s",
+        "default": 2,
+        "label": "pace",
+        "hint": "pace_hint"
+       }
+      ]
+     }
+    ],
+    "bar_items": [
+     {
+      "id": "rain",
+      "label": "bar_rain",
+      "icon": "weather-pouring",
+      "example": "bar_example"
+     }
+    ],
+    "settings": [
+     {
+      "key": "rain_in_top_bar",
+      "label": "setting_bar_when",
+      "hint": "setting_bar_when_hint"
+     },
+     {
+      "key": "rain_top_bar_words",
+      "label": "setting_bar_words",
+      "hint": "setting_bar_words_hint"
+     }
+    ],
+    "cards": [
+     {
+      "id": "radar",
+      "name": "card_name",
+      "wide": true,
+      "pictures": 2
+     }
+    ],
+    "fetch": [
+     {
+      "id": "rain",
+      "url": "https://graphdata.buienradar.nl/2.0/forecast/geo/RainHistoryForecast?lat={latitude}&lon={longitude}",
+      "every": "5m",
+      "map": {
+       "items": "$.forecasts[*]",
+       "fields": {
+        "at": {
+         "path": "utcdatetime",
+         "as": "epoch",
+         "tz": "UTC"
+        },
+        "mm": {
+         "path": "precipitation",
+         "as": "number"
+        }
+       },
+       "limit": 40
+      }
+     }
+    ]
+   },
+   "translations": {
+    "en": {
+     "_meta": {
+      "name": "English"
+     },
+     "screen": {
+      "dry_until": "Dry until {time}",
+      "dry_long": "Dry for two hours",
+      "rain_until": "Rain until {time}",
+      "rain_long": "Rain for two hours",
+      "rain_in": "Rain in {n} min",
+      "most": "Up to {mm} mm/h",
+      "mm": "{mm} mm/h",
+      "dry": "Dry",
+      "now": "now",
+      "later": "+{n} min",
+      "earlier": "-{n} min",
+      "asking": "Asking Buienradar",
+      "failed": "Buienradar does not answer",
+      "not_filled": "Set the place in the tile's settings",
+      "stale": "Older forecast",
+      "unit": "mm/h",
+      "drizzle": "Drizzle",
+      "light": "Light rain",
+      "moderate": "Moderate rain",
+      "heavy": "Heavy rain",
+      "fix_latitude": "Type the latitude as {value}",
+      "fix_longitude": "Type the longitude as {value}",
+      "outside": "The place lies outside Buienradar's map",
+      "dry_in": "Dry in {n} min",
+      "bar_when": "Rain in top bar",
+      "bar_always": "Always",
+      "bar_coming": "Rain coming",
+      "bar_near": "Rain near",
+      "bar_words": "Top bar says",
+      "bar_clock": "Clock time",
+      "bar_minutes": "Minutes",
+      "name": "Buienradar"
+     },
+     "app": {
+      "name": "Buienradar",
+      "summary": "Rain for the next two hours at your place, as Buienradar's graph and its radar map.",
+      "tile_name": "Rain radar",
+      "tile_example": "Dry until 14:05",
+      "card_name": "Rain radar",
+      "latitude": "Latitude",
+      "latitude_hint": "Of the place to show, with a point and at most two decimals, such as 52.09 (about 1 km). Not 52,09 or 52.10. Home Assistant has it under Settings, Areas, labels and zones.",
+      "longitude": "Longitude",
+      "longitude_hint": "With a point and at most two decimals, such as 5.12.",
+      "map": "Radar map",
+      "map_hint": "On a tile of 3x2, 2x3 or larger, a large 2x2, and on the card. A smaller tile shows the graph alone.",
+      "play": "Map plays",
+      "play_hint": "Which frames the tile's map plays by itself.",
+      "play_all": "Past half hour and forecast",
+      "play_forecast": "Forecast only",
+      "play_still": "Stands still on now",
+      "pace": "Time per frame",
+      "pace_hint": "Seconds each frame of the map stays on the tile.",
+      "bar_rain": "Rain",
+      "bar_example": "Dry until 14:05",
+      "setting_bar_when": "Rain in top bar",
+      "setting_bar_when_hint": "When the top bar item shows: always, when rain is coming in the next two hours, or when it starts within half an hour. It says what the screen's Rain radar tile knows, so the screen needs that tile too.",
+      "setting_bar_words": "Top bar says",
+      "setting_bar_words_hint": "The moment as a clock time (Dry until 14:05) or in minutes (Rain in 20 min)."
+     }
+    },
+    "nl": {
+     "_meta": {
+      "name": "Nederlands"
+     },
+     "screen": {
+      "dry_until": "Droog tot {time}",
+      "dry_long": "Twee uur droog",
+      "rain_until": "Regen tot {time}",
+      "rain_long": "Twee uur regen",
+      "rain_in": "Regen over {n} min",
+      "most": "Tot {mm} mm/u",
+      "mm": "{mm} mm/u",
+      "dry": "Droog",
+      "now": "nu",
+      "later": "+{n} min",
+      "earlier": "-{n} min",
+      "asking": "Buienradar wordt gevraagd",
+      "failed": "Buienradar antwoordt niet",
+      "not_filled": "Kies de plek in de instellingen van de tegel",
+      "stale": "Oudere verwachting",
+      "unit": "mm/u",
+      "drizzle": "Motregen",
+      "light": "Lichte regen",
+      "moderate": "Matige regen",
+      "heavy": "Zware regen",
+      "fix_latitude": "Typ de breedtegraad als {value}",
+      "fix_longitude": "Typ de lengtegraad als {value}",
+      "outside": "De plek ligt buiten de kaart van Buienradar",
+      "dry_in": "Droog over {n} min",
+      "bar_when": "Regen in bovenbalk",
+      "bar_always": "Altijd",
+      "bar_coming": "Regen komt",
+      "bar_near": "Regen dichtbij",
+      "bar_words": "Bovenbalk zegt",
+      "bar_clock": "Kloktijd",
+      "bar_minutes": "Minuten",
+      "name": "Buienradar"
+     },
+     "app": {
+      "name": "Buienradar",
+      "summary": "De regen van de komende twee uur op jouw plek, als grafiek en radarkaart van Buienradar.",
+      "tile_name": "Buienradar",
+      "tile_example": "Droog tot 14:05",
+      "card_name": "Buienradar",
+      "latitude": "Breedtegraad",
+      "latitude_hint": "Van de plek, met een punt en hoogstens twee decimalen, zoals 52.09 (ongeveer 1 km). Niet 52,09 of 52.10. Home Assistant toont die onder Instellingen, Ruimtes, labels en zones.",
+      "longitude": "Lengtegraad",
+      "longitude_hint": "Met een punt en hoogstens twee decimalen, zoals 5.12.",
+      "map": "Radarkaart",
+      "map_hint": "Op een tegel van 3x2, 2x3 of groter, een grote 2x2, en op de kaart. Een kleinere tegel toont alleen de grafiek.",
+      "play": "Kaart speelt",
+      "play_hint": "Welke beelden de kaart op de tegel vanzelf afspeelt.",
+      "play_all": "Laatste half uur en verwachting",
+      "play_forecast": "Alleen de verwachting",
+      "play_still": "Staat stil op nu",
+      "pace": "Tijd per beeld",
+      "pace_hint": "Seconden dat elk beeld van de kaart op de tegel blijft.",
+      "bar_rain": "Regen",
+      "bar_example": "Droog tot 14:05",
+      "setting_bar_when": "Regen in bovenbalk",
+      "setting_bar_when_hint": "Wanneer het item in de bovenbalk staat: altijd, als er in de komende twee uur regen komt, of als die binnen een half uur begint. Het zegt wat de Buienradar-tegel van het scherm weet, dus het scherm heeft die tegel ook nodig.",
+      "setting_bar_words": "Bovenbalk zegt",
+      "setting_bar_words_hint": "Het moment als kloktijd (Droog tot 14:05) of in minuten (Regen over 20 min)."
+     }
+    }
+   },
+   "readme": {
+    "en": "# Buienradar\n\nThe rain of the next two hours at one place in the Netherlands or Belgium, from [Buienradar](https://www.buienradar.nl).\n\n- **Every tile** shows Buienradar's rain graph for the place: a bar for every five minutes, from about twenty minutes\n  ago to two and a half hours ahead, with a line at now. Above it (beside it on a tile one row high), in words: \"Dry until 14:05\", \"Rain until 15:10\",\n  and how hard it rains at most. A 1x1 tile has the words alone.\n- **A tile of 3x2, 2x3 or larger, or a 2x2 of at least 35 mm a side,** shows the radar map as well, with a dot at the place. The map plays by itself from\n  half an hour ago to two hours ahead, and a cursor on the graph shows which moment the map shows.\n- **A tap** opens the card over the whole screen: the map and the graph together. The graph is the timeline: tap a\n  moment on it and the map shows that moment. The keys step a frame back or on, or play the frames.\n\nA screen without pictures (the CYD, the Waveshare 3.5-inch, the Hosyond 4-inch) shows the graph and the words only.\n\n## Set up\n\n1. Add the plugin to a screen in Tessera. The screen builds once.\n2. In Layout, place the **Rain radar** tile from the library's Plugins group. Make it 3x2 or larger for the map.\n3. In the inspector, type the **Latitude** and **Longitude** of the place with a point and at most two decimals\n   (about 1 km), such as `52.09` and `5.12`, in the Netherlands or Belgium. Home Assistant shows the coordinates of\n   your home under Settings, Areas, labels and zones. If Buienradar would not take what you typed (`52,09`, `52.10`),\n   the tile says what to type instead. The graph and the dot on the map both use these.\n4. Choose what the map plays, and how long each frame stays.\n\n## Good to know\n\n- The graph and the radar frames are Buienradar's own, the ones its website and its embeddable widget show. They are\n  free for private use with the source named; this README and the plugin's name do.\n- The newest radar frame is the one Buienradar's forecast for your place ends its measured past with: usually six to\n  fifteen minutes old, sometimes over half an hour when Buienradar runs late. So it is always there to fetch. The forecast\n  frames after it come from Buienradar's forecast made ten minutes before that one, which is always published by\n  then, and reach about an hour and fifty minutes past the newest frame.\n- Without internet for a while, the tile keeps its last forecast and says it is older, and the map keeps playing\n  the frames it already had. Both catch up by themselves when Buienradar answers again.\n- The map is Buienradar's own background for its radar, the very area of the radar frames: the Netherlands, Belgium\n  and the land and sea around them, as one view. It does not zoom in on the place yet.\n- Buienradar takes a coordinate only in its shortest form (52.09, 52.1, 52; not 52,09, 52.10 or 52.091) and answers\n  any other with a redirect the app does not follow. The app sends what you type as it is, so the tile can only\n  check it and tell you. Choosing a zone or a person from Home Assistant needs a change in Tessera that lets a fetch\n  use an entity's coordinates.\n\n## Tried on\n\nThe bench of the plugins repository (`tools/preview.py`): the CYD, the 4-inch Guition, the 4.3-inch Waveshare standing\nand the 10.1-inch Guition P4, with Buienradar's real map and radar pictures. Not yet on a real screen: tell me in an\nissue how it works on yours.\n\n## Privacy\n\nTessera's app, in your Home Assistant, asks Buienradar for the forecast every five minutes, with the latitude and\nlongitude you filled in (`graphdata.buienradar.nl`). It fetches the radar frames (`processing-cdn.buienradar.nl`) and\nthe map under them (`cdn.buienradar.nl`), which are the same for everyone. Buienradar sees your Home Assistant's address\non the internet and the place you chose. The screen itself connects to nothing outside your home.\n\nBuienradar is a service of DPG Media; see its [privacy statement](https://www.buienradar.nl/privacy).\n"
+   },
+   "changelog": {
+    "en": "# Changelog\n\n## 0.5.0 - 2026-10-27\n- An item for the top bar: \"Dry until 14:05\" or \"Rain until 15:10\", blue while it rains, amber when rain starts\n  within half an hour. It says what the screen's Rain radar tile knows, so place that tile on the screen too.\n- Two settings for it, on the screen's settings page and in Home Assistant: when it shows (always, when rain is\n  coming, when rain is near) and whether it says a clock time or minutes (\"Rain in 20 min\").\n\n## 0.4.0 - 2026-10-23\n- Latitude and longitude are typed again, now to two decimals (about 1 km), such as 52.09 and 5.12. Buienradar takes\n  a coordinate only in its shortest form, so the tile checks what you typed and says exactly what to type instead\n  (for 52,09 or 52.10). The place you chose from the list stays, as its text; a place kept as a number by a version\n  before 0.3.0 starts at De Bilt (52.1, 5.18) again.\n\n## 0.3.6 - 2026-10-23\n- The time axis shows whole hours (21:00, 22:00) at their place on the graph; the line at now stays.\n\n## 0.3.5 - 2026-10-22\n- Every tile's graph shows its times (now and the hours) under the bars, also on a low tile.\n\n## 0.3.4 - 2026-10-21\n- The rain on the map no longer goes missing when Buienradar runs late: the map takes its newest radar frame from\n  Buienradar's forecast for your place (where its measured past ends) instead of guessing it from the clock. That\n  frame can be over half an hour old while Buienradar catches up; the badge on the map says how old.\n\n## 0.3.3 - 2026-10-21\n- The graph is linear now: its top is 1, 2, 5, 10 mm/h or more, whatever the heaviest rain of the forecast fits\n  under, so light rain still shows.\n- The card's graph has a scale: lines at 0.5, 2.5 and 10 mm/h with their numbers, the kinds of rain between them\n  (drizzle, light, moderate, heavy rain), and the unit above them. The card names the kind of rain of its moment.\n- The lines between the kinds of rain are dotted.\n- No tile or card ends its line in \"Buienradar\" any more.\n- The card is titled with the tile's name, as Tessera's own cards are.\n\n## 0.3.2 - 2026-10-21\n- When Buienradar does not answer (a few minutes without internet), the tile keeps its last forecast, says it is\n  older, and the map keeps playing the frames it already has instead of going blank.\n\n## 0.3.1 - 2026-10-21\n- \"Buienradar does not answer\" is gone for a place on a whole degree (52.0, 5.0): Buienradar only answers a\n  coordinate written in its shortest form, and the list now sends it so. Choose the place again if the tile says it.\n- Latitude starts at 49.6: Buienradar has no forecast at 49.5.\n\n## 0.3.0 - 2026-10-21\n- Latitude and longitude are now chosen from a list in steps of 0.1, always shown with one decimal. Choose your\n  place again after this update: the tile starts at De Bilt (52.1, 5.2).\n- A tile one row high shows the words at the left and the graph beside them.\n- The words beside a graph or a map take only the lines they need.\n\n## 0.2.2 - 2026-10-21\n- The card plays the map as soon as it opens; the key in the middle stops it.\n- Latitude and longitude step by 0.1 in the inspector.\n- A 1x1 tile sets its words in the middle, each over the lines it needs.\n\n## 0.2.1 - 2026-10-21\n- The map no longer goes blank for a while every five minutes: the forecast frames come from a Buienradar forecast\n  that is always published, not one that sometimes was not there yet.\n- A 1x1 tile shows the words alone, larger and in the middle; the graph did not fit beside them.\n\n## 0.2.0 - 2026-10-21\n- A square tile or card shows a larger map with the words, or the time and the keys, beside it, and a lower graph\n  under both.\n- A 2x2 tile of at least 35 mm a side shows the map too.\n- The card's back, play and next keys stay in a row.\n\n## 0.1.1 - 2026-10-21\n- The map is Buienradar's own radar background, the very area of the rain, so rain and map line up and the map\n  has no edge where the radar stops.\n- A wide tile or card shows the map beside the graph, a square or tall one the map above it, with less empty room.\n- The card says the rain of the moment under its time.\n\n## 0.1.0 - 2026-10-21\n- First version: Buienradar's rain graph for a place on every tile size, the radar map that plays by itself on tiles\n  of 3x2 or 2x3 and larger, and a card with both where the graph picks the map's moment.\n"
+   },
+   "image": "store.png"
+  },
+  {
    "id": "custom_card",
    "repo": "https://github.com/stofle/tessera-plugin-custom-card",
    "repo_id": 1412296533,
@@ -3892,6 +4228,869 @@
    "image": "store.png"
   },
   {
+   "id": "pollen",
+   "repo": "https://github.com/hflocki/tessera-pollenprognos",
+   "repo_id": 1424507029,
+   "path": ".",
+   "label": "community",
+   "status": "ok",
+   "release": {
+    "version": "1.2.2",
+    "sha": "bf75936be48f70da350995dff3a25149fcc5ca9d",
+    "date": "2026-10-21",
+    "tag": "1.2.2"
+   },
+   "manifest": {
+    "id": "pollen",
+    "version": "1.2.2",
+    "api": "0.9",
+    "icon": "flower",
+    "maintainer": "hflocki",
+    "license": "MIT",
+    "stage": "beta",
+    "topics": [
+     "weather"
+    ],
+    "requires": {
+     "esphome": "2026.6.2"
+    },
+    "boards": "any",
+    "flash_kb": 18,
+    "permissions": {
+     "read_entities": [
+      "{erle}",
+      "{hasel}",
+      "{esche}",
+      "{birke}",
+      "{graeser}",
+      "{roggen}",
+      "{beifuss}",
+      "{ambrosia}"
+     ]
+    },
+    "inputs": [
+     {
+      "id": "erle",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_erle",
+      "hint": "input_hint"
+     },
+     {
+      "id": "hasel",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_hasel"
+     },
+     {
+      "id": "esche",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_esche"
+     },
+     {
+      "id": "birke",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_birke"
+     },
+     {
+      "id": "graeser",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_graeser"
+     },
+     {
+      "id": "roggen",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_roggen"
+     },
+     {
+      "id": "beifuss",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_beifuss"
+     },
+     {
+      "id": "ambrosia",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_ambrosia"
+     }
+    ],
+    "tiles": [
+     {
+      "id": "forecast",
+      "name": "tile_name",
+      "icon": "flower",
+      "sizes": {
+       "min": "1x1",
+       "max": "6x4"
+      },
+      "memory": 9800,
+      "example": "tile_example",
+      "options": [
+       {
+        "id": "style",
+        "kind": "choice",
+        "default": "circles",
+        "label": "style",
+        "hint": "style_hint",
+        "choices": [
+         {
+          "value": "circles",
+          "label": "style_circles"
+         },
+         {
+          "value": "circles_plain",
+          "label": "style_circles_plain"
+         },
+         {
+          "value": "bars",
+          "label": "style_bars"
+         }
+        ]
+       },
+       {
+        "id": "days",
+        "kind": "choice",
+        "default": "2",
+        "label": "days",
+        "hint": "days_hint",
+        "choices": [
+         {
+          "value": "1",
+          "label": "days_1"
+         },
+         {
+          "value": "2",
+          "label": "days_2"
+         },
+         {
+          "value": "3",
+          "label": "days_3"
+         }
+        ]
+       },
+       {
+        "id": "show_empty",
+        "kind": "toggle",
+        "default": false,
+        "label": "show_empty",
+        "hint": "show_empty_hint"
+       },
+       {
+        "id": "sort",
+        "kind": "toggle",
+        "default": true,
+        "label": "sort",
+        "hint": "sort_hint"
+       },
+       {
+        "id": "show_erle",
+        "kind": "toggle",
+        "default": true,
+        "label": "allergen_erle",
+        "hint": "show_hint"
+       },
+       {
+        "id": "show_hasel",
+        "kind": "toggle",
+        "default": true,
+        "label": "allergen_hasel"
+       },
+       {
+        "id": "show_esche",
+        "kind": "toggle",
+        "default": true,
+        "label": "allergen_esche"
+       },
+       {
+        "id": "show_birke",
+        "kind": "toggle",
+        "default": true,
+        "label": "allergen_birke"
+       },
+       {
+        "id": "show_graeser",
+        "kind": "toggle",
+        "default": true,
+        "label": "allergen_graeser"
+       },
+       {
+        "id": "show_roggen",
+        "kind": "toggle",
+        "default": true,
+        "label": "allergen_roggen"
+       },
+       {
+        "id": "show_beifuss",
+        "kind": "toggle",
+        "default": true,
+        "label": "allergen_beifuss"
+       },
+       {
+        "id": "show_ambrosia",
+        "kind": "toggle",
+        "default": true,
+        "label": "allergen_ambrosia"
+       }
+      ]
+     }
+    ],
+    "cards": [
+     {
+      "id": "detail",
+      "name": "card_name"
+     }
+    ],
+    "bar_items": [
+     {
+      "id": "alert",
+      "label": "bar_alert_label",
+      "icon": "flower",
+      "example": "bar_example"
+     }
+    ],
+    "settings": [
+     {
+      "key": "pollen_in_bar",
+      "label": "setting_in_bar",
+      "hint": "setting_in_bar_hint"
+     },
+     {
+      "key": "pollen_alert_level",
+      "label": "setting_alert_level",
+      "hint": "setting_alert_level_hint"
+     }
+    ]
+   },
+   "translations": {
+    "de": {
+     "_meta": {
+      "name": "Deutsch"
+     },
+     "screen": {
+      "erle": "Erle",
+      "hasel": "Hasel",
+      "esche": "Esche",
+      "birke": "Birke",
+      "graeser": "Gräser",
+      "roggen": "Roggen",
+      "beifuss": "Beifuß",
+      "ambrosia": "Ambrosia",
+      "lvl0": "keine",
+      "lvl1": "sehr gering",
+      "lvl2": "gering",
+      "lvl3": "gering–mittel",
+      "lvl4": "mittel",
+      "lvl5": "mittel–hoch",
+      "lvl6": "hoch",
+      "today": "Heute",
+      "tomorrow": "Morgen",
+      "in_2_days": "Übermorgen",
+      "choose": "Sensoren in den Plugin-Details wählen",
+      "none": "Keine Pollen",
+      "bar_alert": "{name}: {level}",
+      "in_bar": "In der oberen Leiste",
+      "alert_level": "Ab Stufe",
+      "open_card": "Alle Allergene"
+     },
+     "app": {
+      "name": "Pollenflug",
+      "summary": "Pollenbelastung deiner Allergene, heute und in den nächsten Tagen, vom DWD aus Home Assistant.",
+      "tile_name": "Pollenflug",
+      "tile_example": "Birke mittel · Gräser gering",
+      "input_hint": "Der DWD-Pollenflug-Sensor dieses Allergens, z. B. sensor.pollenflug_erle_50. Leer lassen, wenn du es nicht brauchst.",
+      "days": "Tage",
+      "days_hint": "Nur heute, oder die nächsten Tage daneben.",
+      "days_1": "Heute",
+      "days_2": "Heute und morgen",
+      "days_3": "Drei Tage",
+      "show_empty": "Allergene ohne Pollen anzeigen",
+      "show_empty_hint": "Aus: Ein Allergen ohne Pollen an allen gezeigten Tagen wird ausgeblendet.",
+      "sort": "Stärkste zuerst",
+      "sort_hint": "Aus: Reihenfolge der Saison, Erle zuerst.",
+      "show_hint": "Welche Allergene diese Kachel zeigt.",
+      "input_erle": "Erle-Sensor",
+      "allergen_erle": "Erle",
+      "input_hasel": "Hasel-Sensor",
+      "allergen_hasel": "Hasel",
+      "input_esche": "Esche-Sensor",
+      "allergen_esche": "Esche",
+      "input_birke": "Birke-Sensor",
+      "allergen_birke": "Birke",
+      "input_graeser": "Gräser-Sensor",
+      "allergen_graeser": "Gräser",
+      "input_roggen": "Roggen-Sensor",
+      "allergen_roggen": "Roggen",
+      "input_beifuss": "Beifuß-Sensor",
+      "allergen_beifuss": "Beifuß",
+      "input_ambrosia": "Ambrosia-Sensor",
+      "allergen_ambrosia": "Ambrosia",
+      "style": "Darstellung",
+      "style_hint": "Kreise wie in der pollenprognos-card, mit der Stufe in Worten darunter oder ohne, oder Balken, die weniger Platz brauchen.",
+      "style_circles": "Kreise mit Text",
+      "style_bars": "Balken",
+      "style_circles_plain": "Nur Kreise",
+      "card_name": "Alle Allergene",
+      "bar_alert_label": "Starker Pollenflug",
+      "bar_example": "Birke: hoch",
+      "setting_in_bar": "In der oberen Leiste",
+      "setting_in_bar_hint": "Ob die obere Leiste starken Pollenflug anzeigt.",
+      "setting_alert_level": "Ab Stufe",
+      "setting_alert_level_hint": "1 sehr gering, 2 gering, 3 gering–mittel, 4 mittel, 5 mittel–hoch, 6 hoch."
+     }
+    },
+    "en": {
+     "_meta": {
+      "name": "English"
+     },
+     "screen": {
+      "erle": "Alder",
+      "hasel": "Hazel",
+      "esche": "Ash",
+      "birke": "Birch",
+      "graeser": "Grasses",
+      "roggen": "Rye",
+      "beifuss": "Mugwort",
+      "ambrosia": "Ragweed",
+      "lvl0": "none",
+      "lvl1": "very low",
+      "lvl2": "low",
+      "lvl3": "low–mod.",
+      "lvl4": "moderate",
+      "lvl5": "mod.–high",
+      "lvl6": "high",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "in_2_days": "Day after",
+      "choose": "Choose the sensors in the plugin's details",
+      "none": "No pollen",
+      "bar_alert": "{name}: {level}",
+      "in_bar": "In the top bar",
+      "alert_level": "From level",
+      "open_card": "All allergens"
+     },
+     "app": {
+      "name": "Pollen forecast",
+      "summary": "Pollen levels of the allergens you choose, today and the coming days, from the DWD in Home Assistant.",
+      "tile_name": "Pollen forecast",
+      "tile_example": "Birch moderate · Grasses low",
+      "input_hint": "The DWD Pollenflug sensor of this allergen, such as sensor.pollenflug_erle_50. Leave empty for an allergen you don't need.",
+      "days": "Days",
+      "days_hint": "Today alone, or the coming days beside it.",
+      "days_1": "Today",
+      "days_2": "Today and tomorrow",
+      "days_3": "Three days",
+      "show_empty": "Show allergens without pollen",
+      "show_empty_hint": "Off: an allergen with no pollen on any shown day is left out.",
+      "sort": "Strongest first",
+      "sort_hint": "Off: the order of the season, alder first.",
+      "show_hint": "Which allergens this tile shows.",
+      "input_erle": "Alder sensor",
+      "allergen_erle": "Alder",
+      "input_hasel": "Hazel sensor",
+      "allergen_hasel": "Hazel",
+      "input_esche": "Ash sensor",
+      "allergen_esche": "Ash",
+      "input_birke": "Birch sensor",
+      "allergen_birke": "Birch",
+      "input_graeser": "Grasses sensor",
+      "allergen_graeser": "Grasses",
+      "input_roggen": "Rye sensor",
+      "allergen_roggen": "Rye",
+      "input_beifuss": "Mugwort sensor",
+      "allergen_beifuss": "Mugwort",
+      "input_ambrosia": "Ragweed sensor",
+      "allergen_ambrosia": "Ragweed",
+      "style": "Look",
+      "style_hint": "Circles as in the pollenprognos card, with the level in words under them or without, or bars, which take less room.",
+      "style_circles": "Circles with words",
+      "style_bars": "Bars",
+      "style_circles_plain": "Circles only",
+      "card_name": "All allergens",
+      "bar_alert_label": "Strong pollen",
+      "bar_example": "Birch: high",
+      "setting_in_bar": "In the top bar",
+      "setting_in_bar_hint": "Whether the top bar says when the pollen is strong.",
+      "setting_alert_level": "From level",
+      "setting_alert_level_hint": "1 very low, 2 low, 3 low to moderate, 4 moderate, 5 moderate to high, 6 high."
+     }
+    }
+   },
+   "readme": {
+    "en": "# Pollen forecast\n\nThe pollen levels of the allergens you choose, from the DWD Pollenflug integration in Home Assistant: a row per\nallergen with its name, and for today and the coming days a circle whose ring fills from none to high in green,\namber or red, the allergen's icon in its middle and the level in words under it. The strongest allergens first. It is the idea of the\nLovelace [pollenprognos-card](https://github.com/krissen/pollenprognos-card), drawn on a Tessera screen.\n\nThe circles grow with the tile: three allergens fill a tile two cells high, a taller one shows more. With no\npollen in the air the tile shows a green flower and \"No pollen\".\n\n## Set up\n\n1. Have the [DWD Pollenflug integration](https://github.com/mampfes/hacs_dwd_pollenflug) in Home Assistant, set to\n   your region. It makes a sensor per allergen, such as `sensor.pollenflug_birke_50`.\n2. In Tessera, open **Plugins**, **Add with a link**, and paste the link of this repository (or copy the folder to\n   `/config/tessera-plugins/pollen/`). Add the plugin to a screen.\n3. In the plugin's details on the screen's Plugins tab, under **When building**, choose the sensor of each allergen you\n   want (Alder, Hazel, Ash, Birch, Grasses, Rye, Mugwort, Ragweed); leave the others empty. **Save and build**.\n4. In **Layout**, place the **Pollen forecast** tile and set in its inspector what it shows.\n\n## Options of a tile\n\n- **Look**: circles with the level in words under them (the default), circles only, or bars that fill from none to\n  high, which take less room on a small tile.\n- **Days**: today alone, today and tomorrow, or three days.\n- **Show allergens without pollen**: off leaves out an allergen with no pollen on every day shown.\n- **Strongest first**: off keeps the order of the season (alder, hazel, ash, birch, grasses, rye, mugwort, ragweed).\n- **Alder** to **Ragweed**: which allergens this tile shows, so two tiles can show different ones.\n\n## Card and top bar\n\n- A tap on the tile opens a card with every allergen that has a sensor, today and the two days after.\n- The top bar item **Strong pollen** (Top bar, Add, From plugins) says \"Birch: high\" while the strongest allergen of\n  today reaches a level. On the screen (hold the top bar, Settings, Plugins, Pollen forecast) or in the plugin's\n  details: **In the top bar** on or off, and **From level** 1 (very low) to 6 (high), 5 at first.\n\n## Good to know\n\n- The screen reads the chosen sensors itself, today's level from their state and the next days from their attributes\n  `state_tomorrow` and `state_in_2_days`. A change of a sensor in the plugin's details builds the screen again; the\n  tile's options do not.\n- The DWD publishes its forecast once a day, around 11 o'clock.\n"
+   },
+   "changelog": {
+    "en": "# Changelog\n\n## 1.2.2\n- Without words under the circles, no empty word lies under the last row.\n\n## 1.2.1\n- Only as many rows as fit, and a single row's circle never taller than the tile.\n\n## 1.2.0\n- Amber and yellow words and icons take the ink on the light look, where they were too faint to read; the dark look keeps its colours.\n- Rows not shown are hidden, so nothing lies outside a tall tile.\n\n## 1.1.0\n- A tap on the tile opens a card with every allergen and three days.\n- New top bar item **Strong pollen**: \"Birch: high\" while an allergen reaches the level you set. Two new settings on\n  the screen: whether the top bar says it, and from which level (5, moderate to high, at first).\n\n## 0.4.0\n- New in the inspector: **Look**: circles with words, circles only, or bars. The bars of 0.2 are back as a choice\n  and take less room. **Level in words** is now part of it.\n\n## 0.3.0\n- Circles as in the pollenprognos card: per day a ring that fills from none to high in green, amber or red, with\n  the allergen's icon in the middle; they grow with the tile, three allergens fill a tile two cells high.\n- New in the inspector: **Level in words** under the circles.\n\n## 0.2.0\n- A new look: a bar per day that fills from none to high in green, amber or red, the level in words, the icon in\n  the colour of today, and the allergens spread over the whole tile.\n- With no pollen in the air the tile shows a green flower and says so.\n\n## 0.1.0\n- First version: the pollen levels of the DWD Pollenflug sensors you choose, today and up to two days ahead.\n"
+   },
+   "image": "store.png"
+  },
+  {
+   "id": "status_tile",
+   "repo": "https://github.com/hflocki/tessera-status",
+   "repo_id": 1427953388,
+   "path": ".",
+   "label": "community",
+   "status": "ok",
+   "release": {
+    "version": "1.0.2",
+    "sha": "71279e49948ac0236d5e7f43b7af0b3303748cfd",
+    "date": "2026-10-21",
+    "tag": "1.0.2"
+   },
+   "manifest": {
+    "id": "status_tile",
+    "version": "1.0.2",
+    "api": "0.9",
+    "icon": "toggle-switch",
+    "maintainer": "hflocki",
+    "license": "MIT",
+    "stage": "beta",
+    "topics": [
+     "home"
+    ],
+    "requires": {
+     "esphome": "2026.6.2"
+    },
+    "boards": "any",
+    "flash_kb": 12,
+    "permissions": {
+     "home_assistant_actions": [
+      "homeassistant.toggle"
+     ]
+    },
+    "tiles": [
+     {
+      "id": "status",
+      "name": "tile_name",
+      "icon": "toggle-switch",
+      "sizes": {
+       "min": "1x1",
+       "max": "4x2"
+      },
+      "memory": 600,
+      "example": "tile_example",
+      "domains": [
+       "binary_sensor",
+       "sensor",
+       "switch",
+       "light",
+       "input_boolean",
+       "lock",
+       "cover",
+       "fan"
+      ],
+      "attributes": [
+       "device_class",
+       "unit_of_measurement"
+      ],
+      "options": [
+       {
+        "id": "kind",
+        "kind": "choice",
+        "default": "auto",
+        "label": "kind",
+        "hint": "kind_hint",
+        "choices": [
+         {
+          "value": "auto",
+          "label": "kind_auto"
+         },
+         {
+          "value": "window",
+          "label": "kind_window"
+         },
+         {
+          "value": "door",
+          "label": "kind_door"
+         },
+         {
+          "value": "garage",
+          "label": "kind_garage"
+         },
+         {
+          "value": "gate",
+          "label": "kind_gate"
+         },
+         {
+          "value": "blinds",
+          "label": "kind_blinds"
+         },
+         {
+          "value": "light",
+          "label": "kind_light"
+         },
+         {
+          "value": "plug",
+          "label": "kind_plug"
+         },
+         {
+          "value": "motion",
+          "label": "kind_motion"
+         },
+         {
+          "value": "presence",
+          "label": "kind_presence"
+         },
+         {
+          "value": "lock",
+          "label": "kind_lock"
+         },
+         {
+          "value": "leak",
+          "label": "kind_leak"
+         },
+         {
+          "value": "smoke",
+          "label": "kind_smoke"
+         },
+         {
+          "value": "appliance",
+          "label": "kind_appliance"
+         },
+         {
+          "value": "alarm",
+          "label": "kind_alarm"
+         },
+         {
+          "value": "switch",
+          "label": "kind_switch"
+         },
+         {
+          "value": "temperature",
+          "label": "kind_temperature"
+         },
+         {
+          "value": "humidity",
+          "label": "kind_humidity"
+         }
+        ]
+       },
+       {
+        "id": "on_color",
+        "kind": "choice",
+        "default": "auto",
+        "label": "on_color",
+        "hint": "on_color_hint",
+        "choices": [
+         {
+          "value": "auto",
+          "label": "color_auto"
+         },
+         {
+          "value": "red",
+          "label": "color_red"
+         },
+         {
+          "value": "orange",
+          "label": "color_orange"
+         },
+         {
+          "value": "yellow",
+          "label": "color_yellow"
+         },
+         {
+          "value": "green",
+          "label": "color_green"
+         },
+         {
+          "value": "blue",
+          "label": "color_blue"
+         },
+         {
+          "value": "purple",
+          "label": "color_purple"
+         },
+         {
+          "value": "accent",
+          "label": "color_accent"
+         },
+         {
+          "value": "grey",
+          "label": "color_grey"
+         }
+        ]
+       },
+       {
+        "id": "off_color",
+        "kind": "choice",
+        "default": "auto",
+        "label": "off_color",
+        "hint": "off_color_hint",
+        "choices": [
+         {
+          "value": "auto",
+          "label": "color_auto"
+         },
+         {
+          "value": "red",
+          "label": "color_red"
+         },
+         {
+          "value": "orange",
+          "label": "color_orange"
+         },
+         {
+          "value": "yellow",
+          "label": "color_yellow"
+         },
+         {
+          "value": "green",
+          "label": "color_green"
+         },
+         {
+          "value": "blue",
+          "label": "color_blue"
+         },
+         {
+          "value": "purple",
+          "label": "color_purple"
+         },
+         {
+          "value": "accent",
+          "label": "color_accent"
+         },
+         {
+          "value": "grey",
+          "label": "color_grey"
+         }
+        ]
+       },
+       {
+        "id": "on_text",
+        "kind": "text",
+        "default": "",
+        "label": "on_text",
+        "hint": "on_text_hint"
+       },
+       {
+        "id": "off_text",
+        "kind": "text",
+        "default": "",
+        "label": "off_text",
+        "hint": "off_text_hint"
+       },
+       {
+        "id": "tint",
+        "kind": "toggle",
+        "default": true,
+        "label": "tint",
+        "hint": "tint_hint"
+       },
+       {
+        "id": "show_name",
+        "kind": "toggle",
+        "default": true,
+        "label": "show_name",
+        "hint": "show_name_hint"
+       },
+       {
+        "id": "tap",
+        "kind": "toggle",
+        "default": false,
+        "label": "tap",
+        "hint": "tap_hint"
+       }
+      ]
+     }
+    ]
+   },
+   "translations": {
+    "de": {
+     "_meta": {
+      "name": "Deutsch"
+     },
+     "screen": {
+      "title": "Status",
+      "decimal": ",",
+      "choose": "Entität wählen",
+      "unavailable": "Nicht verfügbar",
+      "wrong": "Andere Entität wählen",
+      "open": "Offen",
+      "closed": "Geschlossen",
+      "on": "An",
+      "off": "Aus",
+      "motion": "Bewegung",
+      "calm": "Keine Bewegung",
+      "home": "Zuhause",
+      "away": "Abwesend",
+      "unlocked": "Entriegelt",
+      "locked": "Verriegelt",
+      "wet": "Nass",
+      "dry": "Trocken",
+      "smoke": "Alarm",
+      "clear": "Alles ok",
+      "running": "Läuft",
+      "idle": "Aus",
+      "armed": "Scharf",
+      "disarmed": "Unscharf"
+     },
+     "app": {
+      "name": "Status",
+      "summary": "Jede Entität als Zustand: Fenster, Tür, Licht oder Schloss, mit eigenem Icon und eigenen Farben.",
+      "tile_name": "Status",
+      "tile_example": "Fenster · Geschlossen",
+      "kind": "Was ist es",
+      "kind_hint": "Bestimmt Icons und Wörter. Auto nimmt sie aus der Geräteklasse der Entität.",
+      "kind_auto": "Auto",
+      "kind_window": "Fenster",
+      "kind_door": "Tür",
+      "kind_garage": "Garagentor",
+      "kind_gate": "Tor",
+      "kind_blinds": "Rollladen",
+      "kind_light": "Licht",
+      "kind_plug": "Steckdose",
+      "kind_motion": "Bewegung",
+      "kind_presence": "Anwesenheit",
+      "kind_lock": "Schloss",
+      "kind_leak": "Wasser",
+      "kind_smoke": "Rauch",
+      "kind_appliance": "Gerät",
+      "kind_alarm": "Alarmanlage",
+      "kind_switch": "Schalter",
+      "on_color": "Farbe bei an",
+      "on_color_hint": "An, offen, entriegelt, Bewegung. Auto: rot bei offenem Fenster, gelb bei Licht.",
+      "off_color": "Farbe bei aus",
+      "off_color_hint": "Aus, geschlossen, verriegelt. Auto: grün bei geschlossenem Fenster, grau bei Licht.",
+      "color_auto": "Auto",
+      "color_red": "Rot",
+      "color_orange": "Orange",
+      "color_yellow": "Gelb",
+      "color_green": "Grün",
+      "color_blue": "Blau",
+      "color_purple": "Lila",
+      "color_accent": "Akzent",
+      "color_grey": "Grau (keine)",
+      "on_text": "Text bei an",
+      "on_text_hint": "Z. B. \"Offen\" oder \"Jemand da\". Leer: das Wort der Art.",
+      "off_text": "Text bei aus",
+      "off_text_hint": "Z. B. \"Alle zu\". Leer: das Wort der Art.",
+      "tint": "Kachel einfärben",
+      "tint_hint": "Die ganze Kachel nimmt die Farbe leicht an, solange die Entität an ist.",
+      "show_name": "Namen zeigen",
+      "show_name_hint": "Der Name der Kachel oder der Entität über dem Zustand.",
+      "tap": "Per Tipp schalten",
+      "tap_hint": "Ein Tipp schaltet Licht, Schalter oder Rollladen. Der Screen muss Aktionen ausführen dürfen.",
+      "kind_temperature": "Temperatur",
+      "kind_humidity": "Luftfeuchte"
+     }
+    },
+    "en": {
+     "_meta": {
+      "name": "English"
+     },
+     "screen": {
+      "title": "Status",
+      "decimal": ".",
+      "choose": "Choose an entity",
+      "unavailable": "Unavailable",
+      "wrong": "Choose another entity",
+      "open": "Open",
+      "closed": "Closed",
+      "on": "On",
+      "off": "Off",
+      "motion": "Motion",
+      "calm": "No motion",
+      "home": "Home",
+      "away": "Away",
+      "unlocked": "Unlocked",
+      "locked": "Locked",
+      "wet": "Wet",
+      "dry": "Dry",
+      "smoke": "Alarm",
+      "clear": "All clear",
+      "running": "Running",
+      "idle": "Idle",
+      "armed": "Armed",
+      "disarmed": "Disarmed"
+     },
+     "app": {
+      "name": "Status",
+      "summary": "Any entity as a state: a window, door, light or lock, with its own icon and colours.",
+      "tile_name": "Status",
+      "tile_example": "Windows · Closed",
+      "kind": "What it is",
+      "kind_hint": "Picks the icons and words. Auto takes them from the entity's device class.",
+      "kind_auto": "Auto",
+      "kind_window": "Window",
+      "kind_door": "Door",
+      "kind_garage": "Garage door",
+      "kind_gate": "Gate",
+      "kind_blinds": "Blinds",
+      "kind_light": "Light",
+      "kind_plug": "Plug",
+      "kind_motion": "Motion",
+      "kind_presence": "Presence",
+      "kind_lock": "Lock",
+      "kind_leak": "Leak",
+      "kind_smoke": "Smoke",
+      "kind_appliance": "Appliance",
+      "kind_alarm": "Alarm",
+      "kind_switch": "Switch",
+      "on_color": "Colour when on",
+      "on_color_hint": "On, open, unlocked, motion. Auto: red for an open window, yellow for a light.",
+      "off_color": "Colour when off",
+      "off_color_hint": "Off, closed, locked. Auto: green for a closed window, grey for a light.",
+      "color_auto": "Auto",
+      "color_red": "Red",
+      "color_orange": "Orange",
+      "color_yellow": "Yellow",
+      "color_green": "Green",
+      "color_blue": "Blue",
+      "color_purple": "Purple",
+      "color_accent": "Accent",
+      "color_grey": "Grey (none)",
+      "on_text": "Word when on",
+      "on_text_hint": "Such as \"Open\" or \"Someone home\". Empty: the kind's word.",
+      "off_text": "Word when off",
+      "off_text_hint": "Such as \"All closed\". Empty: the kind's word.",
+      "tint": "Tint the tile",
+      "tint_hint": "The whole tile takes the colour lightly while the entity is on.",
+      "show_name": "Show the name",
+      "show_name_hint": "The tile's or the entity's name above the state.",
+      "tap": "Switch on a tap",
+      "tap_hint": "A tap switches a light, a switch or a cover. Needs the screen to be allowed to perform actions.",
+      "kind_temperature": "Temperature",
+      "kind_humidity": "Humidity"
+     }
+    }
+   },
+   "readme": {
+    "en": "# Status\n\nAny Home Assistant entity as a state on a tile: a window, a door, a light, a lock, motion, a leak. The icon changes\nwith the state (an open or closed window, a light on or off), and so does the colour: an open window red, a closed one\ngreen, a light that is on yellow. Use the tile as often as you like, each with its own entity, on any size from\n1 x 1 to 4 x 2: square, the circle above and the words under it; wide, the circle beside them.\n\nEverything is set on the tile itself, in the layout's inspector, without a build:\n\n- **Entity**: a binary sensor, sensor, switch, light, input boolean, lock, cover or fan. A group works too, such as\n  `binary_sensor.group_windows`, which is on while any window is open.\n- **What it is**: window, door, garage door, gate, blinds, light, plug, motion, presence, lock, leak, smoke, appliance,\n  alarm, switch, temperature or humidity. Its icons and words. **Auto** takes it from the entity's device class.\n- **Colour when on** and **Colour when off**: red, orange, yellow, green, blue, purple, the accent, or grey for none.\n  **Auto** takes the kind's.\n- **Word when on** and **Word when off**: your own, such as \"All closed\"; empty takes the kind's.\n- **Tint the tile**: the whole tile takes the colour lightly while the entity is on.\n- **Show the name**, and **Switch on a tap** for a light, a switch or a cover.\n\nA sensor with a number shows it with its unit.\n\n## Set up\n\n1. In Tessera, open **Plugins**, **Add with a link**, and paste the link of this repository. Add the plugin to a\n   screen and build it once.\n2. In **Layout**, place a **Status** tile, choose its entity in the inspector and set what it is and its colours.\n   Place as many as you like.\n3. For **Switch on a tap**, the screen must be allowed to perform actions (Home Assistant, the ESPHome device's\n   options).\n\n## Good to know\n\n- One entity per tile. For several windows at once, make a group in Home Assistant (Settings, Helpers, Group) and\n  choose the group.\n"
+   },
+   "changelog": {
+    "en": "# Changelog\n\n## 1.0.2\n- New kinds: temperature and humidity, with a thermometer and a drop; Auto finds them by the device class.\n- The picture on the Plugins page shows a door, windows, a light, a washer, a garage, a lock, motion, a temperature\n  and a leak sensor.\n\n## 1.0.1\n- The icon sits inside its circle as one part, and an idle circle is lighter, so the grey icon reads in the light look too.\n- Amber and yellow words and icons take the ink on the light look, where they were too faint to read; the dark look keeps its colours.\n\n## 1.0.0\n- First version: one entity per tile as a state, with icons, words and colours by its kind (window, door, light, lock,\n  motion and more), chosen on the tile without a build.\n"
+   },
+   "image": "store.png"
+  },
+  {
    "id": "sweden_public_transport",
    "repo": "https://github.com/exhalesthlm/tessera-plugin-sweden-public-transport",
    "repo_id": 1423224231,
@@ -4196,6 +5395,324 @@
    "image": "store.png"
   },
   {
+   "id": "tankerkoenig",
+   "repo": "https://github.com/hflocki/tessera-tankerkoenig",
+   "repo_id": 1424424293,
+   "path": ".",
+   "label": "community",
+   "status": "ok",
+   "release": {
+    "version": "1.1.7",
+    "sha": "53f9df6fe3ffb0c4d33f57f3975289e970b216fa",
+    "date": "2026-10-21",
+    "tag": "1.1.7"
+   },
+   "manifest": {
+    "id": "tankerkoenig",
+    "version": "1.1.7",
+    "api": "0.9",
+    "icon": "car",
+    "maintainer": "hflocki",
+    "license": "MIT",
+    "stage": "beta",
+    "topics": [
+     "travel",
+     "money"
+    ],
+    "requires": {
+     "esphome": "2026.6.2"
+    },
+    "boards": "any",
+    "flash_kb": 16,
+    "permissions": {
+     "read_entities": [
+      "{prices}"
+     ]
+    },
+    "inputs": [
+     {
+      "id": "prices",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_prices",
+      "hint": "input_prices_hint"
+     }
+    ],
+    "tiles": [
+     {
+      "id": "prices",
+      "name": "tile_name",
+      "icon": "car",
+      "sizes": {
+       "min": "1x1",
+       "max": "4x4"
+      },
+      "memory": 7400,
+      "domains": [
+       "sensor"
+      ],
+      "has_attributes": [
+       "station_names"
+      ],
+      "attributes": [
+       "station_names",
+       "station_places",
+       "station_open",
+       "e5",
+       "e10",
+       "diesel"
+      ],
+      "example": "tile_example",
+      "options": [
+       {
+        "id": "diesel",
+        "kind": "toggle",
+        "default": true,
+        "label": "fuel_diesel",
+        "hint": "fuel_hint"
+       },
+       {
+        "id": "e10",
+        "kind": "toggle",
+        "default": true,
+        "label": "fuel_e10"
+       },
+       {
+        "id": "e5",
+        "kind": "toggle",
+        "default": true,
+        "label": "fuel_e5"
+       },
+       {
+        "id": "sort",
+        "kind": "choice",
+        "default": "none",
+        "label": "sort",
+        "hint": "sort_hint",
+        "choices": [
+         {
+          "value": "none",
+          "label": "sort_none"
+         },
+         {
+          "value": "diesel",
+          "label": "fuel_diesel"
+         },
+         {
+          "value": "e10",
+          "label": "fuel_e10"
+         },
+         {
+          "value": "e5",
+          "label": "fuel_e5"
+         }
+        ]
+       },
+       {
+        "id": "front",
+        "kind": "text",
+        "label": "front",
+        "hint": "front_hint"
+       },
+       {
+        "id": "cheapest",
+        "kind": "number",
+        "min": 0,
+        "max": 10,
+        "step": 1,
+        "default": 0,
+        "label": "cheapest",
+        "hint": "cheapest_hint"
+       },
+       {
+        "id": "hide_closed",
+        "kind": "toggle",
+        "default": false,
+        "label": "hide_closed",
+        "hint": "hide_closed_hint"
+       },
+       {
+        "id": "address",
+        "kind": "toggle",
+        "default": true,
+        "label": "address",
+        "hint": "address_hint"
+       },
+       {
+        "id": "status",
+        "kind": "toggle",
+        "default": true,
+        "label": "status",
+        "hint": "status_hint"
+       },
+       {
+        "id": "changes",
+        "kind": "toggle",
+        "default": true,
+        "label": "changes",
+        "hint": "changes_hint"
+       }
+      ]
+     }
+    ],
+    "cards": [
+     {
+      "id": "stations",
+      "name": "card_name",
+      "wide": false
+     }
+    ],
+    "bar_items": [
+     {
+      "id": "cheap",
+      "label": "bar_cheap_label",
+      "icon": "car",
+      "example": "bar_example"
+     }
+    ],
+    "settings": [
+     {
+      "key": "fuel_alert",
+      "label": "setting_alert",
+      "hint": "setting_alert_hint"
+     },
+     {
+      "key": "fuel_alert_type",
+      "label": "setting_alert_fuel"
+     },
+     {
+      "key": "fuel_alert_price",
+      "label": "setting_alert_price",
+      "hint": "setting_alert_price_hint"
+     }
+    ]
+   },
+   "translations": {
+    "de": {
+     "_meta": {
+      "name": "Deutsch"
+     },
+     "screen": {
+      "decimal": ",",
+      "e5": "E5",
+      "e10": "E10",
+      "diesel": "Diesel",
+      "closed": "Geschlossen",
+      "no_prices": "Keine Preise",
+      "choose": "Sensor wählen",
+      "waiting": "Keine Tankstellen im Sensor",
+      "none": "Keine Tankstelle offen",
+      "wrong_sensor": "Einen Sensor wählen",
+      "bar_cheap": "{fuel} {price} · {name}",
+      "alert": "Günstig tanken in der Leiste",
+      "alert_fuel": "Sorte",
+      "alert_price": "Bis höchstens"
+     },
+     "app": {
+      "name": "Spritpreise (DE)",
+      "summary": "E5, E10 und Diesel an deinen Tankstellen, aus der Tankerkönig-Integration von Home Assistant.",
+      "tile_name": "Spritpreise",
+      "tile_example": "JET · Diesel 2,34",
+      "fuel_e5": "Super E5",
+      "fuel_e10": "Super E10",
+      "fuel_diesel": "Diesel",
+      "sort": "Sortieren nach",
+      "sort_hint": "Die günstigste zuerst für diese Sorte, oder in deiner eigenen Reihenfolge.",
+      "sort_none": "Meine Reihenfolge",
+      "cheapest": "Nur die günstigsten",
+      "cheapest_hint": "Nur so viele Tankstellen zeigen, die günstigste zuerst. 0 zeigt alle. Braucht eine Sorte zum Sortieren.",
+      "hide_closed": "Geschlossene ausblenden",
+      "hide_closed_hint": "Eine gerade geschlossene Tankstelle wird weggelassen.",
+      "address": "Adresse anzeigen",
+      "address_hint": "Straße und Ort unter dem Namen der Tankstelle.",
+      "status": "Geöffnet/geschlossen anzeigen",
+      "status_hint": "Zeigt an, wenn eine Tankstelle geschlossen ist.",
+      "changes": "Preisänderungen anzeigen",
+      "changes_hint": "Ein gestiegener Preis wird rot, ein gesunkener grün, bis zur nächsten Änderung.",
+      "fuel_hint": "Welche Preise angezeigt werden: Diesel, E10 und E5, je an oder aus.",
+      "input_prices": "Template-Sensor",
+      "input_prices_hint": "Der Spritpreis-Template-Sensor aus der README, für den Hinweis in der oberen Leiste.",
+      "card_name": "Alle Tankstellen",
+      "bar_cheap_label": "Günstig tanken",
+      "bar_example": "Diesel 1,759 · JET",
+      "setting_alert": "Günstig tanken in der Leiste",
+      "setting_alert_hint": "Die obere Leiste nennt die günstigste Tankstelle, solange ihr Preis die Grenze erreicht oder unterschreitet.",
+      "setting_alert_fuel": "Sorte",
+      "setting_alert_price": "Preisgrenze",
+      "setting_alert_price_hint": "In Cent pro Liter, z. B. 180 für 1,80 €.",
+      "front": "Tankstelle vorne",
+      "front_hint": "Ein Teil von Name oder Adresse, z. B. JET oder Burger. Sie steht vorne, auch in der 1×1-Kachel; die anderen folgen in ihrer Reihenfolge. Leer: die erste dieser Reihenfolge."
+     }
+    },
+    "en": {
+     "_meta": {
+      "name": "English"
+     },
+     "screen": {
+      "decimal": ".",
+      "e5": "E5",
+      "e10": "E10",
+      "diesel": "Diesel",
+      "closed": "Closed",
+      "no_prices": "No prices",
+      "choose": "Choose the sensor",
+      "waiting": "No stations in the sensor",
+      "none": "No station open",
+      "wrong_sensor": "Choose a sensor",
+      "bar_cheap": "{fuel} {price} · {name}",
+      "alert": "Cheap fuel in the top bar",
+      "alert_fuel": "Fuel",
+      "alert_price": "At or under"
+     },
+     "app": {
+      "name": "Fuel prices (DE)",
+      "summary": "E5, E10 and diesel at your petrol stations, from Home Assistant’s Tankerkönig integration.",
+      "tile_name": "Fuel prices",
+      "tile_example": "JET · Diesel 2.34",
+      "fuel_e5": "Super E5",
+      "fuel_e10": "Super E10",
+      "fuel_diesel": "Diesel",
+      "sort": "Sort by",
+      "sort_hint": "The cheapest first for this fuel, or in your own order.",
+      "sort_none": "My order",
+      "cheapest": "Only the cheapest",
+      "cheapest_hint": "Show only this many stations, the cheapest first. 0 shows all. Needs a fuel to sort by.",
+      "hide_closed": "Hide closed stations",
+      "hide_closed_hint": "A station that is closed now is left out.",
+      "address": "Show the address",
+      "address_hint": "The street and town under the station's name.",
+      "status": "Show open or closed",
+      "status_hint": "Says when a station is closed.",
+      "changes": "Show price changes",
+      "changes_hint": "A price that went up turns red, one that went down green, until the next change.",
+      "fuel_hint": "Which prices to show: diesel, E10 and E5, each on or off.",
+      "input_prices": "Template sensor",
+      "input_prices_hint": "The fuel prices template sensor of the README, for the top bar item.",
+      "card_name": "All stations",
+      "bar_cheap_label": "Cheap fuel",
+      "bar_example": "Diesel 1.759 · JET",
+      "setting_alert": "Cheap fuel in the top bar",
+      "setting_alert_hint": "The top bar names the cheapest station while its price is at the limit or under.",
+      "setting_alert_fuel": "Fuel",
+      "setting_alert_price": "Price limit",
+      "setting_alert_price_hint": "In cents per litre, such as 180 for 1.80.",
+      "front": "Station in front",
+      "front_hint": "A part of its name or address, such as JET or Burger. It comes first, in one cell too; the others follow in their order. Empty: the first in that order."
+     }
+    }
+   },
+   "readme": {
+    "en": "# Fuel prices (DE)\n\nA tile with the prices for diesel, Super E10 and Super E5 at your petrol stations, from Home Assistant's\n[Tankerkönig integration](https://www.home-assistant.io/integrations/tankerkoenig/). It is the idea of the Lovelace\n[Tankerkönig card](https://github.com/timmaurice/lovelace-tankerkoenig-card), drawn on a Tessera screen.\n\nThe plugin asks no internet service itself: the integration already fetches the prices. One template sensor gathers\nthe stations you choose into lists, and the tile draws them.\n\n**Which stations, and in which order**, you set in the template sensor: one station or up to ten.\n\n**What the tile shows** you set per tile, in the editor's inspector:\n\n- **Diesel**, **Super E10**, **Super E5**: each price on or off.\n- **Sort by**: the order of the sensor, or the cheapest first for one fuel.\n- **Only the cheapest**: just the cheapest one, two, three ... stations for that fuel.\n- **Hide closed stations**, **Show the address**, **Show open or closed**, **Show price changes** (a price that went\n  up turns red, one that went down green, until the next change).\n\nOn one column the tile shows the first station (the cheapest, when it sorts) with its price large. From two columns on\nit is a list: a header with the fuels, and a row per station with its name, its address and a price per fuel, the tenth\nof a cent small, as the price boards at the road write it.\n\n## Set up\n\n1. Set up the Tankerkönig integration in Home Assistant, with the stations you want, if you have not yet.\n2. Copy [`home_assistant/fuel_prices_template.yaml`](home_assistant/fuel_prices_template.yaml) into your\n   `configuration.yaml` (or a file it includes) and put the device ids of your stations under `stations:`. The\n   file's comments say where to find them; a Tankerkönig card on a dashboard has the same ids under its `stations:`.\n   Restart Home Assistant once. **Developer tools**, **States**, then shows `sensor.fuel_prices_for_screens` with the\n   lists `station_names`, `station_places`, `station_open`, `diesel`, `e10` and `e5`.\n3. In Tessera, open **Plugins**, **Add with a link**, and paste the link of this repository. Add the plugin to a\n   screen; the screen builds.\n4. In **Layout**, place the **Fuel prices** tile from the library's Plugins group, and choose the sensor in its\n   inspector (only sensors with these lists are offered).\n5. Choose the fuels, the sorting and the rest. The tile follows at once.\n\nTo change the stations later, edit the list in the template sensor and reload it (**Developer tools**, **YAML**,\n**Template entities**): no new build of the screen.\n\n## Station in front\n\n**Station in front** in the inspector takes a part of a station's name or address (`JET`, `Burger`). That station\ncomes first: a tile of one cell shows it, a list has it on top, and the others follow sorted as set. Empty leaves the\norder as it is.\n\n## Card, one cell and top bar\n\n- A tap on the tile opens a card with every station of the sensor: every fuel, its address, open or closed.\n- A tile of one cell with two or three fuels chosen shows the station's name and a row per fuel; with one fuel, that\n  price large. An arrow beside a price says how it last changed: up in red, down in green.\n- The top bar item **Cheap fuel** (Top bar, Add, From plugins) says \"Diesel 1,759 · JET\" while the cheapest price of\n  a fuel is at a limit or under. Choose the template sensor under **When building** in the plugin's details; then on\n  the screen (hold the top bar, Settings, Plugins) or in the plugin's details: **Cheap fuel in the top bar** on, the\n  **Fuel**, and the **Price limit** in cents (180 for 1,80 €).\n\n## Good to know\n\n- The tile shows a new price as soon as the integration has it (by default every 30 minutes in Home Assistant).\n- A station that is closed keeps its last prices, muted. \"No prices\" means the station reports none right now.\n- A price of 0 in the sensor means \"none\": the station does not sell that fuel, or has no price for it now.\n\n## Privacy\n\nThe plugin talks to no service. Its data comes from Home Assistant, from the Tankerkönig integration you set up there.\nTankerkönig publishes the data of the German market transparency office for fuels (MTS-K) under\n[CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).\n"
+   },
+   "changelog": {
+    "en": "# Changelog\n\n## 1.1.7\n- A picture for the Plugins page.\n\n## 1.1.6\n- New in the inspector: **Station in front**, a part of a name or address (JET, Burger). That station comes first,\n  in one cell too; the others follow sorted as before.\n\n## 1.1.0\n- A tap on the tile opens a card with every station, every fuel, its address and whether it is open.\n- One cell with two or three fuels chosen shows a row per fuel under the station's name.\n- An arrow beside a price that changed: up in red, down in green.\n- New top bar item **Cheap fuel**: \"Diesel 1,759 · JET\" while the cheapest price of a fuel is at a limit or under.\n  Choose the template sensor in the plugin's details, and switch it on, the fuel and the limit on the screen.\n\n## 0.1.0\n- First version: E5, E10 and diesel at up to ten stations you pick, sorted, filtered and coloured the way you choose.\n"
+   },
+   "image": "store.png"
+  },
+  {
    "id": "timers",
    "repo": "https://github.com/heronimonimo/tessera-timers",
    "repo_id": 1426167553,
@@ -4433,6 +5950,601 @@
    },
    "changelog": {
     "en": "# Changelog\n\n## 0.3.1\n- Nothing changes on the screen. The README says the plugin was tried on a real screen, the M5Stack Tab5, and the\n  plugin is now checked against Tessera 0.4.90.\n\n## 0.3.0\n- The top bar can show a running timer and a running stopwatch: in Layout, add **Running timer** or **Running\n  stopwatch** to a page's top bar, under From plugins. It shows only while one runs, in whole minutes (\"6 min\"), and\n  turns red with \"Done\" when a timer is done. With several, the timer that ends first and the stopwatch that runs\n  longest.\n- The Stopwatch tile's icon is one of Tessera's own now (it showed none).\n\n## 0.2.1\n- A switch for the sound: **Timer sound** in the plugin's settings, on the screen's settings page and in Home Assistant,\n  on a screen with a speaker. Turning it off silences a timer that rings at once.\n\n## 0.2.0\n- A timer that is done now rings on a screen with a speaker: three beeps every two seconds for a minute, or until you\n  tap Stop. It is the part \"Ring when a timer is done\" in the plugin's details, on by default; it follows the screen's\n  volume. Screens without a speaker build as before.\n\n## 0.1.0\n- First version: a timer you set with +10s, +1m, +10m and +1h, on the screen or as a timer helper of Home Assistant,\n  and a stopwatch with laps. Both keep running through a restart of the screen.\n"
+   },
+   "image": "store.png"
+  },
+  {
+   "id": "toothbrush",
+   "repo": "https://github.com/heronimonimo/tessera-toothbrush",
+   "repo_id": 1424210507,
+   "path": ".",
+   "label": "community",
+   "status": "ok",
+   "release": {
+    "version": "0.4.0",
+    "sha": "984eab70384dc23da351dbd8b3d8122020bfb1ef",
+    "date": "2026-10-19",
+    "tag": "v0.4.0"
+   },
+   "manifest": {
+    "id": "toothbrush",
+    "version": "0.4.0",
+    "api": "0.15",
+    "icon": "timer-outline",
+    "maintainer": "Heronimonimo",
+    "license": "MIT",
+    "stage": "beta",
+    "topics": [
+     "home"
+    ],
+    "requires": {
+     "esphome": "2026.6.2"
+    },
+    "boards": "any",
+    "flash_kb": 20,
+    "tiles": [
+     {
+      "id": "brush",
+      "name": "tile_name",
+      "icon": "timer-outline",
+      "sizes": {
+       "min": "1x1",
+       "max": "4x4"
+      },
+      "memory": 3200,
+      "example": "tile_example",
+      "options": [
+       {
+        "id": "brush",
+        "kind": "entity",
+        "domains": [
+         "sensor",
+         "binary_sensor"
+        ],
+        "label": "opt_brush",
+        "hint": "opt_brush_hint"
+       },
+       {
+        "id": "sector",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "label": "opt_sector",
+        "hint": "opt_sector_hint"
+       },
+       {
+        "id": "time",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "label": "opt_time",
+        "hint": "opt_time_hint"
+       },
+       {
+        "id": "battery",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "label": "opt_battery"
+       },
+       {
+        "id": "pressure",
+        "kind": "entity",
+        "domains": [
+         "sensor",
+         "binary_sensor"
+        ],
+        "label": "opt_pressure",
+        "hint": "opt_pressure_hint"
+       },
+       {
+        "id": "mode",
+        "kind": "entity",
+        "domains": [
+         "sensor",
+         "select"
+        ],
+        "label": "opt_mode"
+       },
+       {
+        "id": "head",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "label": "opt_head",
+        "hint": "opt_head_hint"
+       },
+       {
+        "id": "last",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "label": "opt_last",
+        "hint": "opt_last_hint"
+       },
+       {
+        "id": "zones",
+        "kind": "choice",
+        "default": "auto",
+        "label": "opt_zones",
+        "hint": "opt_zones_hint",
+        "choices": [
+         {
+          "value": "auto",
+          "label": "zones_auto"
+         },
+         {
+          "value": "4",
+          "label": "zones_4"
+         },
+         {
+          "value": "6",
+          "label": "zones_6"
+         }
+        ]
+       },
+       {
+        "id": "routine",
+        "kind": "number",
+        "min": 60,
+        "max": 300,
+        "step": 10,
+        "unit": "s",
+        "default": 120,
+        "label": "opt_routine",
+        "hint": "opt_routine_hint"
+       },
+       {
+        "id": "hold",
+        "kind": "number",
+        "min": 0,
+        "max": 24,
+        "step": 1,
+        "unit": "h",
+        "default": 2,
+        "label": "opt_hold",
+        "hint": "opt_hold_hint"
+       },
+       {
+        "id": "head_unit",
+        "kind": "choice",
+        "default": "days",
+        "label": "opt_head_unit",
+        "hint": "opt_head_unit_hint",
+        "choices": [
+         {
+          "value": "days",
+          "label": "head_days"
+         },
+         {
+          "value": "percent",
+          "label": "head_percent"
+         },
+         {
+          "value": "sessions",
+          "label": "head_sessions"
+         }
+        ]
+       }
+      ]
+     }
+    ],
+    "cards": [
+     {
+      "id": "zones",
+      "name": "card_name",
+      "wide": true
+     }
+    ]
+   },
+   "translations": {
+    "en": {
+     "_meta": {
+      "name": "English"
+     },
+     "screen": {
+      "brush": "Toothbrush",
+      "zone_ll": "Lower left",
+      "zone_lf": "Lower front",
+      "zone_lr": "Lower right",
+      "zone_ul": "Upper left",
+      "zone_uf": "Upper front",
+      "zone_ur": "Upper right",
+      "side_left": "Left",
+      "side_front": "Front",
+      "side_right": "Right",
+      "zone_of": "Zone {i} of {n}",
+      "left": "{t} left",
+      "of": "of {t}",
+      "joined": "{a} · {b}",
+      "zones_done": "{i} of {n} zones",
+      "done": "Done",
+      "stopped": "Stopped early",
+      "ready": "Ready",
+      "away": "Out of reach",
+      "waiting": "Waiting",
+      "waiting_hint": "Waiting for the toothbrush in Home Assistant",
+      "pressure_high": "Too hard",
+      "pressure_low": "Too soft",
+      "pressure_ok": "Pressure OK",
+      "percent": "{n}%",
+      "head_days_n": "1 day | {n} days",
+      "head_percent_n": "{n}% left",
+      "head_sessions_n": "1 session | {n} sessions",
+      "today_at": "Today {time}",
+      "yesterday_at": "Yesterday {time}",
+      "day_at": "{day} {time}",
+      "none": "–",
+      "battery": "Battery",
+      "pressure": "Pressure",
+      "mode": "Mode",
+      "head": "Brush head",
+      "last": "Last session",
+      "choose": "Choose",
+      "choose_hint": "Choose your toothbrush in the tile's options"
+     },
+     "app": {
+      "name": "Toothbrush",
+      "summary": "Your electric toothbrush live: the zones you brush as a ring, the time, battery and pressure.",
+      "tile_name": "Toothbrush",
+      "tile_example": "1:12 · Lower left",
+      "card_name": "Brushing zones",
+      "opt_brush": "Toothbrush",
+      "opt_brush_hint": "The brush's main entity: Oral-B's toothbrush state, Sonicare's handle state, Laifen's status, Xiaomi's toothbrush.",
+      "opt_sector": "Zone",
+      "opt_sector_hint": "Its sector (Oral-B, Sonicare). Empty: the zones go by time.",
+      "opt_time": "Brushing time",
+      "opt_time_hint": "Seconds brushed (Oral-B time, Sonicare brushing time, Laifen timer). Empty: the screen counts.",
+      "opt_battery": "Battery",
+      "opt_pressure": "Pressure",
+      "opt_pressure_hint": "Oral-B pressure, Sonicare pressure state, Laifen pressing too hard.",
+      "opt_mode": "Mode",
+      "opt_head": "Brush head",
+      "opt_head_hint": "Oral-B refill days, Sonicare brush head wear (on its brush head device), Xiaomi consumable.",
+      "opt_last": "Last session",
+      "opt_last_hint": "Its last session (a moment), or Xiaomi's score.",
+      "opt_head_unit": "Brush head counts",
+      "opt_head_unit_hint": "What the brush head entity counts.",
+      "opt_zones": "Zones",
+      "opt_zones_hint": "Auto shows 4 until the brush reports a fifth zone. Choose 6 for a brush that brushes in six from the start.",
+      "zones_auto": "Auto",
+      "zones_4": "4 zones",
+      "zones_6": "6 zones",
+      "opt_routine": "Routine",
+      "opt_routine_hint": "How long a full session takes. It times the zones of a brush without a zone sensor.",
+      "opt_hold": "Keep the result",
+      "opt_hold_hint": "How many hours the ring shows how the last session went. 0 keeps it until the next one.",
+      "head_days": "Days left",
+      "head_percent": "Percent left",
+      "head_sessions": "Sessions left"
+     }
+    },
+    "nl": {
+     "_meta": {
+      "name": "Nederlands"
+     },
+     "screen": {
+      "brush": "Tandenborstel",
+      "zone_ll": "Linksonder",
+      "zone_lf": "Voor onder",
+      "zone_lr": "Rechtsonder",
+      "zone_ul": "Linksboven",
+      "zone_uf": "Voor boven",
+      "zone_ur": "Rechtsboven",
+      "side_left": "Links",
+      "side_front": "Voor",
+      "side_right": "Rechts",
+      "zone_of": "Zone {i} van {n}",
+      "left": "nog {t}",
+      "of": "van {t}",
+      "joined": "{a} · {b}",
+      "zones_done": "{i} van {n} zones",
+      "done": "Klaar",
+      "stopped": "Te vroeg gestopt",
+      "ready": "Klaar voor gebruik",
+      "away": "Buiten bereik",
+      "waiting": "Even wachten",
+      "waiting_hint": "Wacht op de tandenborstel in Home Assistant",
+      "pressure_high": "Te hard",
+      "pressure_low": "Te zacht",
+      "pressure_ok": "Druk goed",
+      "percent": "{n}%",
+      "head_days_n": "1 dag | {n} dagen",
+      "head_percent_n": "nog {n}%",
+      "head_sessions_n": "1 beurt | {n} beurten",
+      "today_at": "Vandaag {time}",
+      "yesterday_at": "Gisteren {time}",
+      "day_at": "{day} {time}",
+      "none": "–",
+      "battery": "Batterij",
+      "pressure": "Druk",
+      "mode": "Stand",
+      "head": "Opzetborstel",
+      "last": "Laatste beurt",
+      "choose": "Kiezen",
+      "choose_hint": "Kies je tandenborstel in de opties van de tegel"
+     },
+     "app": {
+      "name": "Tandenborstel",
+      "summary": "Je elektrische tandenborstel live: de zones die je poetst als ring, de tijd, batterij en druk.",
+      "tile_name": "Tandenborstel",
+      "tile_example": "1:12 · Linksonder",
+      "card_name": "Poetszones",
+      "opt_brush": "Tandenborstel",
+      "opt_brush_hint": "De hoofdentiteit van de borstel: bij Oral-B de toothbrush state, bij Sonicare de handle state, bij Laifen de status, bij Xiaomi de toothbrush.",
+      "opt_sector": "Zone",
+      "opt_sector_hint": "De sector (Oral-B, Sonicare). Leeg: de zones gaan op tijd.",
+      "opt_time": "Poetstijd",
+      "opt_time_hint": "Seconden gepoetst (Oral-B time, Sonicare brushing time, Laifen timer). Leeg: het scherm telt.",
+      "opt_battery": "Batterij",
+      "opt_pressure": "Druk",
+      "opt_pressure_hint": "Oral-B pressure, Sonicare pressure state, Laifen pressing too hard.",
+      "opt_mode": "Stand",
+      "opt_head": "Opzetborstel",
+      "opt_head_hint": "Oral-B refill-dagen, Sonicare brush head wear (op zijn opzetborstel-apparaat), Xiaomi consumable.",
+      "opt_last": "Laatste beurt",
+      "opt_last_hint": "De laatste beurt (een moment), of de score van Xiaomi.",
+      "opt_head_unit": "Opzetborstel telt",
+      "opt_head_unit_hint": "Wat de entiteit van de opzetborstel telt.",
+      "opt_zones": "Zones",
+      "opt_zones_hint": "Automatisch toont 4 tot de borstel een vijfde zone meldt. Kies 6 voor een borstel die vanaf het begin in zes poetst.",
+      "zones_auto": "Automatisch",
+      "zones_4": "4 zones",
+      "zones_6": "6 zones",
+      "opt_routine": "Poetsduur",
+      "opt_routine_hint": "Hoe lang een volledige beurt duurt. Hiermee gaan de zones op tijd bij een borstel zonder zonesensor.",
+      "opt_hold": "Resultaat bewaren",
+      "opt_hold_hint": "Hoeveel uur de ring laat zien hoe de laatste beurt ging. 0 bewaart het tot de volgende.",
+      "head_days": "Dagen over",
+      "head_percent": "Procent over",
+      "head_sessions": "Beurten over"
+     }
+    }
+   },
+   "readme": {
+    "en": "# Toothbrush\n\nYour electric toothbrush live on a Tessera screen. The zones you brush show as a ring around the time: the upper jaw\non top, the lower jaw below, a zone done in green and the one you brush now in the accent. Battery, pressure and mode\nsit beside it, and a tap opens the whole session over the page.\n\nIt works with the toothbrushes Home Assistant knows over Bluetooth: Oral-B (`oralb`, `oralb_live`), Philips Sonicare\n(`philips_sonicare_ble`), Xiaomi (`xiaomi_ble`) and Laifen (`laifen_ble`). It is a Tessera version of\n[toothbrush-card](https://github.com/mtheli/toothbrush-card) by mtheli, whose zone and session logic it follows.\n\n## Set up\n\nIt needs a Tessera with plugin API 0.15: Tessera's dev branch until its next release.\n\n1. In Tessera, open Plugins, choose **Add with a link** and paste this repository's link.\n2. Tick the screen in the bathroom and apply. The screen builds once.\n3. In Layout, place the **Toothbrush** tile from the library's Plugins group, at any size from 1x1 to 4x4.\n4. In the inspector, choose the brush's entities. Only **Toothbrush** is needed; each other one adds its reading:\n\n   | Option | Oral-B (`oralb`, `oralb_live`) | Sonicare (`philips_sonicare_ble`) | Laifen (`laifen_ble`) | Xiaomi (`xiaomi_ble`) |\n   |---|---|---|---|---|\n   | Toothbrush | `…_toothbrush_state` | `…_handle_state` | `…_status` | `…_toothbrush` |\n   | Zone | `…_sector` | `…_sector` | leave empty | leave empty |\n   | Brushing time | `…_time` | `…_brushing_time` | `…_timer` | leave empty |\n   | Battery | `…_battery` | `…_battery` | `…_battery` | `…_battery` |\n   | Pressure | `…_pressure` | `…_pressure_state` | `…_pressing_too_hard` | leave empty |\n   | Mode | `…_mode` | `…_brushing_mode` | `…_mode` | leave empty |\n   | Brush head | `…_refill_days` | brush head wear (its brush head device) | leave empty | `…_consumable` |\n   | Last session | `…_last_session` | `…_last_session` | leave empty | `…_score` |\n\n   The lists are searchable: type the brush's name. Another choice shows at once, without a build.\n5. Check the other options: the number of zones (Auto, 4 or 6), the length of your routine, how long the result\n   stays, and what the brush head counts (days, percent or sessions).\n\n## What it shows\n\n- **1x1**: the ring with the time in its middle.\n- **2x1 and wider**: the ring on the left; the zone, how far you are and the chips on the right.\n- **1x2 and taller**: the ring on top; the zone, how far you are and the chips under it.\n- **2x2 and up**: the name, battery, pressure and mode, and a large ring.\n- **A tap**: the full-screen card, with every zone named around the ring and every reading.\n\nAfter a session the ring stays green for as long as you chose (\"Done\"), or shows how far you got (\"Stopped early\").\n\n![The plugin on the 10-inch, the 4-inch square and the CYD](store.png)\n\nThe full-screen card on a 10-inch screen, in the middle of a six-zone session:\n\n![The card on the Guition 10.1-inch, dark](renders/jc8012p4a1/card-zones-dark.png)\n\nEvery tile at every size on every screen, drawn by the real firmware on Tessera's preview bench, is in\n[renders/](renders/) ([overview](renders/overview.png)): one folder per screen, light and dark, with the finest grid of\neach in a folder of its own.\n\n## Good to know\n\n- Tessera sends the entities you choose to the screen and follows them. Nothing is needed in Home Assistant: no\n  template, no helper, no integration of its own.\n- Each tile has its own brush, so a screen can show several: one tile each.\n- A brush without a zone sensor (Xiaomi, Laifen) gets its zones by time, evenly over the routine.\n- Auto zones show 4 until the brush reports a fifth zone; choose 6 for a brush that brushes in six from the start.\n- Tried on: Tessera's preview bench (the CYD, the Guition 4-inch, the Waveshare 4.3-inch standing up and the Guition\n  10.1-inch), not yet on a real screen with a real brush. Please say in an issue which board and brush you used.\n\n## Privacy\n\nIt talks to nothing outside your home: Tessera sends the screen the states of the entities you chose in the tile's\noptions, from your Home Assistant.\n"
+   },
+   "changelog": {
+    "en": "# Changelog\n\n## 0.4.0\n- The brush's entities are the tile's options now (plugin API 0.15): choose the toothbrush, and its other entities\n  for the readings you want, in the tile's inspector. Tessera sends them and follows them; another choice needs no\n  build and no restart.\n- Each tile has its own brush, so one screen can show several.\n- Needs a Tessera with plugin API 0.15 (its dev branch until the next release).\n- Update: the toothbrush input and the entity settings are gone; choose the same entities in each tile's options.\n\n## 0.3.0\n- One field when you add the plugin: the toothbrush. Tessera asks for every field it shows, so the other seven are\n  gone from there, and the plugin can be applied with the toothbrush alone.\n- Another entity for a reading is now a setting: the plugin's details on the screen's Plugins tab, On this screen.\n  Leave it empty to find it beside the toothbrush; the screen restarts once when you change one.\n- Update: if you filled in the other fields before, fill the same entity ids into the settings.\n\n## 0.2.1\n- A wide tile on a small screen shows only the lines that fit: the zone first, then the name, a line of detail and the\n  chips.\n- A small ring shows the timer's icon where a word would not fit.\n- The names around the card's ring are the side alone (Left, Front, Right), and go away where even those would crowd\n  the ring.\n- Tried on the preview bench: the CYD, the Guition 4-inch, the Waveshare 4.3-inch standing up and the Guition 10.1-inch,\n  light and dark, on their own grids and the finest ones.\n\n## 0.2.0\n- Choose your toothbrush once: pick its main entity, and the plugin finds the brush's other entities itself (Oral-B,\n  Sonicare, Laifen and Xiaomi, by their English entity names).\n- The other inputs are optional now: fill one in only when your entity has another name (a Home Assistant in another\n  language, a renamed entity, or a Sonicare's brush head).\n- Update: open the plugin's details on the screen's Plugins tab, choose the toothbrush entity, and build once.\n\n## 0.1.0\n- First version: your electric toothbrush live on a tile, with the zones as a ring of 4 or 6 arcs, the time, battery\n  and pressure, and a full-screen card with every reading.\n- Reads the brush's own entities directly: choose them when you add the plugin to a screen. Nothing to set up in Home\n  Assistant.\n"
+   },
+   "image": "store.png"
+  },
+  {
+   "id": "waste_overview",
+   "repo": "https://github.com/hflocki/tessera-waste",
+   "repo_id": 1424449437,
+   "path": ".",
+   "label": "community",
+   "status": "ok",
+   "release": {
+    "version": "1.2.1",
+    "sha": "05cc1486fd8968ae0d9722dab4d5493a445cebe6",
+    "date": "2026-10-21",
+    "tag": "1.2.1"
+   },
+   "manifest": {
+    "id": "waste_overview",
+    "version": "1.2.1",
+    "api": "0.9",
+    "icon": "recycle",
+    "maintainer": "hflocki",
+    "license": "MIT",
+    "stage": "beta",
+    "topics": [
+     "home",
+     "calendar"
+    ],
+    "requires": {
+     "esphome": "2026.6.2"
+    },
+    "boards": "any",
+    "flash_kb": 16,
+    "permissions": {
+     "ha_commands": [
+      "call_service:calendar.get_events"
+     ]
+    },
+    "inputs": [
+     {
+      "id": "calendar",
+      "kind": "entity",
+      "domains": [
+       "calendar"
+      ],
+      "scope": "screen",
+      "label": "input_calendar",
+      "hint": "input_calendar_hint"
+     }
+    ],
+    "tiles": [
+     {
+      "id": "overview",
+      "name": "tile_name",
+      "icon": "recycle",
+      "sizes": {
+       "min": "1x1",
+       "max": "6x3"
+      },
+      "memory": 4400,
+      "domains": [
+       "calendar"
+      ],
+      "attributes": [
+       "message",
+       "start_time"
+      ],
+      "example": "tile_example",
+      "options": [
+       {
+        "id": "days",
+        "kind": "number",
+        "min": 7,
+        "max": 60,
+        "step": 1,
+        "unit": "d",
+        "default": 35,
+        "label": "days",
+        "hint": "days_hint"
+       },
+       {
+        "id": "drop_after",
+        "kind": "number",
+        "min": 0,
+        "max": 24,
+        "step": 1,
+        "unit": "h",
+        "default": 10,
+        "label": "drop_after",
+        "hint": "drop_after_hint"
+       },
+       {
+        "id": "match1",
+        "kind": "text",
+        "label": "match1",
+        "hint": "match_hint"
+       },
+       {
+        "id": "label1",
+        "kind": "text",
+        "label": "label1",
+        "hint": "label_hint"
+       },
+       {
+        "id": "match2",
+        "kind": "text",
+        "label": "match2"
+       },
+       {
+        "id": "label2",
+        "kind": "text",
+        "label": "label2"
+       },
+       {
+        "id": "match3",
+        "kind": "text",
+        "label": "match3"
+       },
+       {
+        "id": "label3",
+        "kind": "text",
+        "label": "label3"
+       },
+       {
+        "id": "match4",
+        "kind": "text",
+        "label": "match4"
+       },
+       {
+        "id": "label4",
+        "kind": "text",
+        "label": "label4"
+       },
+       {
+        "id": "match5",
+        "kind": "text",
+        "label": "match5"
+       },
+       {
+        "id": "label5",
+        "kind": "text",
+        "label": "label5"
+       }
+      ]
+     }
+    ],
+    "cards": [
+     {
+      "id": "upcoming",
+      "name": "card_name"
+     }
+    ]
+   },
+   "translations": {
+    "de": {
+     "_meta": {
+      "name": "Deutsch"
+     },
+     "screen": {
+      "today": "Heute",
+      "choose": "Kalender wählen",
+      "waiting": "Kalender wird gefragt",
+      "failed": "Der Kalender antwortet nicht",
+      "none": "Nichts geplant"
+     },
+     "app": {
+      "name": "Müll-Übersicht",
+      "summary": "Alle Müllarten nebeneinander, mit den Tagen bis zur nächsten Abholung, aus einem Kalender.",
+      "input_calendar": "Müllkalender",
+      "input_calendar_hint": "Der Kalender mit den Abholterminen (Waste Collection Schedule, ein lokaler Kalender, ...).",
+      "tile_name": "Müll-Übersicht",
+      "tile_example": "Papier in 2 Tagen · Restmüll in 9 Tagen",
+      "days": "Tage voraus",
+      "days_hint": "Wie weit voraus nach Abholungen gesucht wird.",
+      "drop_after": "Heutige Abholung bis",
+      "drop_after_hint": "Ab dieser Stunde macht eine Abholung von heute Platz für die nächste ihrer Art. 24 behält sie den ganzen Tag.",
+      "match1": "Art 1: Wort",
+      "match_hint": "Ein Wort im Kalendertermin, z. B. Rest oder Papier. Termine damit erscheinen unter dem Namen darunter; alle anderen behalten ihren eigenen Namen.",
+      "label1": "Art 1: Name",
+      "label_hint": "Wie die Kachel sie nennt, z. B. Restmüll. Leer behält den Namen des Termins.",
+      "match2": "Art 2: Wort",
+      "label2": "Art 2: Name",
+      "match3": "Art 3: Wort",
+      "label3": "Art 3: Name",
+      "match4": "Art 4: Wort",
+      "label4": "Art 4: Name",
+      "match5": "Art 5: Wort",
+      "label5": "Art 5: Name",
+      "card_name": "Nächste Abholungen"
+     }
+    },
+    "en": {
+     "_meta": {
+      "name": "English"
+     },
+     "screen": {
+      "today": "Today",
+      "choose": "Choose a calendar",
+      "waiting": "Asking the calendar",
+      "failed": "The calendar did not answer",
+      "none": "Nothing planned"
+     },
+     "app": {
+      "name": "Waste overview",
+      "summary": "Every kind of waste side by side, with how many days until it goes out, from a calendar.",
+      "input_calendar": "Waste calendar",
+      "input_calendar_hint": "The calendar with the collection days (Waste Collection Schedule, a local calendar, ...).",
+      "tile_name": "Waste overview",
+      "tile_example": "Paper in 2 days · Residual in 9 days",
+      "days": "Days ahead",
+      "days_hint": "How far ahead to look for collections.",
+      "drop_after": "Today's collection until",
+      "drop_after_hint": "From this hour on, a collection of today makes way for the next one of its kind. 24 keeps it all day.",
+      "match1": "Kind 1: word",
+      "match_hint": "A word in the calendar's event, such as Rest or Papier. Events with it show under the name below; every other event keeps its own name.",
+      "label1": "Kind 1: name",
+      "label_hint": "What the tile calls it, such as Restmüll. Empty keeps the event's name.",
+      "match2": "Kind 2: word",
+      "label2": "Kind 2: name",
+      "match3": "Kind 3: word",
+      "label3": "Kind 3: name",
+      "match4": "Kind 4: word",
+      "label4": "Kind 4: name",
+      "match5": "Kind 5: word",
+      "label5": "Kind 5: name",
+      "card_name": "Coming collections"
+     }
+    }
+   },
+   "readme": {
+    "en": "# Waste overview\n\nEvery kind of waste of a calendar in Home Assistant side by side on one tile: its icon in its colour, its name, and how\nmany days until it goes out next (\"Tomorrow\", \"In 9 days\"), the soonest first. It is the idea of the Lovelace\n[trash-card](https://github.com/idaho/hassio-trash-card), drawn on a Tessera screen.\n\nOn a wide tile the kinds stand side by side, as many as fit; on a tall one they are rows, with the days at the right.\n\nThe icon and colour follow the words calendars use: paper blue, the yellow bag and packaging amber, organic waste\ngreen, hazardous waste purple, a Christmas tree green, everything else a grey bin. German, English and Dutch words\nwork.\n\n## Set up\n\n1. Have a calendar with the collection days in Home Assistant. [Waste Collection Schedule](https://github.com/mampfes/hacs_waste_collection_schedule)\n   makes one for most councils; a Local Calendar with the days typed in works too.\n2. In Tessera, open **Plugins**, **Add with a link**, and paste the link of this repository. Add the plugin to a\n   screen and choose the calendar under **Waste calendar**. The screen builds once.\n3. In **Layout**, place the **Waste overview** tile from the library's Plugins group (4 x 1 shows four kinds side by\n   side) and choose the calendar in its inspector.\n4. That is all: every event name of the calendar is a kind of its own. To group or rename them, fill in the kinds\n   below.\n\n## Options\n\n- **Days ahead**: how far ahead to look, 35 days by default. A kind collected less often than that does not show.\n- **Today's collection until**: from this hour on (10 by default) a collection of today makes way for the next one of\n  its kind, as the bin is out already. 24 keeps it all day.\n- **Kind 1 to 5, word and name**: renames and groups kinds. Every event whose name holds the word shows under the\n  name: `Rest` with the name `Restmüll` turns \"Restmülltonne 2-wöchentlich\" into \"Restmüll\", and `Gelb` with\n  `Gelber Sack` puts \"Gelbe Tonne\" and \"Gelber Sack\" together. Every other event keeps its own name.\n\n## Coming collections\n\nA tap on the tile opens a card with the coming collections of five weeks: each with its icon, its name (renamed as on\nthe tile), its date and how far away.\n\n## Good to know\n\n- The tile asks Home Assistant for the coming events through Tessera (`calendar.get_events`): when it appears, when\n  the calendar's next event changes, and every hour.\n- Up to eight kinds and 24 coming collections; an answer of Home Assistant is at most about 3 KB, so a calendar with\n  long descriptions may lose its last collections. Fewer **Days ahead** helps then.\n- Works on every board, the CYD included.\n"
+   },
+   "changelog": {
+    "en": "# Changelog\n\n## 1.2.1\n- Amber and yellow words and icons take the ink on the light look, where they were too faint to read; the dark look keeps its colours.\n\n## 1.2.0\n- A tap on the tile opens the coming collections of five weeks, with their date and how far away, named as on\n  the tile.\n\n## 0.1.2\n- A word with an umlaut (Restmülltonne) now finds its events however the calendar writes the umlaut.\n\n## 0.1.1\n- Kind 1 to 5 only rename and group now: events that match none of them still show, under their own name.\n\n## 0.1.0\n- First version: every kind of waste of a calendar side by side, each with its icon, its name and the days until it\n  goes out next.\n"
    },
    "image": "store.png"
   },
@@ -4717,6 +6829,194 @@
    },
    "changelog": {
     "en": "# Changelog\n\n## 0.2.0\n- New: the travel time in the top bar. Add **Travel time** to a page's top bar (Top bar, Add, From plugins): \"23 min\",\n  or \"23 min +8\" when it is slower than usual, with the car in green, amber or red.\n- Adding or updating the plugin now asks for the **Waze sensor for the top bar** once per screen.\n- The top bar's usual time is a setting of the screen: **Waze usual time** in Home Assistant, and on the screen's\n  settings page under Plugins.\n- The card asks Waze in the tile's own region in every case.\n- The Plugins page now says the plugin uses a service outside the home (Waze, through Home Assistant), with a privacy\n  note in the README.\n\n## 0.1.0\n- First version: a tile of a Waze Travel Time sensor with the travel time, the delay against your usual time, the\n  route, when you arrive and a line of the last hours from the sensor's history.\n- A card with every route Waze offers right now, fastest first.\n"
+   },
+   "image": "store.png"
+  },
+  {
+   "id": "weather_warnings",
+   "repo": "https://github.com/hflocki/tessera-weather-warnings",
+   "repo_id": 1425997636,
+   "path": ".",
+   "label": "community",
+   "status": "ok",
+   "release": {
+    "version": "1.1.2",
+    "sha": "14c4ffa06e870d2ce8805e46aca30c6589140294",
+    "date": "2026-10-21",
+    "tag": "1.1.2"
+   },
+   "manifest": {
+    "id": "weather_warnings",
+    "version": "1.1.2",
+    "api": "0.10",
+    "icon": "alert-circle",
+    "maintainer": "hflocki",
+    "license": "MIT",
+    "stage": "beta",
+    "topics": [
+     "weather"
+    ],
+    "requires": {
+     "esphome": "2026.6.2"
+    },
+    "boards": "any",
+    "flash_kb": 16,
+    "permissions": {
+     "read_entities": [
+      "{dwd}",
+      "{dwd_advance}",
+      "{nina_1}",
+      "{nina_2}"
+     ]
+    },
+    "inputs": [
+     {
+      "id": "dwd",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_dwd",
+      "hint": "input_dwd_hint"
+     },
+     {
+      "id": "dwd_advance",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_dwd_advance",
+      "hint": "input_dwd_advance_hint"
+     },
+     {
+      "id": "nina_1",
+      "kind": "entity",
+      "domains": [
+       "binary_sensor"
+      ],
+      "scope": "screen",
+      "label": "input_nina_1",
+      "hint": "input_nina_hint"
+     },
+     {
+      "id": "nina_2",
+      "kind": "entity",
+      "domains": [
+       "binary_sensor"
+      ],
+      "scope": "screen",
+      "label": "input_nina_2"
+     }
+    ],
+    "tiles": [
+     {
+      "id": "status",
+      "name": "tile_name",
+      "icon": "alert-circle",
+      "sizes": {
+       "min": "1x1",
+       "max": "3x2"
+      },
+      "memory": 700,
+      "example": "tile_example",
+      "options": [
+       {
+        "id": "advance",
+        "kind": "toggle",
+        "default": true,
+        "label": "advance",
+        "hint": "advance_hint"
+       }
+      ]
+     }
+    ],
+    "cards": [
+     {
+      "id": "warnings",
+      "name": "card_name",
+      "wide": true
+     }
+    ]
+   },
+   "translations": {
+    "de": {
+     "_meta": {
+      "name": "Deutsch"
+     },
+     "screen": {
+      "title": "Warnungen",
+      "none": "Keine Warnungen",
+      "choose": "Sensoren in den Plugin-Details wählen",
+      "until": "bis {time}",
+      "from": "ab {time}",
+      "advance_from": "Vorabinfo ab {time}",
+      "more": "+{n}",
+      "dwd": "DWD",
+      "nina": "NINA",
+      "advance": "Vorabinformation (DWD)",
+      "nina_warning": "NINA-Warnung",
+      "level": "Warnstufe {n}"
+     },
+     "app": {
+      "name": "Wetterwarnungen",
+      "summary": "DWD- und NINA-Warnungen auf einer Kachel in der Farbe der Warnstufe; ein Tipp zeigt alle.",
+      "tile_name": "Wetterwarnungen",
+      "tile_example": "Sturmböen bis 22:00 · +1",
+      "advance": "Vorabinformationen anzeigen",
+      "advance_hint": "Ohne aktuelle Warnung zeigt die Kachel die Vorabinformation des DWD, gedämpft.",
+      "card_name": "Alle Warnungen",
+      "input_dwd": "DWD aktuelle Warnstufe",
+      "input_dwd_hint": "Der Sensor ..._current_warning_level der Integration DWD Weather Warnings.",
+      "input_dwd_advance": "DWD Vorabwarnstufe",
+      "input_dwd_advance_hint": "Der Sensor ..._advance_warning_level, für kommende Warnungen. Darf leer bleiben.",
+      "input_nina_1": "NINA-Warnung 1",
+      "input_nina_hint": "Ein Warn-Slot der NINA-Integration, z. B. binary_sensor.warning_<ort>_1. Darf leer bleiben.",
+      "input_nina_2": "NINA-Warnung 2"
+     }
+    },
+    "en": {
+     "_meta": {
+      "name": "English"
+     },
+     "screen": {
+      "title": "Warnings",
+      "none": "No warnings",
+      "choose": "Choose the sensors in the plugin's details",
+      "until": "until {time}",
+      "from": "from {time}",
+      "advance_from": "Advance warning from {time}",
+      "more": "+{n}",
+      "dwd": "DWD",
+      "nina": "NINA",
+      "advance": "Advance warning (DWD)",
+      "nina_warning": "NINA warning",
+      "level": "Warning level {n}"
+     },
+     "app": {
+      "name": "Weather warnings",
+      "summary": "DWD and NINA warnings on a tile in the colour of their level; a tap shows them all.",
+      "tile_name": "Weather warnings",
+      "tile_example": "Gusts until 22:00 · +1",
+      "advance": "Show advance warnings",
+      "advance_hint": "Without a warning in force, the DWD's advance warning shows on the tile, muted.",
+      "card_name": "All warnings",
+      "input_dwd": "DWD current warning level",
+      "input_dwd_hint": "The sensor ..._current_warning_level of the DWD Weather Warnings integration.",
+      "input_dwd_advance": "DWD advance warning level",
+      "input_dwd_advance_hint": "The sensor ..._advance_warning_level, for warnings to come. May stay empty.",
+      "input_nina_1": "NINA warning 1",
+      "input_nina_hint": "A warning slot of the NINA integration, such as binary_sensor.warning_<place>_1. May stay empty.",
+      "input_nina_2": "NINA warning 2"
+     }
+    }
+   },
+   "readme": {
+    "en": "# Weather warnings\n\nWarnings of the DWD and NINA from Home Assistant on one tile, in the spirit of the Lovelace\n[nina-dwd-card](https://github.com/timmaurice/lovelace-nina-dwd-card).\n\n**The tile** (1 x 1 and up) shows the strongest warning in force: its icon (thunderstorm, wind, rain, snow, ice, fog,\nheat ...) in a circle of its level's colour, its short name (\"Sturmböen\") and until when it lasts, and \"+2\" when there\nare more. The tile itself takes the level's colour lightly: yellow for a weather warning, orange for notable weather,\nred for severe weather, purple for extreme weather. NINA's severities count the same (Minor, Moderate, Severe,\nExtreme). Without a warning it shows a quiet shield and \"No warnings\", or the DWD's advance warning, muted.\n\n**A tap** opens a card with every warning, the strongest first and the advance warning last: a bar in its level's\ncolour, its icon and headline, when it is in force and where it comes from, and its text in as many lines as fit.\n\n## Set up\n\n1. Have the [DWD Weather Warnings](https://www.home-assistant.io/integrations/dwd_weather_warnings/) integration for\n   your region (sensors `..._current_warning_level` and `..._advance_warning_level`) and, if you like, the\n   [NINA](https://www.home-assistant.io/integrations/nina/) integration (binary sensors `binary_sensor.warning_<place>_1`\n   and so on).\n2. In Tessera, open **Plugins**, **Add with a link**, and paste the link of this repository. Add the plugin to a\n   screen.\n3. In the plugin's details on the screen's Plugins tab, under **When building**, choose **DWD current warning level**,\n   **DWD advance warning level** and up to two **NINA warning** slots; leave out what you do not use. **Save and\n   build**.\n4. In **Layout**, place the **Weather warnings** tile.\n\n## Good to know\n\n- The screen reads the sensors and their attributes itself; a change of the chosen entities builds the screen again.\n- The DWD's first three warnings, its first advance warning and two NINA slots are shown.\n- Without a time the tile names the source (\"DWD\", \"NINA\"). A DWD level whose warnings have no details (yet) shows as\n  \"Warning level 1\".\n\n## NINA with headline and times\n\nNewer Home Assistant versions give NINA's binary sensors only the attribute `id`; the headline, severity, text and\ntimes come from the action `nina.get_details`. Without them the tile shows \"NINA warning\" in its colour. A template\nbinary sensor brings them back as attributes; choose it instead of the NINA sensor in the plugin's details. Put it in\n`configuration.yaml` (or a file of your `template:` folder), with your sensor in place of\n`binary_sensor.warning_place_1`, once per slot:\n\n```yaml\ntemplate:\n  - triggers:\n      - trigger: state\n        entity_id: binary_sensor.warning_place_1\n      - trigger: homeassistant\n        event: start\n      - trigger: time_pattern\n        minutes: \"/10\"\n    actions:\n      - action: nina.get_details\n        target:\n          entity_id: binary_sensor.warning_place_1\n        response_variable: nina\n        continue_on_error: true\n    binary_sensor:\n      - name: NINA warning details 1\n        unique_id: nina_warning_details_1\n        state: \"{{ is_state('binary_sensor.warning_place_1', 'on') }}\"\n        attributes:\n          headline: \"{{ ((nina | default({}, true)).get('binary_sensor.warning_place_1') or {}).get('headline', '') }}\"\n          severity: \"{{ ((nina | default({}, true)).get('binary_sensor.warning_place_1') or {}).get('severity', '') }}\"\n          description: \"{{ ((nina | default({}, true)).get('binary_sensor.warning_place_1') or {}).get('description', '') }}\"\n          start: \"{{ ((nina | default({}, true)).get('binary_sensor.warning_place_1') or {}).get('start', '') }}\"\n          expires: \"{{ ((nina | default({}, true)).get('binary_sensor.warning_place_1') or {}).get('expires', '') }}\"\n```\n"
+   },
+   "changelog": {
+    "en": "# Changelog\n\n## 1.1.2\n- The icon sits inside its circle as one part, and an idle circle is lighter, so the grey icon reads in the light look too.\n- Amber and yellow words and icons take the ink on the light look, where they were too faint to read; the dark look keeps its colours.\n\n## 1.1.1\n- Opacities are written only when they change, so the tile is not redrawn every second.\n\n## 1.1.0\n- The tint covers the whole tile with its own corners; the circle is light and the icon takes the level's colour.\n- A DWD level without the details of its warnings shows as \"Warning level 1\", the advance warning too.\n- NINA's severity is read whatever its case, for a template sensor fed by `nina.get_details` (README).\n- Without a time, the tile names the source of the warning.\n\n## 1.0.0\n- First version: the strongest DWD or NINA warning on a tile in the colour of its level, and a card with every\n  warning, its time, source and text.\n"
    },
    "image": "store.png"
   },
