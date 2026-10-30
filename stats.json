@@ -17,7 +17,7 @@
    "likes": 9,
    "rating": null,
    "ratings": 1,
-   "homes": 2
+   "homes": 3
   },
   "electricity_price": {
    "likes": 1,
@@ -29,7 +29,7 @@
    "likes": 3,
    "rating": null,
    "ratings": 1,
-   "homes": 1
+   "homes": 2
   },
   "new_music": {
    "likes": 2,
@@ -73,6 +73,12 @@
    "ratings": 1,
    "homes": 1
   },
+  "timers": {
+   "likes": 0,
+   "rating": null,
+   "ratings": 1,
+   "homes": 0
+  },
   "vinyl_deck": {
    "likes": 1,
    "rating": null,
@@ -91,8 +97,20 @@
    "ratings": 1,
    "homes": 1
   },
+  "waste_overview": {
+   "likes": 0,
+   "rating": null,
+   "ratings": 1,
+   "homes": 0
+  },
   "waze_traveltime": {
    "likes": 2,
+   "rating": null,
+   "ratings": 0,
+   "homes": 0
+  },
+  "wifi_qr": {
+   "likes": 1,
    "rating": null,
    "ratings": 0,
    "homes": 0

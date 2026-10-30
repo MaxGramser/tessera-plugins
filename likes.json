@@ -15,6 +15,7 @@
   "voice_assist": 3,
   "waste_collection": 6,
   "waze_traveltime": 2,
+  "wifi_qr": 1,
   "world_clock": 2
  }
 }
