@@ -1,6 +1,6 @@
 {
  "format": 1,
- "generated": "2026-10-30T07:44:27Z",
+ "generated": "2026-10-30T07:46:22Z",
  "plugin_api": "0.24",
  "blocked": [],
  "featured": [
@@ -31,6 +31,11 @@
   "electricity_price": {
    "repo": "https://github.com/heronimonimo/tessera-electricity-price",
    "repo_id": 1421748188,
+   "path": "."
+  },
+  "energy_flow": {
+   "repo": "https://github.com/hflocki/tessera-energy",
+   "repo_id": 1427455521,
    "path": "."
   },
   "film_stasera": {
@@ -151,6 +156,11 @@
   "weather_warnings": {
    "repo": "https://github.com/hflocki/tessera-weather-warnings",
    "repo_id": 1425997636,
+   "path": "."
+  },
+  "wifi_qr": {
+   "repo": "https://github.com/dynodix/tessera-wifi-qr",
+   "repo_id": 1432221662,
    "path": "."
   },
   "world_clock": {
@@ -3505,6 +3515,255 @@
    },
    "changelog": {
     "en": "# Changelog\n\n## 0.11.0\n- The top bar shows the price as your tiles do: the sensor, formula, unit and decimals of a price tile on the screen,\n  and the price of the current time slot. The first tile with a sensor gives it. Its own sensor and its two settings\n  (Price sensor for the top bar, Top bar: price formula, Top bar: unit) are gone, and so is the permission to read\n  that sensor. A screen without a price tile shows no price in the top bar.\n\n## 0.10.0\n- The price now in the top bar: place **Electricity price** on a page's top bar in the editor, under \"From plugins\".\n  It reads the price sensor chosen when the plugin is added (Price sensor for the top bar), through a formula of its\n  own and in EUR/kWh or ct/kWh: two settings in the plugin's details on the screen's Plugins tab, which change\n  without a build. A formula with a typo says \"Check the formula\".\n- The price of now comes from today's list at the current time slot, the same as the bar of now. The ENTSO-e tile\n  showed the day's average as the price of now: ENTSO-e keeps its lists only on its average-price sensor, whose\n  state is that average (issue #2). Without a list or a set clock, the sensor's state stays the price.\n\n## 0.9.0\n- Graph: bars or a stepped line, chosen per tile in the editor. The stepped line follows the price slot by slot in the\n  colours of the bars, with a dot for now; a feed-in price is a thin grey line under it. A tapped slot gets a line\n  down through it and a dot on each price.\n- Fill under the line (on by default): a faint fill down to zero, or to the feed-in price.\n- Grid lines (none by default): solid or dotted lines across the graph at the price labels it shows. The lines\n  that were there before were a pixel wide by mistake, so none showed.\n- The card shows the graph of the tile you open it from.\n\n## 0.8.1\n- A tapped bar shows its feed-in price too: after its time on a tile, where it fits, and on the card in the feed-in\n  line, with its time slot.\n\n## 0.8.0\n- The tariff is a formula you type, one for delivery and one for feed-in: `(p+0.12)*1.21`, `p-0.02`, or a number\n  alone for a fixed price. p is the sensor's price per kWh; + - * /, brackets and a decimal point or comma work.\n  A formula with a typo shows \"Check the formula\" in place of the price.\n- The a, b and c options of 0.7.0 are gone: type your tariff again as a formula.\n\n## 0.7.0\n- Your own tariff on top of the market price: the delivery price is (p + a) × b + c, with a for the energy tax and the\n  supplier's surcharge, b for the VAT and c added after it. b 0 and c your price make a fixed price.\n- An optional feed-in price, (p + a) × b + c with its own a, b and c. With it each bar of the graph runs from the\n  feed-in price up to the delivery price; the colours stay those of the delivery price.\n- The feed-in price of now under the price on the meter tile, where it has room, and under the price on the card.\n\n## 0.6.6\n- A sensor that reports per MWh shows its price per kWh, in EUR/kWh and in ct/kWh alike. Before, ct/kWh multiplied a\n  price per MWh by 100.\n- On the days the clock changes (23 or 25 hours), the bar of now, the times under the graph and the time slots of a\n  tapped bar and of the highest and lowest price are right. Before, they were an hour off after the change.\n- When tomorrow's prices come in another resolution than today's (hours beside quarters), the graph shows them in\n  today's, without gaps.\n- \"Choose a price sensor\" and \"No price\" fit on a small tile and on the card, in every language: without a price\n  the message takes the whole row, in a smaller font where needed. Before, it was cut off.\n\n## 0.6.5\n- The tiles also take the whole page (`full: true`): a tile as big as the grid, such as 5x5 on a 5x5 grid, was not offered before.\n- The editor shows the price with its unit.\n\n## 0.6.4\n- The tiles come in every size, from 1x1 up to 9x9 (before, at most 4x3).\n\n## 0.6.3\n- Graph: the bars share the whole width of the plot. Before, each bar had a whole number of pixels, so on a screen where 192 quarters did not divide the width the bars took only part of it.\n\n## 0.6.2\n- Card: the highest and the lowest price only count from now on, tomorrow included once it is known. A time slot of tomorrow says \"Tomorrow\" in front.\n\n## 0.6.1\n- The card is as wide as the glass, like Tessera's own graph.\n\n## 0.6.0\n- Card: the unit behind the average, the highest and the lowest. A tapped bar shows its price under its time slot in the middle, and the price of now stays at the left.\n\n## 0.5.4\n- Store picture (store.png) made on the bench.\n- Fixes found by the first real build: the GE-Spot tile is registered, no `strlcpy`, the Tomorrow label stays inside the card.\n- The name keeps the tile-label font, the price takes what is left.\n\n## 0.5.3\n- The graph shows from 2 wide and 2 high; smaller tiles show the price with the meter bar.\n\n## 0.5.2\n- Tile with a graph: the name at the left and the price of now at the right, like the small tile. A tapped bar shows its time in place of the name.\n\n## 0.5.1\n- Small tile like the meter bar tile: the name at the left, the price with its unit at the right.\n\n## 0.5.0\n- GE-Spot as a source: a third tile reads `today_interval_prices` and `tomorrow_interval_prices` (the `value` of each interval).\n\n## 0.4.1\n- Tapping a bar works on the full screen card too (needs API 0.12). High, low and average use the font of the history card.\n\n## 0.4.0\n- Tap a bar of the graph on a tile to see its price and time slot for a few seconds. Tap it again, or beside the bars, to open the card.\n\n## 0.3.1\n- Card header like the history card: price at the left, average in the middle, highest and lowest at the right with their time slot.\n\n## 0.3.0\n- Choose the unit: EUR/kWh or ct/kWh.\n- Time axis and price axis in the look of Tessera's history graph; the small tile is the meter's bar of cells.\n\n## 0.2.0\n- The graph shows quarter-hour prices when the sensor has them.\n- One tile per integration (Nord Pool, ENTSO-e), so the inspector lists only compatible sensors.\n\n## 0.1.0\n- First version: a tile with the electricity price now, a graph of today and tomorrow on bigger tiles and on a card.\n  Works with the Nord Pool and ENTSO-e sensors.\n"
+   },
+   "image": "store.png"
+  },
+  {
+   "id": "energy_flow",
+   "repo": "https://github.com/hflocki/tessera-energy",
+   "repo_id": 1427455521,
+   "path": ".",
+   "label": "community",
+   "status": "ok",
+   "release": {
+    "version": "1.1.4",
+    "sha": "74feebc1da649903eeefbc84ed9f5020da456ac5",
+    "date": "2026-10-21",
+    "tag": "1.1.4"
+   },
+   "manifest": {
+    "id": "energy_flow",
+    "version": "1.1.4",
+    "api": "0.10",
+    "icon": "solar-power",
+    "maintainer": "hflocki",
+    "license": "MIT",
+    "stage": "beta",
+    "topics": [
+     "energy",
+     "home"
+    ],
+    "requires": {
+     "esphome": "2026.6.2"
+    },
+    "boards": "any",
+    "flash_kb": 16,
+    "permissions": {
+     "read_entities": [
+      "{grid}",
+      "{pv}",
+      "{pv_today}",
+      "{coverage}",
+      "{forecast}",
+      "{grid_today}"
+     ]
+    },
+    "inputs": [
+     {
+      "id": "grid",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_grid",
+      "hint": "input_grid_hint"
+     },
+     {
+      "id": "pv",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_pv",
+      "hint": "input_pv_hint"
+     },
+     {
+      "id": "pv_today",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_pv_today",
+      "hint": "input_pv_today_hint"
+     },
+     {
+      "id": "coverage",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_coverage",
+      "hint": "input_coverage_hint"
+     },
+     {
+      "id": "forecast",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_forecast",
+      "hint": "input_forecast_hint"
+     },
+     {
+      "id": "grid_today",
+      "kind": "entity",
+      "domains": [
+       "sensor"
+      ],
+      "scope": "screen",
+      "label": "input_grid_today",
+      "hint": "input_grid_today_hint"
+     }
+    ],
+    "tiles": [
+     {
+      "id": "flow",
+      "name": "tile_name",
+      "icon": "solar-power",
+      "sizes": {
+       "min": "1x1",
+       "max": "6x3"
+      },
+      "memory": 1400,
+      "example": "tile_example",
+      "options": [
+       {
+        "id": "invert",
+        "kind": "toggle",
+        "default": false,
+        "label": "invert",
+        "hint": "invert_hint"
+       },
+       {
+        "id": "today",
+        "kind": "toggle",
+        "default": true,
+        "label": "today",
+        "hint": "today_hint"
+       }
+      ]
+     }
+    ],
+    "cards": [
+     {
+      "id": "details",
+      "name": "card_name",
+      "wide": true
+     }
+    ]
+   },
+   "translations": {
+    "de": {
+     "_meta": {
+      "name": "Deutsch"
+     },
+     "screen": {
+      "decimal": ",",
+      "choose": "Netzleistung in den Plugin-Details wählen",
+      "solar": "Solar",
+      "home": "Haus",
+      "import": "Netzbezug",
+      "export": "Einspeisung",
+      "coverage": "PV-Deckung {n} %",
+      "grid_share": "Netz {n} %",
+      "today": "Heute",
+      "day_solar": "Solar {v}",
+      "day_grid": "Bezug {v}",
+      "forecast": "{made} von {of} Prognose",
+      "grid": "Netz",
+      "percent": "{n} %",
+      "row_pv": "PV-Leistung",
+      "row_home": "Hausverbrauch",
+      "row_coverage": "PV-Deckung",
+      "row_pv_today": "PV heute",
+      "row_forecast": "Prognose heute",
+      "row_grid_today": "Netzbezug heute"
+     },
+     "app": {
+      "name": "Energiefluss",
+      "summary": "Solar, Haus und Netz: was die PV erzeugt, was das Haus braucht, was aus dem Netz kommt oder eingespeist wird, und der Tag bisher.",
+      "tile_name": "Energie",
+      "tile_example": "Solar 1,24 kW → Haus 352 W ← Netz",
+      "invert": "Netz umkehren",
+      "invert_hint": "Für Zähler, die Einspeisung positiv zählen.",
+      "today": "Tag anzeigen",
+      "today_hint": "Solar- und Netzenergie von heute und die Prognose, wenn Platz ist.",
+      "card_name": "Energie im Detail",
+      "input_grid": "Netzleistung",
+      "input_grid_hint": "Leistung des Zählers in W oder kW: positiv Bezug, negativ Einspeisung.",
+      "input_pv": "PV-Leistung",
+      "input_pv_hint": "Was die PV gerade erzeugt, in W oder kW.",
+      "input_pv_today": "PV heute",
+      "input_pv_today_hint": "Heute erzeugte Solarenergie in kWh. Darf leer bleiben.",
+      "input_coverage": "PV-Deckung",
+      "input_coverage_hint": "Sensor in %, wie viel vom Verbrauch die PV deckt. Leer: aus PV und Netz berechnet.",
+      "input_forecast": "Prognose heute",
+      "input_forecast_hint": "Solarprognose für heute in kWh, z. B. von Forecast.Solar. Darf leer bleiben.",
+      "input_grid_today": "Netzbezug heute",
+      "input_grid_today_hint": "Heute aus dem Netz bezogene Energie in kWh. Darf leer bleiben."
+     }
+    },
+    "en": {
+     "_meta": {
+      "name": "English"
+     },
+     "screen": {
+      "decimal": ".",
+      "choose": "Choose the grid power in the plugin's details",
+      "solar": "Solar",
+      "home": "House",
+      "import": "From the grid",
+      "export": "To the grid",
+      "coverage": "Solar covers {n} %",
+      "grid_share": "Grid {n} %",
+      "today": "Today",
+      "day_solar": "solar {v}",
+      "day_grid": "from the grid {v}",
+      "forecast": "{made} of {of} forecast",
+      "grid": "Grid",
+      "percent": "{n} %",
+      "row_pv": "Solar power",
+      "row_home": "House uses",
+      "row_coverage": "Solar coverage",
+      "row_pv_today": "Solar today",
+      "row_forecast": "Forecast today",
+      "row_grid_today": "From the grid today"
+     },
+     "app": {
+      "name": "Energy flow",
+      "summary": "Solar, house and grid: what the panels make, what the house uses, what comes from the grid or goes back, and the day so far.",
+      "tile_name": "Energy",
+      "tile_example": "Solar 1.24 kW → House 352 W ← Grid",
+      "invert": "Invert the grid",
+      "invert_hint": "For a meter that counts power going to the grid as positive.",
+      "today": "Show the day",
+      "today_hint": "Today's solar and grid energy and the forecast, when there is room.",
+      "card_name": "Energy in detail",
+      "input_grid": "Grid power",
+      "input_grid_hint": "The meter's power in W or kW: positive from the grid, negative to it.",
+      "input_pv": "Solar power",
+      "input_pv_hint": "What the panels make now, in W or kW.",
+      "input_pv_today": "Solar today",
+      "input_pv_today_hint": "Today's solar energy in kWh. May stay empty.",
+      "input_coverage": "Solar coverage",
+      "input_coverage_hint": "A sensor in % of the house's use the sun covers. Empty: worked out from solar and grid.",
+      "input_forecast": "Forecast today",
+      "input_forecast_hint": "Today's solar forecast in kWh, such as Forecast.Solar's. May stay empty.",
+      "input_grid_today": "Grid today",
+      "input_grid_today_hint": "Today's energy from the grid in kWh. May stay empty."
+     }
+    }
+   },
+   "readme": {
+    "en": "# Energy flow\n\nElectricity at home with solar panels on one tile, in the spirit of Home Assistant's energy dashboard.\n\n**The tile** shows the sun, the house and the grid side by side: what the panels make now, what the house uses, and\nwhat comes from the grid or goes back to it. Arrows show where the power flows; a circle takes its colour while power\nflows there (amber for the sun, blue for power from the grid, green for power to it). Under them, when there is room:\n\n- a bar of the house's use, amber as far as the sun covers it, blue for the rest (\"Solar covers 46 %\");\n- the day so far (\"Today: solar 3.4 kWh · from the grid 5.2 kWh\");\n- what the panels made against today's forecast, as a bar.\n\nIt fits any size from 1 x 1 to 6 x 3: on a narrow tile it shows the grid and, under it, the sun. Each part shows\nonly while there is room for it and a sensor for it. **A tap** opens a card: at the left the flow as in Home Assistant's energy card, the sun above, the grid and the\nhouse below, joined by lines that take their colour and a dot where power flows; at the right every chosen sensor in\na row of its own (grid, solar, house, coverage, solar today, forecast with how much of it is made, grid today).\n\n## Set up\n\n1. In Tessera, open **Plugins**, **Add with a link**, and paste the link of this repository. Add the plugin to a\n   screen.\n2. In the plugin's details on the screen's Plugins tab, under **When building**, choose the sensors:\n   - **Grid power** (needed): your meter's power in W or kW, positive while power comes from the grid and negative\n     while it goes back. A meter that counts the other way round: switch on **Invert the grid** on the tile.\n   - **Solar power**: what the panels make now.\n   - **Solar today**, **Grid today**: today's energy in kWh, for the day so far.\n   - **Solar coverage**: a sensor in % if you have one; without it the share is worked out from solar and grid.\n   - **Forecast today**: today's solar forecast in kWh (Forecast.Solar, Solcast).\n   Leave out what you do not have. **Save and build**.\n3. In **Layout**, place the **Energy** tile.\n\n## Good to know\n\n- The house's use is grid + solar. A battery is not part of it yet.\n- W and kW, Wh and kWh are both understood: the plugin reads each sensor's unit.\n"
+   },
+   "changelog": {
+    "en": "# Changelog\n\n## 1.1.4\n- On a small card the rings choose a font and icon that fit, and leave out the day where it does not fit.\n- Each value in the list is as wide as it is; the names take the rest, smaller on a narrow list.\n\n## 1.1.3\n- Each sensor has its own default entity, and the picture on the Plugins page shows the plugin with values.\n\n## 1.1.2\n- On the card, the names under the circles stay inside the card at its edges.\n\n## 1.1.1\n- The icon sits inside its circle as one part, and an idle circle is lighter, so the grey icon reads in the light look too.\n- Amber and yellow words and icons take the ink on the light look, where they were too faint to read; the dark look keeps its colours.\n- Parts not shown are hidden, so nothing lies outside the tile before the first values arrive.\n\n## 1.1.0\n- The card on a tap: the flow as in Home Assistant's energy card (the sun above, the grid and the house below, lines\n  with a dot where power flows) and every sensor in a row of its own.\n\n## 1.0.0\n- First version: solar, house and grid side by side with the direction of the flow, the share of the house's use the\n  sun covers, and the day so far with the forecast; narrow, the grid and the sun under each other.\n"
    },
    "image": "store.png"
   },
@@ -7017,6 +7276,106 @@
    },
    "changelog": {
     "en": "# Changelog\n\n## 1.1.2\n- The icon sits inside its circle as one part, and an idle circle is lighter, so the grey icon reads in the light look too.\n- Amber and yellow words and icons take the ink on the light look, where they were too faint to read; the dark look keeps its colours.\n\n## 1.1.1\n- Opacities are written only when they change, so the tile is not redrawn every second.\n\n## 1.1.0\n- The tint covers the whole tile with its own corners; the circle is light and the icon takes the level's colour.\n- A DWD level without the details of its warnings shows as \"Warning level 1\", the advance warning too.\n- NINA's severity is read whatever its case, for a template sensor fed by `nina.get_details` (README).\n- Without a time, the tile names the source of the warning.\n\n## 1.0.0\n- First version: the strongest DWD or NINA warning on a tile in the colour of its level, and a card with every\n  warning, its time, source and text.\n"
+   },
+   "image": "store.png"
+  },
+  {
+   "id": "wifi_qr",
+   "repo": "https://github.com/dynodix/tessera-wifi-qr",
+   "repo_id": 1432221662,
+   "path": ".",
+   "label": "community",
+   "status": "ok",
+   "release": {
+    "version": "0.1.1",
+    "sha": "288bdc43471ba441c7668c2e0440fcf9fbd771d1",
+    "date": "2026-10-24",
+    "tag": "v0.1.1"
+   },
+   "manifest": {
+    "id": "wifi_qr",
+    "version": "0.1.1",
+    "api": "0.8",
+    "icon": "qrcode",
+    "maintainer": "dynodix",
+    "license": "MIT",
+    "stage": "beta",
+    "topics": [
+     "tech",
+     "home"
+    ],
+    "requires": {
+     "esphome": "2026.6.2"
+    },
+    "boards": "any",
+    "flash_kb": 24,
+    "permissions": {
+     "read_entities": [
+      "{wifi_ssid}",
+      "{wifi_password}"
+     ]
+    },
+    "inputs": [
+     {
+      "id": "wifi_ssid",
+      "kind": "entity",
+      "domains": [
+       "input_text"
+      ],
+      "scope": "screen",
+      "label": "wifi_ssid",
+      "hint": "wifi_ssid_hint"
+     },
+     {
+      "id": "wifi_password",
+      "kind": "entity",
+      "domains": [
+       "input_text"
+      ],
+      "scope": "screen",
+      "label": "wifi_password",
+      "hint": "wifi_password_hint"
+     }
+    ],
+    "tiles": [
+     {
+      "id": "connect",
+      "name": "tile_name",
+      "icon": "qrcode",
+      "sizes": {
+       "min": "1x1",
+       "max": "3x3"
+      },
+      "memory": 900,
+      "example": "tile_example"
+     }
+    ]
+   },
+   "translations": {
+    "en": {
+     "_meta": {
+      "name": "English"
+     },
+     "screen": {
+      "helpers_empty": "Fill in both Wi-Fi helpers"
+     },
+     "app": {
+      "name": "Wi-Fi QR",
+      "summary": "Lets guests scan a QR code to join your Wi-Fi network.",
+      "tile_name": "Wi-Fi QR",
+      "tile_example": "Scan to join Wi-Fi",
+      "wifi_ssid": "Wi-Fi name helper",
+      "wifi_ssid_hint": "The input_text helper containing the network name (SSID).",
+      "wifi_password": "Wi-Fi password helper",
+      "wifi_password_hint": "The input_text helper containing the network password."
+     }
+    }
+   },
+   "readme": {
+    "en": "# Wi-Fi QR\n\nA Tessera tile that shows a scannable QR code for a Wi-Fi network. Its network name and password come from two Home\nAssistant `input_text` helpers, so changing either helper updates the tile without rebuilding the screen.\n\n## Set up\n\n1. In Home Assistant, create two Text helpers named `WIFI_SSID` and `WIFI_PASSWORD`.\n2. Put the Wi-Fi network name in `WIFI_SSID` and its password in `WIFI_PASSWORD`.\n3. Add this plugin to a screen in Tessera. Choose those two helpers when Tessera asks for them, then build the screen.\n4. In Layout, place the **Wi-Fi QR** tile from the Plugins group and resize it from 1 x 1 up to 3 x 3. A size of at\n   least 2 x 2 is recommended for reliable scanning.\n\n## Good to know\n\n- The QR code uses the common `WIFI:` format with WPA security. Modern Android and iOS cameras can scan it directly.\n- The password is sent to the screen through ESPHome's Home Assistant connection. It is encoded in the QR code but is\n  never printed as text on the display.\n- Anyone who can see the tile can join the network. Put it only on screens and pages intended for guests.\n- Hidden or open networks and WEP are not supported in this first version.\n"
+   },
+   "changelog": {
+    "en": "# Changelog\n\n## 0.1.1 - 2026-10-24\n- The tile can now be resized from 1 x 1 through 3 x 3 in Layout.\n\n## 0.1.0\n- First version: a scannable WPA Wi-Fi QR code driven by two Home Assistant Text helpers.\n"
    },
    "image": "store.png"
   },
