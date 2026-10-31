@@ -11,7 +11,7 @@
    "likes": 0,
    "rating": null,
    "ratings": 1,
-   "homes": 1
+   "homes": 2
   },
   "cinema": {
    "likes": 2,
@@ -23,12 +23,18 @@
    "likes": 9,
    "rating": null,
    "ratings": 2,
-   "homes": 5
+   "homes": 6
+  },
+  "dwd_rain": {
+   "likes": 0,
+   "rating": null,
+   "ratings": 0,
+   "homes": 1
   },
   "electricity_price": {
    "likes": 1,
    "rating": null,
-   "ratings": 0,
+   "ratings": 1,
    "homes": 0
   },
   "flip_clock": {
@@ -36,6 +42,12 @@
    "rating": null,
    "ratings": 1,
    "homes": 7
+  },
+  "guition_relays": {
+   "likes": 0,
+   "rating": null,
+   "ratings": 0,
+   "homes": 1
   },
   "new_music": {
    "likes": 2,
@@ -65,7 +77,7 @@
    "likes": 1,
    "rating": null,
    "ratings": 0,
-   "homes": 2
+   "homes": 1
   },
   "scmt": {
    "likes": 0,
@@ -119,7 +131,7 @@
    "likes": 0,
    "rating": null,
    "ratings": 1,
-   "homes": 0
+   "homes": 1
   },
   "waze_traveltime": {
    "likes": 2,
@@ -137,7 +149,7 @@
    "likes": 2,
    "rating": null,
    "ratings": 0,
-   "homes": 2
+   "homes": 3
   }
  }
 }
