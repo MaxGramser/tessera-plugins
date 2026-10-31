@@ -1,6 +1,6 @@
 {
  "format": 1,
- "generated": "2026-10-30T19:15:29Z",
+ "generated": "2026-10-31T20:03:57Z",
  "plugin_api": "0.24",
  "blocked": [],
  "featured": [
@@ -7771,14 +7771,14 @@
    "label": "community",
    "status": "ok",
    "release": {
-    "version": "0.3.0",
-    "sha": "9ec75705230d63290c437f03ba8cb516e9f346a2",
-    "date": "2026-10-30",
-    "tag": "v0.3.0"
+    "version": "0.3.1",
+    "sha": "ffae4c6a80ff1cc0723a276b6e3a82d392a56f6b",
+    "date": "2026-10-31",
+    "tag": "v0.3.1"
    },
    "manifest": {
     "id": "thermo_dial",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "api": "0.12",
     "icon": "thermometer",
     "maintainer": "alexcoscia",
@@ -7896,7 +7896,7 @@
     "en": "# Thermo dial\n\nA tile for a climate entity with the target large, and keys to step it and change its mode. A tap on the tile opens\na card with a dial you drag, like Home Assistant's thermostat card.\n\n## Set up\n\n1. In Tessera, open **Plugins**, choose **Thermo dial** and tick your screens. Each screen builds once.\n2. In Layout, place the **Thermo dial** tile from 1x2 up (the keys sit at the bottom).\n3. Choose the `climate.*` entity in the tile's inspector.\n4. Make sure the screen may perform Home Assistant actions. Tessera turns this on for a screen it added to Home Assistant;\n   for a screen added by hand, tick **Allow the device to perform Home Assistant actions** in the ESPHome integration's\n   options for that device.\n\n## What it shows\n\n- The tile: the name, the target as a number in the middle, and the keys - , mode and + below. The mode key shows only\n  when the entity offers two modes or more.\n- A tap on the tile, anywhere but a key, opens the card: the dial with the target large in the middle, \"Now 19.8°\"\n  and what the thermostat is doing under it. The ring is amber while heating, blue while cooling and grey when idle or\n  off.\n\n## Good to know\n\n- Dragging the dial changes the number only; Home Assistant gets one `climate.set_temperature` when you let go. The\n  - and + keys send one after 600 ms without another tap.\n- If Home Assistant does not report the new target within 5 seconds, the number goes back to the real one.\n- Range and step come from the entity (`min_temp`, `max_temp`, `target_temp_step`).\n- An unavailable thermostat shows a dash, and its keys and dial do nothing.\n\n## Boards\n\nTried on a real screen: the Waveshare ESP32-S3-Touch-LCD-7B (7 inch, 1024x600), with a real `climate` entity: the\nkeys, the card and dragging its dial. Drawn by the plugin bench on the CYD, a 4-inch Guition, a 4.3-inch Waveshare and a\n10-inch Guition P4, light and dark.\n"
    },
    "changelog": {
-    "en": "# Changelog\n\n## 0.3.0\n- A tile one cell wide and two or more high (1x2, 1x3) shows the - and + keys at the bottom, under the words; the mode\n  key still needs two cells in width.\n- Under the number every tile that has room shows the temperature now and the state's icon (flame, snowflake, power,\n  and zzz when idle). The card uses the same icons.\n\n## 0.2.1\n- Builds on Tessera 0.4.91 and later (plugin API 0.24), which took away the key and value form of `tessera::action`:\n  the target and the mode go as a JSON object, the temperature as a number. The manifest names plugin API 0.12, which\n  brought those fields.\n- README: a new step in \"Set up\" says the screen must be allowed to perform Home Assistant actions.\n\n## 0.2.0\n- The dial now lives on a card that a tap on the tile opens, so the screen keeps its drags (`on_step`). The tile shows the\n  target and the temperature now, with the - and + keys and the mode key.\n- The number is centred on the tile.\n- The keys answer `on_tap` and `tap_point()`, so they have the screen's touch filter, not an LVGL event of their own.\n## 0.1.0\n- First version: a dial tile for a climate entity.\n"
+    "en": "# Changelog\n\n## 0.3.1\n- A tile two or more cells wide and one high (2x1) shows the - key at the left and the + key at the right, with the\n  number between them and under it the temperature now and the state's icon. The name stays above the number only when\n  there is room for it.\n- The number, the temperature now and the icon take a colour while the thermostat works: Home Assistant's amber when\n  it heats, the screen's blue when it cools. Idle, off and unavailable keep the usual colours.\n\n## 0.3.0\n- A tile one cell wide and two or more high (1x2, 1x3) shows the - and + keys at the bottom, under the words; the mode\n  key still needs two cells in width.\n- Under the number every tile that has room shows the temperature now and the state's icon (flame, snowflake, power,\n  and zzz when idle). The card uses the same icons.\n\n## 0.2.1\n- Builds on Tessera 0.4.91 and later (plugin API 0.24), which took away the key and value form of `tessera::action`:\n  the target and the mode go as a JSON object, the temperature as a number. The manifest names plugin API 0.12, which\n  brought those fields.\n- README: a new step in \"Set up\" says the screen must be allowed to perform Home Assistant actions.\n\n## 0.2.0\n- The dial now lives on a card that a tap on the tile opens, so the screen keeps its drags (`on_step`). The tile shows the\n  target and the temperature now, with the - and + keys and the mode key.\n- The number is centred on the tile.\n- The keys answer `on_tap` and `tap_point()`, so they have the screen's touch filter, not an LVGL event of their own.\n## 0.1.0\n- First version: a dial tile for a climate entity.\n"
    },
    "image": "store.png"
   },

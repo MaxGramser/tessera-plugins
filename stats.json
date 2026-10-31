@@ -37,11 +37,17 @@
    "ratings": 2,
    "homes": 0
   },
+  "energy_flow": {
+   "likes": 0,
+   "rating": null,
+   "ratings": 0,
+   "homes": 2
+  },
   "flip_clock": {
    "likes": 4,
    "rating": null,
    "ratings": 1,
-   "homes": 7
+   "homes": 6
   },
   "guition_relays": {
    "likes": 0,
@@ -91,12 +97,6 @@
    "ratings": 1,
    "homes": 1
   },
-  "status_tile": {
-   "likes": 0,
-   "rating": null,
-   "ratings": 0,
-   "homes": 1
-  },
   "tankerkoenig": {
    "likes": 1,
    "rating": null,
@@ -109,6 +109,12 @@
    "ratings": 1,
    "homes": 1
   },
+  "thermo_dial": {
+   "likes": 1,
+   "rating": null,
+   "ratings": 1,
+   "homes": 0
+  },
   "timers": {
    "likes": 0,
    "rating": null,
@@ -119,7 +125,7 @@
    "likes": 1,
    "rating": null,
    "ratings": 0,
-   "homes": 1
+   "homes": 0
   },
   "voice_assist": {
    "likes": 3,
