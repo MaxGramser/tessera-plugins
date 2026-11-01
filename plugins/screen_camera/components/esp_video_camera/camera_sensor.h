@@ -29,6 +29,11 @@ typedef struct tessera_camera_sensor {
   // What the sensor says it does in that mode, for the log ten seconds after a change or when it fails: the length
   // written into `out`.
   int (*field_report)(char *out, size_t size);
+  // The camera has handed the sensor its controls (its flips): after every start, which hands the sensor its format and
+  // so its format's own registers again, and after a turn. Called on the camera's task, before the next frame. A sensor
+  // whose registers the format or a flip leaves wrong for the picture puts them right here: the OV5647, whose flips
+  // move its colour order and whose format sets one of its two mirror bits (components/ov5647).
+  void (*controls_set)(void);
 } tessera_camera_sensor_t;
 
 // A driver that found its sensor adds it (once; the table outlives the call).

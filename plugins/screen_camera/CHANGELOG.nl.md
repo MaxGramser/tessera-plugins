@@ -1,5 +1,14 @@
 # Wijzigingen
 
+## 0.6.16 - 2026-11-01
+- **De kleuren van de OV5647 kloppen, ook als het beeld draait.** Op een Waveshare ESP32-P4 7B met zijn OV5647 was het
+  beeld paars en kwam oranje als groen: Espressifs driver zet een van de twee spiegelbits van de sensor, en de
+  kleurvolgorde die hij opgeeft klopt alleen met allebei. Half omgedraaid (een scherm dat ondersteboven hangt) wisselden
+  ook rood en blauw, omdat de flips van de sensor zijn kleuren verschuiven. Een kleine component voor deze sensor zet nu
+  het tweede bit en schuift het venster van de sensor een pixel op voor elke flip, telkens als de camera hem heeft
+  gestart of gedraaid; de stand van het beeld blijft zoals hij was. Geprobeerd op een 7B met een ESP32-P4 v1.3, rechtop
+  en gedraaid.
+
 ## 0.6.15 - 2026-10-29
 - **Een geluidspakket gaat zodra de verbinding er ruimte voor heeft.** 0.6.14 hield het tegen zolang de verbinding niet
   "writable" was, en dat zegt lwIP pas met de helft van de zendbuffer vrij: een vijfde seconde video onderweg, normaal

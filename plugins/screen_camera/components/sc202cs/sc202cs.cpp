@@ -36,7 +36,7 @@ static int camera_frame_report(char *out, size_t size) {
 }
 // Its frame rate only: its one format already shows all it sees.
 static const tessera_camera_sensor_t CAMERA_SENSOR = {"SC202CS", camera_set_fps, camera_frame_report, nullptr,
-                                                      nullptr};
+                                                      nullptr, nullptr};
 
 void SC202CS::setup() {
   uint8_t high = 0, low = 0;

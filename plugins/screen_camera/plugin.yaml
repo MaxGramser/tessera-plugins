@@ -29,6 +29,12 @@ ov02c10:
 sc202cs:
   i2c_id: ${CAMERA_I2C}
 
+# The OmniVision OV5647 of the Waveshare ESP32-P4 7B's camera kit (and the Raspberry Pi cameras of that sensor): its
+# colours in the order Espressif's driver declares, also when the camera flips it to turn the picture
+# (components/ov5647). It leaves a sensor of another id alone.
+ov5647:
+  i2c_id: ${CAMERA_I2C}
+
 # The room's light level and motion, worked out on the screen from the camera's frames: no picture leaves the screen for
 # them. Off until a person switches it on, because the camera then keeps running (at the frame rate above); the core's dot
 # shows while it does. Motion can wake the screen, a setting of its own, off as well.

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6.16 - 2026-11-01
+- **The OV5647's colours are right, also when the picture turns.** On a Waveshare ESP32-P4 7B with its OV5647 the
+  picture was purple and orange showed as green: Espressif's driver sets one of the sensor's two mirror bits, and the
+  colour order it declares holds only with both. Turned half way round (a screen hung upside down), red and blue swapped
+  as well, since the sensor's flips move its colours. A small component for this sensor now sets the second bit and
+  moves the sensor's window by a pixel for each flip, every time the camera has started or turned it; the picture's
+  orientation is as before. Tried on a 7B with an ESP32-P4 v1.3, upright and turned.
+
 ## 0.6.15 - 2026-10-29
 - **A sound packet goes whenever the connection has room for it.** 0.6.14 held it back whenever the connection was not
   "writable", which lwIP says only with half of the send buffer free: a fifth of a second of video in flight, normal

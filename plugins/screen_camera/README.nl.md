@@ -83,7 +83,11 @@ is een eigen component ernaast, `components/ov02c10`: de sensordriver en zijn be
 voor oudere), met een NOTICE die zegt waar ze vandaan komen. De SmartSens SC202CS (SC2356) van de Tab5 en de reTerminal
 heeft ook een kleine eigen component, `components/sc202cs`: Espressifs driver start hem met een zwartniveau van 16 van
 255 dat de ISP eraf moet halen, wat een ESP32-P4 van voor rev3 niet kan, dus verlaagt de component het eigen
-zwartniveau van de sensor nadat de camera hem heeft gestart. De beelden van de camera gaan naar een verdeler van Screen
+zwartniveau van de sensor nadat de camera hem heeft gestart. De OmniVision OV5647 (de camerakit van de Waveshare
+ESP32-P4 7B, de Raspberry Pi-camera's met die sensor) heeft er ook een, `components/ov5647`: Espressifs formaten zetten
+een van zijn twee spiegelbits en zijn flips verschuiven zijn kleuren, dus zet de component het andere bit en schuift hij
+het venster van de sensor een pixel op voor elke flip, telkens als de camera de sensor zijn instellingen heeft gegeven;
+zonder dat was het beeld paars, met oranje als groen, en half omgedraaid wisselden rood en blauw. De beelden van de camera gaan naar een verdeler van Screen
 camera (`components/screen_camera/frame_hub.h`) die ze doorgeeft aan lichtniveau en beweging en aan de video, en de
 sensoren die de camera zelf vindt staan in de tabel `components/screen_camera/sensors.py`. Wat de driver van een
 sensor kan naast zijn formaat, een lager beeldtempo als de camera alleen meet en een stand over zijn hele beeldveld,

@@ -54,6 +54,8 @@ static const char *const FIELD_NAMES[] = {"Sharp", "Full"};
 static const tessera_camera_sensor_t *field_sensor();
 // What that sensor says it does (the OV02C10: binning, window and output), into `report`; false when it says nothing.
 static bool field_report(char *report, size_t size);
+// Tells every sensor that the camera has handed it its controls (camera_sensor.h, controls_set).
+static void sensors_controls_set();
 
 #if CONFIG_IDF_TARGET_ESP32P4
 // What the P4's MIPI receiver, CSI bridge and ISP saw when a field of view stalls (from a Guition tester's test
@@ -650,6 +652,7 @@ void ESPVideoCamera::apply_runtime_ctrls_() {
     v = this->rt_hflip_.load();
     if (v >= 0)
       gate_set_ext_ctrl(this->capture_fd_, V4L2_CID_HFLIP, v, "hflip");
+    sensors_controls_set();
   }
   if (this->jpeg_fd_ >= 0) {
     v = this->rt_quality_.load();
@@ -1216,6 +1219,12 @@ static const tessera_camera_sensor_t *field_sensor() {
   for (int i = 0; i < n; ++i)
     if (s_sensors[i]->field_format != nullptr) return s_sensors[i];
   return nullptr;
+}
+
+static void sensors_controls_set() {
+  const int n = s_sensor_count.load(std::memory_order_acquire);
+  for (int i = 0; i < n; ++i)
+    if (s_sensors[i]->controls_set != nullptr) s_sensors[i]->controls_set();
 }
 
 static bool field_report(char *report, size_t size) {

@@ -92,4 +92,8 @@ own beside it, `components/ov02c10`: the sensor driver and its image tuning (one
 with a NOTICE that says where they come from. The SmartSens SC202CS (SC2356) of the Tab5 and the reTerminal has a small
 component of its own too, `components/sc202cs`: Espressif's driver starts it with a black level of 16 of 255 for the ISP
 to take off, which an ESP32-P4 before rev3 cannot, so the component lowers the sensor's own black level target after the
-camera has started it.
+camera has started it. The OmniVision OV5647 (the Waveshare ESP32-P4 7B's camera kit, the Raspberry Pi cameras of that
+sensor) has one as well, `components/ov5647`: Espressif's formats set one of its two mirror bits and its flips move its
+colours, so the component sets the other bit and moves the sensor's window by a pixel for each flip, every time the
+camera has handed the sensor its controls; without it the picture was purple, with orange as green, and turned half way
+round red and blue swapped.
