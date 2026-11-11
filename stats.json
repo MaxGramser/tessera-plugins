@@ -9,9 +9,9 @@
   },
   "bt_proxy": {
    "likes": 0,
-   "rating": 4.1,
-   "ratings": 9,
-   "homes": 11
+   "rating": 4.2,
+   "ratings": 10,
+   "homes": 12
   },
   "buienradar": {
    "likes": 2,
@@ -28,19 +28,19 @@
   "custom_card": {
    "likes": 20,
    "rating": 4.7,
-   "ratings": 32,
-   "homes": 35
+   "ratings": 33,
+   "homes": 39
   },
   "dwd_rain": {
    "likes": 1,
-   "rating": 3.6,
-   "ratings": 5,
-   "homes": 5
+   "rating": 3.8,
+   "ratings": 6,
+   "homes": 6
   },
   "electricity_price": {
    "likes": 2,
    "rating": 4.3,
-   "ratings": 6,
+   "ratings": 7,
    "homes": 7
   },
   "energidata_price": {
@@ -50,22 +50,22 @@
    "homes": 3
   },
   "energy_flow": {
-   "likes": 9,
+   "likes": 10,
    "rating": 3,
    "ratings": 3,
-   "homes": 6
+   "homes": 7
   },
   "flip_clock": {
-   "likes": 14,
-   "rating": 4.2,
-   "ratings": 41,
+   "likes": 15,
+   "rating": 4.3,
+   "ratings": 45,
    "homes": 39
   },
   "guition_relays": {
    "likes": 1,
    "rating": 5,
-   "ratings": 11,
-   "homes": 11
+   "ratings": 12,
+   "homes": 12
   },
   "new_music": {
    "likes": 4,
@@ -101,7 +101,7 @@
    "likes": 1,
    "rating": null,
    "ratings": 2,
-   "homes": 1
+   "homes": 2
   },
   "scmt": {
    "likes": 2,
@@ -117,9 +117,9 @@
   },
   "status_tile": {
    "likes": 1,
-   "rating": 4.3,
-   "ratings": 12,
-   "homes": 17
+   "rating": 4.2,
+   "ratings": 13,
+   "homes": 18
   },
   "sweden_public_transport": {
    "likes": 0,
@@ -149,7 +149,7 @@
    "likes": 0,
    "rating": 5,
    "ratings": 8,
-   "homes": 15
+   "homes": 16
   },
   "toothbrush": {
    "likes": 2,
@@ -179,7 +179,7 @@
    "likes": 5,
    "rating": 3.4,
    "ratings": 7,
-   "homes": 9
+   "homes": 10
   },
   "waze_traveltime": {
    "likes": 3,
