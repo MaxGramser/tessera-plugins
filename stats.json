@@ -17,7 +17,7 @@
    "likes": 2,
    "rating": 4.1,
    "ratings": 9,
-   "homes": 10
+   "homes": 11
   },
   "cinema": {
    "likes": 2,
@@ -33,15 +33,15 @@
   },
   "dwd_rain": {
    "likes": 1,
-   "rating": 3.8,
-   "ratings": 6,
+   "rating": 3.4,
+   "ratings": 7,
    "homes": 6
   },
   "electricity_price": {
    "likes": 2,
    "rating": 4.3,
    "ratings": 7,
-   "homes": 7
+   "homes": 8
   },
   "energidata_price": {
    "likes": 1,
@@ -53,18 +53,18 @@
    "likes": 10,
    "rating": 3,
    "ratings": 3,
-   "homes": 7
+   "homes": 6
   },
   "flip_clock": {
    "likes": 15,
    "rating": 4.3,
    "ratings": 45,
-   "homes": 39
+   "homes": 40
   },
   "guition_relays": {
    "likes": 1,
    "rating": 5,
-   "ratings": 12,
+   "ratings": 15,
    "homes": 12
   },
   "new_music": {
@@ -88,7 +88,7 @@
   "photo_slideshow": {
    "likes": 3,
    "rating": null,
-   "ratings": 1,
+   "ratings": 2,
    "homes": 7
   },
   "picture_frame": {
@@ -141,14 +141,14 @@
   },
   "thermo_dial": {
    "likes": 2,
-   "rating": 4.4,
-   "ratings": 8,
-   "homes": 17
+   "rating": 4.3,
+   "ratings": 9,
+   "homes": 16
   },
   "timers": {
    "likes": 0,
    "rating": 5,
-   "ratings": 8,
+   "ratings": 9,
    "homes": 16
   },
   "toothbrush": {
@@ -167,19 +167,19 @@
    "likes": 11,
    "rating": 4.8,
    "ratings": 16,
-   "homes": 21
+   "homes": 22
   },
   "waste_collection": {
    "likes": 9,
-   "rating": 4.6,
-   "ratings": 14,
-   "homes": 22
+   "rating": 4.7,
+   "ratings": 15,
+   "homes": 23
   },
   "waste_overview": {
    "likes": 5,
    "rating": 3.4,
    "ratings": 7,
-   "homes": 10
+   "homes": 9
   },
   "waze_traveltime": {
    "likes": 3,
@@ -201,9 +201,9 @@
   },
   "world_clock": {
    "likes": 3,
-   "rating": 4.4,
-   "ratings": 10,
-   "homes": 11
+   "rating": 4.5,
+   "ratings": 11,
+   "homes": 12
   }
  }
 }
