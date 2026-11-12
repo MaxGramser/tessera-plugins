@@ -59,7 +59,7 @@
    "likes": 15,
    "rating": 4.3,
    "ratings": 45,
-   "homes": 40
+   "homes": 39
   },
   "guition_relays": {
    "likes": 1,
@@ -83,13 +83,13 @@
    "likes": 2,
    "rating": 4.3,
    "ratings": 3,
-   "homes": 12
+   "homes": 11
   },
   "photo_slideshow": {
    "likes": 3,
    "rating": null,
    "ratings": 2,
-   "homes": 7
+   "homes": 6
   },
   "picture_frame": {
    "likes": 2,
@@ -143,7 +143,7 @@
    "likes": 2,
    "rating": 4.3,
    "ratings": 9,
-   "homes": 16
+   "homes": 15
   },
   "timers": {
    "likes": 0,
