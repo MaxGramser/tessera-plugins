@@ -17,7 +17,7 @@
    "likes": 2,
    "rating": 4.1,
    "ratings": 10,
-   "homes": 12
+   "homes": 13
   },
   "cinema": {
    "likes": 2,
@@ -44,7 +44,7 @@
    "homes": 9
   },
   "energidata_price": {
-   "likes": 2,
+   "likes": 3,
    "rating": 5,
    "ratings": 3,
    "homes": 4
@@ -57,15 +57,15 @@
   },
   "flip_clock": {
    "likes": 16,
-   "rating": 4.3,
-   "ratings": 49,
-   "homes": 46
+   "rating": 4.4,
+   "ratings": 50,
+   "homes": 47
   },
   "guition_relays": {
-   "likes": 1,
+   "likes": 3,
    "rating": 5,
-   "ratings": 15,
-   "homes": 13
+   "ratings": 16,
+   "homes": 15
   },
   "new_music": {
    "likes": 4,
@@ -81,8 +81,8 @@
   },
   "photo_clock": {
    "likes": 2,
-   "rating": 4.3,
-   "ratings": 3,
+   "rating": 4.5,
+   "ratings": 4,
    "homes": 12
   },
   "photo_slideshow": {
@@ -92,9 +92,9 @@
    "homes": 8
   },
   "picture_frame": {
-   "likes": 2,
+   "likes": 3,
    "rating": 4.4,
-   "ratings": 8,
+   "ratings": 9,
    "homes": 17
   },
   "pollen": {
@@ -113,7 +113,7 @@
    "likes": 4,
    "rating": 4.6,
    "ratings": 11,
-   "homes": 19
+   "homes": 20
   },
   "status_tile": {
    "likes": 1,
@@ -135,9 +135,9 @@
   },
   "tap_sound": {
    "likes": 2,
-   "rating": 4.3,
-   "ratings": 7,
-   "homes": 11
+   "rating": 4.4,
+   "ratings": 8,
+   "homes": 12
   },
   "thermo_dial": {
    "likes": 2,
@@ -146,10 +146,10 @@
    "homes": 17
   },
   "timers": {
-   "likes": 0,
+   "likes": 2,
    "rating": 5,
-   "ratings": 10,
-   "homes": 18
+   "ratings": 12,
+   "homes": 19
   },
   "toothbrush": {
    "likes": 2,
@@ -167,18 +167,18 @@
    "likes": 12,
    "rating": 4.7,
    "ratings": 18,
-   "homes": 23
+   "homes": 24
   },
   "waste_collection": {
    "likes": 11,
    "rating": 4.5,
-   "ratings": 20,
-   "homes": 23
+   "ratings": 21,
+   "homes": 24
   },
   "waste_overview": {
    "likes": 5,
-   "rating": 3.6,
-   "ratings": 8,
+   "rating": 3.8,
+   "ratings": 9,
    "homes": 9
   },
   "waze_traveltime": {
@@ -197,7 +197,7 @@
    "likes": 4,
    "rating": 4.4,
    "ratings": 7,
-   "homes": 6
+   "homes": 7
   },
   "world_clock": {
    "likes": 3,
