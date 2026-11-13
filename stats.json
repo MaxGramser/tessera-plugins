@@ -41,7 +41,7 @@
    "likes": 3,
    "rating": 4.4,
    "ratings": 8,
-   "homes": 8
+   "homes": 9
   },
   "energidata_price": {
    "likes": 1,
@@ -94,8 +94,8 @@
   "picture_frame": {
    "likes": 2,
    "rating": 4.3,
-   "ratings": 6,
-   "homes": 15
+   "ratings": 7,
+   "homes": 16
   },
   "pollen": {
    "likes": 1,
@@ -112,14 +112,14 @@
   "screen_camera": {
    "likes": 4,
    "rating": 4.6,
-   "ratings": 10,
+   "ratings": 11,
    "homes": 19
   },
   "status_tile": {
    "likes": 1,
    "rating": 4.3,
    "ratings": 14,
-   "homes": 18
+   "homes": 19
   },
   "sweden_public_transport": {
    "likes": 0,
@@ -135,8 +135,8 @@
   },
   "tap_sound": {
    "likes": 2,
-   "rating": 4.7,
-   "ratings": 6,
+   "rating": 4.3,
+   "ratings": 7,
    "homes": 11
   },
   "thermo_dial": {
@@ -149,12 +149,12 @@
    "likes": 0,
    "rating": 5,
    "ratings": 10,
-   "homes": 17
+   "homes": 18
   },
   "toothbrush": {
    "likes": 2,
-   "rating": null,
-   "ratings": 2,
+   "rating": 3.7,
+   "ratings": 3,
    "homes": 5
   },
   "vinyl_deck": {
@@ -170,10 +170,10 @@
    "homes": 22
   },
   "waste_collection": {
-   "likes": 9,
-   "rating": 4.6,
-   "ratings": 16,
-   "homes": 22
+   "likes": 10,
+   "rating": 4.5,
+   "ratings": 17,
+   "homes": 23
   },
   "waste_overview": {
    "likes": 5,
@@ -182,10 +182,10 @@
    "homes": 9
   },
   "waze_traveltime": {
-   "likes": 3,
+   "likes": 4,
    "rating": 4.3,
    "ratings": 3,
-   "homes": 4
+   "homes": 6
   },
   "weather_warnings": {
    "likes": 1,
