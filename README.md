@@ -24,6 +24,7 @@ This repository holds:
 | Plugin | What it does | Boards |
 |---|---|---|
 | [Public transport (NL)](plugins/ov_departures) | The next bus, tram, metro or ferry from your stop, live from OVapi, counted down on the screen. | All |
+| [Air quality](plugins/air_quality) | One verdict for the air of a room, from the sensors you choose (an AirGradient ONE, or any CO2, particle, VOC, temperature and humidity sensor), judged for the kind of room it is, with a first step when something is off. | All |
 | [Waste collection](plugins/waste_collection) | When the next bin goes out, from a calendar in Home Assistant, on a tile, a card and in the top bar. | All |
 | [Voice assistant](plugins/voice_assist) | Home Assistant's Assist on the screen: a wake word on the screen itself, the answer on its speaker, sounds while it listens and thinks. | With a microphone and a speaker |
 | [Screen camera](plugins/screen_camera) | The screen's own camera as a camera in Home Assistant, with a camera in the top bar while it is watched. | With a camera |
@@ -54,7 +55,7 @@ stays on the commit it was built with: a newer version shows as an update on the
 builds it.
 
 Plugins are new and only in the dev version of the app for now (the app added with `#dev` at the end of the repository
-URL, or a local copy). The plugin API is 0.24 (an older one in the release until the next), and a plugin names the version it was written for. While the API is 0.x
+URL, or a local copy). The plugin API is 0.26 (an older one in the release until the next), and a plugin names the version it was written for. While the API is 0.x
 a minor may still change a name: the core lists the minors that did (only 0.4 so far), a plugin written before one no
 longer builds and says so, and Tessera's own plugins move with it ([docs/FIRMWARE_API.md](docs/FIRMWARE_API.md),
 "Versions").

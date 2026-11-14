@@ -1,0 +1,88 @@
+# What tools/preview.py shows (docs/PREVIEW.md): rooms with an AirGradient ONE's sensors, in the states the tile has
+# to say something about, a room with one loose CO2 sensor, and a day of humidity for the rooms that judge how even
+# it stayed.
+tiles:
+  - tile: room
+    name: Living room
+    options: { room: living, co2: sensor.living_co2, pm25: sensor.living_pm25, voc: sensor.living_voc, nox: sensor.living_nox, temperature: sensor.living_temperature, humidity: sensor.living_humidity }
+    sizes: [1x1, 2x1, 1x2, 2x2, 1x3, 3x2, 4x3]
+  - tile: room
+    name: Studio
+    options: { room: studio, co2: sensor.studio_co2, pm25: sensor.studio_pm25, voc: sensor.studio_voc, nox: sensor.studio_nox, temperature: sensor.studio_temperature, humidity: sensor.studio_humidity }
+    sizes: [1x1, 2x1, 2x2, 3x2]
+  - tile: room
+    name: Bedroom
+    options: { room: bedroom, co2: sensor.bed_co2, pm25: sensor.bed_pm25, temperature: sensor.bed_temperature, humidity: sensor.bed_humidity }
+    sizes: [1x1, 2x2]
+  - tile: room
+    name: Gallery
+    options: { room: gallery, co2: sensor.living_co2, pm25: sensor.living_pm25, temperature: sensor.living_temperature, humidity: sensor.living_humidity }
+    sizes: [1x1, 2x2]
+  - tile: room
+    name: Workshop
+    options: { room: workshop, co2: sensor.shop_co2, pm25: sensor.shop_pm25, pm10: sensor.shop_pm10, voc: sensor.shop_voc, nox: sensor.shop_nox, temperature: sensor.shop_temperature, humidity: sensor.shop_humidity }
+    sizes: [2x1, 2x2]
+  - tile: room
+    name: Office
+    options: { room: office, co2: sensor.office_co2, co2_max: 1000 }
+    sizes: [1x1, 2x1]
+  - tile: room
+    name: No sensors
+    sizes: [1x1]
+
+states:
+  sensor.living_co2: { state: "612", attributes: { unit_of_measurement: ppm, device_class: carbon_dioxide } }
+  sensor.living_pm25: { state: "4", attributes: { unit_of_measurement: "µg/m³", device_class: pm25 } }
+  sensor.living_voc: { state: "96", attributes: {} }
+  sensor.living_nox: { state: "1", attributes: {} }
+  sensor.living_temperature: { state: "21.4", attributes: { unit_of_measurement: "°C", device_class: temperature } }
+  sensor.living_humidity: { state: "48", attributes: { unit_of_measurement: "%", device_class: humidity } }
+  sensor.studio_co2: { state: "1340", attributes: { unit_of_measurement: ppm, device_class: carbon_dioxide } }
+  sensor.studio_pm25: { state: "6", attributes: { unit_of_measurement: "µg/m³", device_class: pm25 } }
+  sensor.studio_voc: { state: "132", attributes: {} }
+  sensor.studio_nox: { state: "2", attributes: {} }
+  sensor.studio_temperature: { state: "22.8", attributes: { unit_of_measurement: "°C", device_class: temperature } }
+  sensor.studio_humidity: { state: "47", attributes: { unit_of_measurement: "%", device_class: humidity } }
+  sensor.bed_co2: { state: "655", attributes: { unit_of_measurement: ppm, device_class: carbon_dioxide } }
+  sensor.bed_pm25: { state: "3", attributes: { unit_of_measurement: "µg/m³", device_class: pm25 } }
+  sensor.bed_temperature: { state: "17.9", attributes: { unit_of_measurement: "°C", device_class: temperature } }
+  sensor.bed_humidity: { state: "34", attributes: { unit_of_measurement: "%", device_class: humidity } }
+  sensor.shop_co2: { state: "702", attributes: { unit_of_measurement: ppm, device_class: carbon_dioxide } }
+  sensor.shop_pm25: { state: "58", attributes: { unit_of_measurement: "µg/m³", device_class: pm25 } }
+  sensor.shop_pm10: { state: "71", attributes: { unit_of_measurement: "µg/m³", device_class: pm10 } }
+  sensor.shop_voc: { state: "212", attributes: {} }
+  sensor.shop_nox: { state: "3", attributes: {} }
+  sensor.shop_temperature: { state: "19.2", attributes: { unit_of_measurement: "°C", device_class: temperature } }
+  sensor.shop_humidity: { state: "52", attributes: { unit_of_measurement: "%", device_class: humidity } }
+  sensor.office_co2: { state: "884", attributes: { unit_of_measurement: ppm, device_class: carbon_dioxide } }
+
+# The last 24 hours as Home Assistant's statistics give them: one row an hour, oldest first. Every question gets this
+# answer here, so it is a day of humidity: 42 to 53 %.
+commands:
+  "recorder/statistics_during_period":
+    sensor.humidity:
+        - { mean: 43.0, min: 42.0, max: 44.0 }
+        - { mean: 43.2, min: 42.2, max: 44.2 }
+        - { mean: 43.6, min: 42.6, max: 44.6 }
+        - { mean: 44.3, min: 43.3, max: 45.3 }
+        - { mean: 45.2, min: 44.2, max: 46.2 }
+        - { mean: 46.3, min: 45.3, max: 47.3 }
+        - { mean: 47.5, min: 46.5, max: 48.5 }
+        - { mean: 48.7, min: 47.7, max: 49.7 }
+        - { mean: 49.8, min: 48.8, max: 50.8 }
+        - { mean: 50.7, min: 49.7, max: 51.7 }
+        - { mean: 51.4, min: 50.4, max: 52.4 }
+        - { mean: 51.8, min: 50.8, max: 52.8 }
+        - { mean: 52.0, min: 51.0, max: 53.0 }
+        - { mean: 51.8, min: 50.8, max: 52.8 }
+        - { mean: 51.4, min: 50.4, max: 52.4 }
+        - { mean: 50.7, min: 49.7, max: 51.7 }
+        - { mean: 49.8, min: 48.8, max: 50.8 }
+        - { mean: 48.7, min: 47.7, max: 49.7 }
+        - { mean: 47.5, min: 46.5, max: 48.5 }
+        - { mean: 46.3, min: 45.3, max: 47.3 }
+        - { mean: 45.2, min: 44.2, max: 46.2 }
+        - { mean: 44.3, min: 43.3, max: 45.3 }
+        - { mean: 43.6, min: 42.6, max: 44.6 }
+        - { mean: 43.2, min: 42.2, max: 44.2 }
+        - { mean: 43.0, min: 42.0, max: 44.0 }

@@ -1,0 +1,73 @@
+# Air quality: one verdict for the air of a room, from the sensors a person chooses (an AirGradient ONE, or any CO2,
+# particle, VOC, NOx, temperature and humidity sensors of Home Assistant), judged for the kind of room it is.
+id: air_quality
+version: 0.1.0
+api: "0.26"
+icon: air-purifier
+maintainer: MaxGramser
+license: MIT
+stage: beta
+topics: [home, weather]
+requires:
+  esphome: 2026.6.2
+boards: any
+flash_kb: 40
+
+permissions:
+  # The last 24 hours of a sensor, from Home Assistant's own statistics: the bars in the explanation, and how even
+  # the humidity stayed in a room that judges it.
+  ha_commands: ["recorder/statistics_during_period"]
+
+answers:
+  - command: recorder/statistics_during_period
+    fields:
+      mean: { path: "[*][*].mean", as: numbers }
+      min: { path: "[*][*].min", as: numbers }
+      max: { path: "[*][*].max", as: numbers }
+
+tiles:
+  - id: room
+    name: tile_name
+    icon: air-purifier
+    sizes: { min: 1x1, max: 4x4 }
+    # What the largest tile holds: eight cells with their scales, the ring and the words. A single cell uses a third.
+    memory: 12000
+    example: tile_example
+    # One device that measures several of these (an AirGradient ONE, an Awair, an Airthings) fills them in one go.
+    from_device: true
+    options:
+      - id: room
+        kind: choice
+        label: opt_room
+        hint: opt_room_hint
+        default: living
+        choices:
+          - { value: living, label: room_living }
+          - { value: bedroom, label: room_bedroom }
+          - { value: office, label: room_office }
+          - { value: studio, label: room_studio }
+          - { value: gallery, label: room_gallery }
+          - { value: workshop, label: room_workshop }
+          - { value: nursery, label: room_nursery }
+          - { value: kitchen, label: room_kitchen }
+      - { id: co2, kind: entity, domains: [sensor], attributes: [unit_of_measurement, device_class], device_class: [carbon_dioxide], label: opt_co2 }
+      - { id: pm25, kind: entity, domains: [sensor], attributes: [unit_of_measurement, device_class], device_class: [pm25], label: opt_pm25 }
+      - { id: pm10, kind: entity, domains: [sensor], attributes: [unit_of_measurement, device_class], device_class: [pm10], label: opt_pm10 }
+      - { id: voc, kind: entity, domains: [sensor], attributes: [unit_of_measurement, device_class], device_class: [volatile_organic_compounds, volatile_organic_compounds_parts], matches: [voc_index, total_volatile_organic_component_index, voc, tvoc], label: opt_voc }
+      - { id: nox, kind: entity, domains: [sensor], attributes: [unit_of_measurement, device_class], matches: [nox_index, nitrogen_index, nox], label: opt_nox }
+      - { id: temperature, kind: entity, domains: [sensor], attributes: [unit_of_measurement, device_class], device_class: [temperature], label: opt_temperature }
+      - { id: humidity, kind: entity, domains: [sensor], attributes: [unit_of_measurement, device_class], device_class: [humidity], label: opt_humidity }
+      # A person's own limits: where "fine" ends. Left empty, the kind of room decides (the number shown in the field).
+      - { id: co2_max, kind: number, optional: true, group: group_limits, min: 450, max: 5000, step: 50, unit: "ppm", placeholder_from: { option: room, values: { living: 1000, bedroom: 800, office: 800, studio: 800, gallery: 1000, workshop: 1000, nursery: 800, kitchen: 1000 } }, label: opt_co2_max }
+      - { id: pm25_max, kind: number, optional: true, group: group_limits, min: 1, max: 150, step: 1, unit: "µg/m³", placeholder_from: { option: room, values: { living: 10, bedroom: 10, office: 10, studio: 10, gallery: 5, workshop: 10, nursery: 10, kitchen: 15 } }, label: opt_pm25_max }
+      - { id: pm10_max, kind: number, optional: true, group: group_limits, min: 1, max: 300, step: 1, unit: "µg/m³", placeholder_from: { option: room, values: { living: 20, bedroom: 20, office: 20, studio: 20, gallery: 10, workshop: 20, nursery: 20, kitchen: 30 } }, label: opt_pm10_max }
+      - { id: voc_max, kind: number, optional: true, group: group_limits, min: 1, max: 5000, step: 10, placeholder_from: { option: room, values: { living: 150, bedroom: 150, office: 150, studio: 150, gallery: 150, workshop: 150, nursery: 150, kitchen: 150 } }, label: opt_voc_max }
+      - { id: nox_max, kind: number, optional: true, group: group_limits, min: 2, max: 500, step: 1, placeholder_from: { option: room, values: { living: 20, bedroom: 20, office: 20, studio: 20, gallery: 20, workshop: 20, nursery: 20, kitchen: 20 } }, label: opt_nox_max }
+      - { id: temperature_min, kind: number, optional: true, group: group_limits, min: 0, max: 40, step: 0.5, unit: "°C", placeholder_from: { option: room, values: { living: 19, bedroom: 16, office: 20, studio: 20, gallery: 16, workshop: 15, nursery: 16, kitchen: 18 } }, label: opt_temperature_min }
+      - { id: temperature_max, kind: number, optional: true, group: group_limits, min: 0, max: 40, step: 0.5, unit: "°C", placeholder_from: { option: room, values: { living: 24, bedroom: 20, office: 24, studio: 24, gallery: 25, workshop: 25, nursery: 20, kitchen: 25 } }, label: opt_temperature_max }
+      - { id: humidity_min, kind: number, optional: true, group: group_limits, min: 0, max: 100, step: 1, unit: "%", placeholder_from: { option: room, values: { living: 40, bedroom: 40, office: 40, studio: 45, gallery: 40, workshop: 35, nursery: 40, kitchen: 40 } }, label: opt_humidity_min }
+      - { id: humidity_max, kind: number, optional: true, group: group_limits, min: 0, max: 100, step: 1, unit: "%", placeholder_from: { option: room, values: { living: 60, bedroom: 60, office: 60, studio: 55, gallery: 60, workshop: 65, nursery: 60, kitchen: 65 } }, label: opt_humidity_max }
+      - { id: swing_max, kind: number, optional: true, group: group_limits, min: 1, max: 50, step: 1, unit: "%", placeholder_from: { option: room, values: { studio: 15, gallery: 10 } }, label: opt_swing_max }
+
+cards:
+  - { id: detail, name: card_name, wide: true }

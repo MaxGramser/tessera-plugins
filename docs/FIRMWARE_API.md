@@ -1,4 +1,4 @@
-# The firmware API (plugin API 0.25)
+# The firmware API (plugin API 0.26)
 
 A plugin's code runs on the screen as an ESPHome component. It talks to Tessera's core through one header:
 
@@ -9,8 +9,8 @@ A plugin's code runs on the screen as an ESPHome component. It talks to Tessera'
 The header lives in the Tessera repository at `components/smart_display/plugin_api.h`; it is the reference, and this
 page explains it. Everything is in namespace `tessera`.
 
-A manifest names the plugin API it was written for: `api: "0.8"`, or `"0.9"` up to `"0.25"` for the parts those
-brought; the plugin API 0.25 is the one the core offers now (on Tessera's dev branch; the release has 0.24 until the next). Which cores a plugin builds on is under "Versions" at the end of this page.
+A manifest names the plugin API it was written for: `api: "0.8"`, or `"0.9"` up to `"0.26"` for the parts those
+brought; the plugin API 0.26 is the one the core offers now (on Tessera's dev branch; the release has 0.24 until the next). Which cores a plugin builds on is under "Versions" at the end of this page.
 
 A plugin adds to the screen in a few kinds of parts: tiles on a page, cards over the page, tap actions for Tessera's own
 tiles, items in the top bar, rows on the settings page, (0.14) screensavers, which the screen shows over the whole
@@ -712,6 +712,7 @@ The screen's look is the same on every tile, so a plugin draws with the core's s
 | `ui::tone_color(Tone, Role)` (0.9) | A tone's colour in this look, for a part the two above do not reach. |
 | `ui::text(parent, Font, Role)` | A label of several lines (0.10): wraps at its width, ends in dots at its height (two lines to start with; set your own). For a description, a title that may take two lines. |
 | `ui::block(parent, Role)` | A rounded block with the radius of a key (a badge, a bar). |
+| `ui::set_card_color(CardColor)`, `ui::card_color()`, `ui::card_color(CardColor)` (0.26) | The tile's card in one of the screen's card colours, and the colour of the card as it is drawn ("The card's own colour", below). |
 | `ui::picture(parent)`, `ui::set_picture(place, url, fit)`, `ui::pictures()`, `ui::slide_pictures(dx, ms)` | Pictures on a tile (0.10), on a card (0.13) and on a screensaver (0.14), above. |
 | `ui::picture(parent, Placeholder::NONE)`, `on_picture(place, PictureState)`, `ui::live(place)` (0.17) | A place without its block, what came of a place's picture, and a tile's place that streams its camera, above. |
 | `tessera::capturing(plugin, Capture::CAMERA, on)` (0.17) | The plugin uses the screen's own camera on the screen itself ("The screen's own camera", below); `Capture::SENSING` (0.20) when it only senses and nobody watches; `Capture::SOUND` (0.23) while someone hears what the screen's microphone hears (its video with sound, a call): no dot, but the screen keeps its live tiles at a quarter while it lasts, so they do not starve the conversation's uplink. |
@@ -752,6 +753,41 @@ green, `BUSY` its amber, `ALERT` its red, `ACCENT` the look's accent, each made 
 with `ui::set_tone(label, tone, normal)`, a block (a bar, a dot) with `ui::set_fill(block, tone, normal)` (0.9); `normal`
 is the role for `NORMAL`. A level that is good, moderate or bad is `GOOD`, `BUSY` and `ALERT`. Never a colour as a
 number. Before 0.9 a block has no colour by meaning: `TRACK` and `ACCENT`, or the mark's colours where a kind fits.
+
+### The card's own colour
+
+A tile can give its card a colour of its own (0.26): the whole card, edge to edge, in a colour that says something. A
+level that is fine, fair or off; the bin that goes out tomorrow; a price that is low; a timer that ran out.
+
+```cpp
+void on_state(JsonObjectConst data) override {
+  const bool off = (data["level"] | 0) > 1;
+  ui::set_card_color(off ? tessera::CardColor::RED : tessera::CardColor::GREEN);   // the card of this tile
+  // A part that has to go with the card, mixed from it and the screen's ink: never a colour as a number.
+  lv_obj_set_style_bg_color(cell_, lv_color_mix(ui::color(theme::INK), ui::card_color(), 26), 0);
+}
+```
+
+| Function | What |
+|---|---|
+| `ui::set_card_color(CardColor)` | The card of the tile in whose call this is: `RED`, `ORANGE`, `YELLOW`, `GREEN`, `MINT`, `BLUE`, `PURPLE`, `PINK` or `GRAY`, the colours a person can give any tile in the editor. `CardColor::NONE` gives the card back to what the person chose there. |
+| `ui::card_color()` | The colour of the card under the tile as it is drawn now: the tile's own, else the person's, else the plain card; the page's colour for a tile whose background the person set to None. For parts that have to go with the card. |
+| `ui::card_color(CardColor)` | A named card colour as this look draws it, anywhere: for a panel on a card over the page that wears the colour its tile wears. |
+
+- **The colours are the screen's own.** Each is a pastel in the light look and a deep shade of the same hue in the dark
+  one, chosen so `theme::INK` reads on it; the core paints the card, its hairline and its shade under a finger in both
+  looks. A tile never brings a card colour of its own.
+- **Call it in a call of the tile** (`create`, `on_state`, `on_tick`, `on_theme`, `on_tap`): it colours that tile's
+  card. The same colour again costs nothing, so call it wherever you paint. In one of the plugin's own moments
+  (`on_message`, `on_interval`) there is no tile, and it does nothing: keep what you heard and set the colour in the
+  tile's next `on_tick`.
+- **It lasts** until the tile sets another, and goes when the tile leaves the card. It lies over the colour the person
+  chose for the tile; a tile without a card (background None) stays without one.
+- **Colour the parts on it from it.** On a coloured card `theme::MUTED` may be too soft: use `theme::SLATE` for second
+  lines, as Tessera's own tiles do, or mix `theme::INK` with `ui::card_color()`. Set them again in `on_theme`: the
+  card's colour is another in the other look.
+- **Use it for meaning, sparingly.** A page of cards that are all coloured says nothing. One colour per meaning, the
+  same on every size of the tile, and a word or an icon that says it too: a colour alone does not reach everyone.
 
 ## The rest of the core
 
@@ -805,6 +841,11 @@ number. Before 0.9 a block has no colour by meaning: `TRACK` and `ACCENT`, or th
 - [`plugins/waste_collection/components/waste_collection/waste_collection.cpp`](../plugins/waste_collection/components/waste_collection/waste_collection.cpp):
   most of the API in one plugin: a tile of a calendar entity, a card that asks Home Assistant for the coming events, a
   tap action, a top bar item, two settings rows backed by ESPHome entities of `plugin.yaml`, and an input of kind entity.
+- [`plugins/air_quality/components/air_quality/air_quality.cpp`](../plugins/air_quality/components/air_quality/air_quality.cpp):
+  a tile of several sensors (options of kind `entity`) that lays itself out for every size, a single cell to the whole
+  page, by the room it gets; the card's own colour (0.26) with every part on it mixed from that colour; a card and a
+  popup opened from it by `tap_point()`; and a day of a sensor asked from Home Assistant, heard in `on_message` and
+  painted in the tile's next tick.
 - [`plugins/voice_assist/components/voice_assist/voice_assist.cpp`](../plugins/voice_assist/components/voice_assist/voice_assist.cpp):
   ESPHome's own components (`micro_wake_word`, `voice_assistant`) from `plugin.yaml` on the features it needs, a tile
   and a top bar item whose icon changes tone, settings rows and sounds of its own.
@@ -868,7 +909,7 @@ readout by it, so the pictures, a video and whatever reads the frames all stand 
 
 ## Versions
 
-A manifest names the plugin API it was written for: `api: "0.8"` up to `"0.25"`; the plugin API 0.25 is the one the core offers now (on Tessera's dev branch; the release has 0.24 until the next). When a
+A manifest names the plugin API it was written for: `api: "0.8"` up to `"0.26"`; the plugin API 0.26 is the one the core offers now (on Tessera's dev branch; the release has 0.24 until the next). When a
 screen is built, `smart_display.register_plugin()` compares it with the core's and stops the build with one sentence
 when it does not fit. A plugin fits a core when all three hold:
 
@@ -883,14 +924,14 @@ plugin that still uses it fails its build with the compiler's error at that call
 plugin would still build but work wrongly is listed in `PLUGIN_API_BREAKS`, in `screen_manager/app/plugin_manifest.py`
 and in `components/smart_display/__init__.py` (a test keeps the two equal), and such a plugin is refused in one
 sentence. Today the list holds one: 0.4, where `Plugin::on_tick` changed its meaning and the old one became
-`on_interval`. So with a core of 0.25:
+`on_interval`. So with a core of 0.26:
 
 | The manifest says | Builds? | Why |
 |---|---|---|
-| `api: "0.25"` | Yes | The core's own. |
-| `api: "0.5"` up to `"0.24"` | Yes | Same major, an older minor, and no break after it (unless it uses a form 0.24 took away). |
+| `api: "0.26"` | Yes | The core's own. |
+| `api: "0.5"` up to `"0.25"` | Yes | Same major, an older minor, and no break after it (unless it uses a form 0.24 took away). |
 | `api: "0.3"` | No | 0.4 changed a name it may use; the build says so in one sentence and asks to update the plugin. |
-| `api: "0.26"` | No | Newer than the core; the build asks to update the plugin or the screen's firmware. |
+| `api: "0.27"` | No | Newer than the core; the build asks to update the plugin or the screen's firmware. |
 | `api: "1.0"` | No | Another major. |
 
 `tools/check.py` applies the same rules against the core it checks with (`api_fits` of `plugin_manifest.py`), so a
@@ -927,6 +968,7 @@ brought:
 | 0.23 | `Capture::SOUND` for `tessera::capturing`: someone hears what the screen's microphone hears (its video with sound, a call); the screen keeps its live tiles at a quarter while it lasts, so a conversation goes before the tiles on the sending side too. |
 | 0.24 | One form for each thing; taken away, each beside a newer form: `on_touch` (use `on_press`), `tessera::action(service, entity, key, value)` (use `tessera::action(service, entity, fields)`, or no fields; `tools/check.py` refuses the old form and `on_touch`), the address `saver:picture` (use `step:`) and a tile's `memory: { bytes: n }` (write the number). `ui::picture` and `ui::set_picture` are one signature each, with defaults. |
 | 0.25 | How large a tile is: `sizes: { full: true }` for a tile that only takes the whole page, `full: true` beside `min` and `max` now offers it, a `max` that reaches the grid offers it there too; `TileContext::full` says the tile is the whole page. |
+| 0.26 | A card's own colour: `ui::set_card_color(CardColor)`, `ui::card_color()` and `ui::card_color(CardColor)`, the tile's card in one of the screen's nine card colours. The manifest's side: an entity option that says which entities it is for (`device_class`, `matches`), a tile whose entity options one device fills (`from_device`), up to 24 options, options in a `group`, and a number that may stay empty (`optional`, `placeholder_from`). `tools/check.py` refuses these in a plugin of an older `api`. |
 
 A minor of the app's or the manifest's side only still counts: a plugin that uses what it brought needs an app that
 knows it ([MANIFEST.md](MANIFEST.md), "Which minor brought a field").

@@ -533,6 +533,12 @@ def examples_of(entry, spec):
             raise SystemExit(f'preview.yaml tiles[{i}]: tile {example.get("tile")!r} is not in the manifest '
                              f'({", ".join(kinds) or "it has none"})')
         name = example.get('name') or entry.text(kind['name'])
+        then = example.get('then') or []
+        if not isinstance(then, list) or len(then) > 4 or any(
+                not isinstance(point, list) or len(point) != 2 or
+                any(isinstance(n, bool) or not isinstance(n, (int, float)) or not 0 <= n <= 1 for n in point) for point in then):
+            raise SystemExit(f'preview.yaml tiles[{i}].then: up to 4 points of the glass, each [x, y] from 0 to 1 '
+                             '(docs/PREVIEW.md, "A tap further")')
         out.append({**example, 'key': f'{i + 1}-{SHOWN.sub("-", name.lower()).strip("-") or kind["id"]}',
                     'name': name, 'kind': kind,
                     'spans': [s for s in (example.get('sizes') or spans(kind))] + (['full'] if kind.get('full') else [])})
@@ -1069,6 +1075,26 @@ class Bench(run.Run):
                 view['taps'].append({'file': file, 'name': example['name'], 'span': span, 'actions': did})
                 if after.tobytes() != before.tobytes():
                     self.faults(await self.audit(card=True), f'the tap on {example["name"]} {span}')
+            # A tap further (preview.yaml `then`): each a point of the glass, tapped after the tile's own tap and
+            # photographed when the glass changed: a key on the card the tile opened, the popup that key shows.
+            for step, (x, y) in enumerate(example.get('then') or [], 2):
+                shown = await self.render('_before', keep=False)
+                heard = len(self.actions)
+                await self.tap(round(x * (self.screen.width - 1)), round(y * (self.screen.height - 1)))
+                await asyncio.sleep(1.5)   # a popup that asks Home Assistant first: the answer and its first tick
+                await self.pictures_settled()
+                now = await self.render('_after', keep=False)
+                if now.tobytes() != shown.tobytes():
+                    file = f'tap-{example["key"]}-{span}-{step}.png'
+                    now.save(out / file)
+                    view['taps'].append({'file': file, 'name': f'{example["name"]}, tap {step}', 'span': span,
+                                         'actions': self.actions[heard:]})
+                else:
+                    self.find('info', f'the tap on {example["name"]} {span}', f'tap {step} at {x}, {y} changed nothing on this glass')
+            if example.get('then'):
+                # A popup goes on a tap beside its card: the glass's own corner.
+                await self.tap(2, self.screen.height - 3)
+                await asyncio.sleep(0.4)
             await self.call('render_close_cards')
             await asyncio.sleep(0.4)
 

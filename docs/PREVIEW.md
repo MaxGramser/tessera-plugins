@@ -132,7 +132,7 @@ python3 tools/preview.py plugins/<id> --strict    # or from the plugin's folder:
   dark: 1 too faint to read on its ground: faint[Tomorrow]`), and are in `.preview/summary.json`.
 - **Then look.** `.preview/overview.png` has every tile at every size on every screen on one picture. Each picture is
   also its own file: `.preview/<screen>/tile-<example>-<size>-<light|dark>.png`, `card-<id>-<theme>.png`,
-  `tap-<example>-<size>.png`, `bar-<theme>.png`, `bar-icon-<theme>.png`, `saver-<example>-<theme>.png`,
+  `tap-<example>-<size>.png` (and `-2`, `-3` for a tap further), `bar-<theme>.png`, `bar-icon-<theme>.png`, `saver-<example>-<theme>.png`,
   `settings-<n>.png`, `page-<n>-<theme>.png`; a
   grid of `--grid` has a folder of its own under the screen (`.preview/guition/4x5/`). Look at the smallest screen
   (`cyd`) and the largest, light and dark: a finding only catches what can be measured, a picture shows what looks wrong.
@@ -220,6 +220,26 @@ time_zone: Europe/Amsterdam    # the zone of the moments below (default Europe/A
   with a note. The app's own checks hold here too: a tile without `pictures` in the manifest, or an address on a host
   `permissions.network` does not name, gets a warning and no picture.
 - Never put a secret here: the file is shared with your plugin.
+
+### A tap further
+
+The bench taps every tile once and photographs what opens. A tile's example can name taps that follow, to show a
+second step: a key on the card the tile opened, the popup that key shows, a row of a list.
+
+```yaml
+tiles:
+  - tile: room
+    name: Studio
+    sizes: [2x2]
+    then: [[0.44, 0.42]]        # after the tile's own tap: a tap at 44 % of the glass's width, 42 % of its height
+```
+
+Each point is `[x, y]` as a part of the glass, `0, 0` its top left and `1, 1` its bottom right, at most four. The bench
+taps them in order, waits for a question to Home Assistant to be answered, and keeps a picture of each tap that
+changed the glass: `tap-<example>-<size>-2.png` for the first of them, `-3` for the next. Then it taps the glass's
+corner, which closes a popup, and closes the card. A point is right for one shape of glass: the same part of a
+4-inch square is another spot on a 10-inch panel, so give such an example the size and run it with the `--board` it
+was made for. A tap that changed nothing is an `info`.
 
 ## Screensavers
 

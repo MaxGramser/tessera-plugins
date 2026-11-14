@@ -16,7 +16,7 @@ plugin is done.
    carries out the plugin's `fetch` (JSON from a web service) with its own code.
 4. A tile of a plugin is `plugin:<plugin id>.<tile id>` in a screen's layout. The core gives it a card's drawing area
    while its page is on the glass, hands it the data the app sent (`on_state`), and ticks it once a second (`on_tick`).
-5. The plugin API is 0.25 on Tessera's dev branch; the release has 0.24 since Tessera 0.4.91 (firmware 0.58.0). A manifest names the lowest minor whose
+5. The plugin API is 0.26 on Tessera's dev branch; the release has 0.24 since Tessera 0.4.91 (firmware 0.58.0). A manifest names the lowest minor whose
    parts it uses: `api: "0.8"`, `"0.9"` for `Font::DIGITS`, `ui::covers`, `Tone::GOOD`, `ui::set_fill` and
    `ui::tone_color`, `"0.10"` for pictures on a tile, `ui::text` and `tap_point()`, `"0.11"` for `on_press` and
    `on_step`, `"0.12"` for options that keep lists (`multiple`, `search`), a fetch with `each` or `{name|,}`,
@@ -27,7 +27,10 @@ plugin is done.
    `tessera::capturing` for a plugin that uses the screen's own camera), `"0.18"` for a popup (`show_popup`, `Popup`,
    `ui::animate`), `"0.19"` for `tessera::camera_turn`, `"0.20"` for `Capture::SENSING` (the camera only sensing,
    the dot a ring), `"0.21"` for `tessera::squeeze` (a busy screen's governor), and `"0.22"` for `tessera::own_frame` (the screen's own
-   camera on a tile of its own), `"0.23"` for `Capture::SOUND` (someone hears the microphone: the live tiles slow). A plugin builds on a core with the
+   camera on a tile of its own), `"0.23"` for `Capture::SOUND` (someone hears the microphone: the live tiles slow), and `"0.26"` for a card's own
+   colour (`ui::set_card_color`), entity options that say which entities they are for (`device_class`, `matches`), a
+   tile one device fills (`from_device`), options in a `group`, numbers that may stay empty (`optional`,
+   `placeholder_from`) and up to 24 options. A plugin builds on a core with the
    same major and at least its minor, unless a minor after its own is listed as a break: while the major is 0 a name may
    change its meaning, and the core lists those minors (only 0.4 so far); a form a minor takes away fails in the
    compiler at its call instead. So a plugin of 0.7 builds on a core of 0.24, one of 0.3
@@ -72,7 +75,9 @@ a tap action, a top bar item, settings), [`plugins/voice_assist/`](plugins/voice
 its own, ESPHome components of its own, a top bar item in colour, a popup with parts that move) and [`plugins/screen_camera/`](plugins/screen_camera)
 (a board's hardware through a feature only a board brings, and a driver beside the plugin's own component) and
 [`plugins/picture_frame/`](plugins/picture_frame) (pictures on a tile: an entity's own picture or an address, cover or
-contain, with the name over it). Screensavers: [`plugins/flip_clock/`](plugins/flip_clock) (a face of the clock, no
+contain, with the name over it) and [`plugins/air_quality/`](plugins/air_quality) (a tile of several sensors a person
+chooses or one device fills, a card in the colour of what it says, one face for every size from a single cell to the
+whole page, limits in a group, a card and a popup opened from it, and a day of history asked from Home Assistant). Screensavers: [`plugins/flip_clock/`](plugins/flip_clock) (a face of the clock, no
 pictures, every board), [`plugins/vinyl_deck/`](plugins/vinyl_deck) (a face of the music: the cover, keys that take taps,
 `wish()`) and [`plugins/photo_clock/`](plugins/photo_clock) (a face of the photos, the photo over the whole glass).
 

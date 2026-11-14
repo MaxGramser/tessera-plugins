@@ -87,7 +87,7 @@ fetch:
       label: [LinePublicNumber, DestinationName50]
 ```
 
-It names `api: "0.7"` and builds on today's core, which offers plugin API 0.25: no minor after 0.7 changed a name
+It names `api: "0.7"` and builds on today's core, which offers plugin API 0.26: no minor after 0.7 changed a name
 ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). The fetch is plain `http` because OVapi offers nothing else and the
 fetch carries no secret.
 
@@ -109,7 +109,7 @@ fetch carries no secret.
 |---|---|---|
 | `id` | yes | The plugin's id. Unique in the index, the same as its folder and its component, and never changed. |
 | `version` | yes | Three numbers, `1.0.0`. Raise it for every change that reaches screens, and give it a `## 1.0.0` heading with its lines at the top of `CHANGELOG.md` ([MAKING_A_PLUGIN.md](MAKING_A_PLUGIN.md#the-changelog)). |
-| `api` | yes | The plugin API it was written for, as major and minor in quotes: `"0.8"`; the plugin API 0.25 is the one the core offers now (on Tessera's dev branch; the release has an older one until the next). Without quotes YAML reads a number, which the check refuses. It builds on a core with the same major and at least that minor, unless a minor after its own up to the core's is listed as a break (0.4, where a name changed its meaning; a form a minor takes away, as 0.24 did four, fails in the compiler at its call instead); `tools/check.py` refuses an `api` newer than the core it checks against, and one from before such a minor ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
+| `api` | yes | The plugin API it was written for, as major and minor in quotes: `"0.8"`; the plugin API 0.26 is the one the core offers now (on Tessera's dev branch; the release has an older one until the next). Without quotes YAML reads a number, which the check refuses. It builds on a core with the same major and at least that minor, unless a minor after its own up to the core's is listed as a break (0.4, where a name changed its meaning; a form a minor takes away, as 0.24 did four, fails in the compiler at its call instead); `tools/check.py` refuses an `api` newer than the core it checks against, and one from before such a minor ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
 | `icon` | yes | <a id="icon"></a>A Material Design Icons name from Tessera's icon set (`screen_manager/app/tile_icons.py` in the Tessera repository, such as `bus`, `train`, `calendar`, `thermometer`, `lightbulb`). The screen's icon font holds only that set. Tiles and top bar items take it when they name no icon of their own. |
 | `maintainer` | yes | The GitHub name of whoever looks after the plugin, 1 to 39 characters. `tools/check.py` refuses the template's `your-github-name` in any folder but `template/`. |
 | `license` | yes | An SPDX name that goes with AGPL-3.0: `MIT`, `Apache-2.0`, `BSD-2-Clause`, `BSD-3-Clause`, `ISC`, `MPL-2.0`, `LGPL-2.1-or-later`, `LGPL-3.0-or-later`, `GPL-3.0-or-later`, `GPL-3.0-only`, `AGPL-3.0-or-later`, `AGPL-3.0-only`, `Unlicense`, `0BSD`, `CC0-1.0`. |
@@ -273,7 +273,7 @@ At most 8.
 | `id` | yes | The tile type's id; `add_tile("<id>", ...)` in the C++ uses the same. A layout calls it `plugin:<plugin>.<id>`. |
 | `name` | yes | Text key: what the library and the inspector call it. |
 | `icon` | no | From Tessera's icon set; the plugin's icon when left out. The editor shows it, and a screen without the plugin draws it on its placeholder. |
-| `sizes` | yes | `{ min: 1x1, max: 2x2 }`, columns x rows, each 1 to 9; `min` is not larger than `max` in either. The editor offers the sizes in between that fit the screen's grid. A rectangle that fills the grid is the whole page, so `max: 3x3` also offers the whole page on a grid of 3 x 3. `full: true` offers the whole page on every grid, beside `min` and `max`; on its own (`sizes: { full: true }`, plugin API 0.25) the tile only takes the whole page. A new tile starts at the smallest size it takes. |
+| `sizes` | yes | `{ min: 1x1, max: 2x2 }`, columns x rows, each 1 to 9; `min` is not larger than `max` in either. The editor offers the sizes in between that fit the screen's grid. A rectangle that fills the grid is the whole page, so `max: 3x3` also offers the whole page on a grid of 3 x 3. `full: true` offers the whole page on every grid, beside `min` and `max`; on its own (`sizes: { full: true }`, since API 0.25) the tile only takes the whole page. A new tile starts at the smallest size it takes. |
 | `memory` | yes | What one tile costs of the screen's layout memory, a whole number of bytes from 64 to 16384. The screen and the app add it to the layout's budget, and the build refuses a value outside that range too. About 400 for a few labels, 1200 for a list. |
 | `domains` | no | Up to 8 domains of the entity the tile belongs to (0.2), `[calendar]`, as a tap action and an input of kind `entity` name theirs. The inspector offers the entities of those domains, also of a domain Tessera draws no tile for; the tile gets the entity's state, name and `attributes`, again at every change. Its entity id in `TileContext::entity`, for such a domain, needs the firmware after 0.56.0 ([FIRMWARE_API.md](FIRMWARE_API.md), "A tile of an entity"). |
 | `attributes` | no | With `domains`: the attributes the tile gets, at most 16, each a name of `a-z`, `0-9` and `_` of up to 48 characters, not starting with a digit. One named `..._at`, `..._time` or `...date` that holds a moment comes as seconds since 1970. A list comes whole when it fits: texts and numbers, not objects. |
@@ -285,7 +285,8 @@ still offers every sensor that has one. Only the list: the tile keeps its entity
 | `pictures` | no | Places for pictures on the tile (0.10), 1 to 8: how many the tile makes at most with `ui::picture` ([FIRMWARE_API.md](FIRMWARE_API.md), "Pictures on a tile"). The app paints a picture only for a tile that has this, at most this many, and only from a host of `permissions.network` or, for a tile with `domains`, Home Assistant's own pictures of its entity (`entity_picture`, or from 0.17 `cover:`, `camera:` and `entity:` of that entity, which need no `attributes`). A plugin whose pictures come from a host names it in `permissions.network`, which gives it the attribute `cloud` and asks for a `privacy` link. Default: 0, no pictures. |
 | `example` | no | Text key: a line the editor shows on the tile's placeholder. |
 | `preview` | no | How the editor draws the tile from its data, so the page in the editor looks like the glass (it cannot run your C++). Only with `data` or `domains`. Any of `badge`, `title`, `value` and `countdown`, each a text of 1 to 64 characters. `badge`, `title` and `value` are templates of the first item's fields (`"{line}"`, `"{to}"`; for a tile of an entity `{state}`, `{name}`, its `attributes` and its `fields`), and every `{name}` in them must be such a field. `countdown` names a field with `as: epoch` (for a tile of an entity also an attribute named `..._at`, `..._time` or `...date`), and the editor counts down to it in whole minutes (the editor's clock moves every 30 seconds). `value` or `countdown`, not both. Without a preview the editor shows the icon, the name and `example`. |
-| `options` | no | At most 12 options the inspector shows, below. |
+| `from_device` | no | `true` (0.26): the inspector offers **Fill from a device** above the options, for a tile that reads several sensors one device often has together (a weather station, an energy meter, an air quality monitor). It needs at least two options of kind `entity` that say which entities they are for (`device_class` or `matches`, below). "Entities of one kind, and one device that fills them", below. |
+| `options` | no | At most 24 options the inspector shows (12 before 0.26), below. |
 
 An option:
 
@@ -300,6 +301,10 @@ An option:
 | `search` | For `choice` with `options_from` (0.12): `true` finds the choices by what the person types. The editor sends it, from two characters on, as `{search}` of that fetch: `url: https://api.deezer.com/search/artist?q={search}`. Without `multiple` the option keeps one pick. No option of the tile may be called `search`. |
 | `min`, `max`, `step`, `unit` | For `number`: the range (both required, `min` less than `max`), the step (more than 0, default 1), and a unit of up to 8 characters. |
 | `domains`, `attributes` | For `entity` (0.15): the domains whose entities the person may choose, 1 to 8 (`[sensor]`), and the attributes the tile reads of the chosen one, as a tile's own `attributes`. Only in a tile's options, and only with `api: "0.15"` or later. |
+| `device_class`, `matches` | For `entity` (0.26): which entities of its domains the option is for. `device_class` is 1 to 8 of Home Assistant's device classes (`[carbon_dioxide]`, `[power]`, `[temperature]`); `matches` is 1 to 8 words for entities that have no device class (`[voc_index]`): the entity's translation key, or the end of its id after an underscore (`sensor.hall_voc_index`). Each a word of `a-z`, `0-9` and `_`, at most 64 characters. An entity fits when either says so; the list offers the ones that fit, with a key under it to show every entity of the domains. Only the list: an entity that does not fit is still kept when a person chooses it. |
+| `group` | For any option (0.26): a text key. Options with the same group stand together in a section of that name, folded until one of them has a value, after the options without a group. For what most people leave alone: limits, fine tuning. |
+| `optional` | For `number` (0.26): `true` lets the field stay empty. An empty one is not in the tile's options at all (never 0), so read it with a default that says "not set": `c.options["limit"] \| NAN`. It has no `default`. |
+| `placeholder_from` | For a `number` with `optional` (0.26): `{ option: <a choice of the same tile>, values: { <its value>: <number>, ... } }`. While the field is empty it shows the number that goes with what that choice is set to, with the option's unit: what applies when the person leaves it alone. The option named is a choice with `choices` (not a list, not from a fetch); a value of it that `values` does not name shows nothing. At most 48 values. |
 
 A field that belongs to another kind is an error (`min` on a text option, `choices` on a number). A text option's value
 is at most 64 characters. The tile gets every option in `context.options` of `create()`, with the defaults filled in.
@@ -322,6 +327,44 @@ sources (an energy dashboard: the grid, the solar panels, the battery) has one s
 options:
   - { id: grid, kind: entity, domains: [sensor], attributes: [unit_of_measurement], label: grid }
   - { id: solar, kind: entity, domains: [sensor], attributes: [unit_of_measurement], label: solar }
+```
+
+**Entities of one kind, and one device that fills them** (0.26). An entity option that says which entities it is for
+spares a person the list of every sensor in the house: `device_class` for what Home Assistant classifies, `matches`
+for what it does not. And when the entities a tile reads usually come from one device, `from_device: true` on the tile
+adds one picker above the options: the devices that have entities for at least two of them, the one with the most
+first ("Weather station · 5 sensors"). Choosing a device fills in every option it has an entity for, and leaves the
+rest as they were; where a device has two for one option it takes the one that is enabled, not a diagnostic and not a
+raw value. It is a one-time fill of the ordinary options: nothing else is kept, and each can be changed after.
+
+```yaml
+tiles:
+  - id: meter
+    from_device: true
+    options:
+      - { id: power, kind: entity, domains: [sensor], attributes: [unit_of_measurement], device_class: [power], label: power }
+      - { id: energy, kind: entity, domains: [sensor], attributes: [unit_of_measurement], device_class: [energy], label: energy }
+      - { id: gas, kind: entity, domains: [sensor], attributes: [unit_of_measurement], device_class: [gas], matches: [gas_consumed], label: gas }
+```
+
+**A group, and a number that may stay empty** (0.26). A tile that judges something can let a person set its limits
+without filling the inspector with fields nobody needs: the limits go in a `group`, each an `optional` number, and
+`placeholder_from` shows in the empty field what the tile uses instead, here by the kind of room chosen above.
+
+```yaml
+options:
+  - id: room
+    kind: choice
+    label: room
+    default: living
+    choices: [{ value: living, label: room_living }, { value: bedroom, label: room_bedroom }]
+  - { id: limit, kind: number, optional: true, group: group_limits, min: 400, max: 5000, step: 50, unit: ppm,
+      placeholder_from: { option: room, values: { living: 1000, bedroom: 800 } }, label: limit }
+```
+
+```cpp
+const float limit = c.options["limit"] | NAN;     // not there while the field is empty
+if (std::isfinite(limit)) fine_up_to_ = limit;      // else the room's own
 ```
 
 ```yaml
@@ -628,6 +671,7 @@ These are the fields whose minor the core records:
 | 0.14 | `savers`, with every field of a saver |
 | 0.15 | An option of kind `entity` in a tile's `options`, with `domains` and `attributes` |
 | 0.25 | A tile's `sizes` with `full: true` and no `min` and `max` |
+| 0.26 | An entity option's `device_class` and `matches`, a tile's `from_device`, an option's `group`, a number's `optional` and `placeholder_from`, and more than 12 options on a tile |
 
 What each minor brought to the C++ is in [FIRMWARE_API.md](FIRMWARE_API.md), "Versions".
 
@@ -654,7 +698,9 @@ What each minor brought to the C++ is in [FIRMWARE_API.md](FIRMWARE_API.md), "Ve
 | A tile's `pictures`, a card's | 8, each from an address of at most 512 characters, at most 2 MB |
 | Attributes of a tile's entity | 16, and 8 `fields`, 8 `has_attributes` |
 | A text of a `preview` | 64 characters |
-| Options per tile | 12 |
+| Options per tile | 24 (12 before 0.26, and for a screensaver) |
+| Device classes of an entity option, and its `matches` | 8 each |
+| Values of a `placeholder_from` | 48 |
 | Choices of an option | 48, each value 64 characters |
 | A text option's value | 64 characters |
 | Values of a list option (`multiple`) | 16, each value and label 64 characters |

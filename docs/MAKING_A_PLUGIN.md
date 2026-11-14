@@ -72,7 +72,7 @@ tiles:
     name: tile_name                 # a key in translations/en.json, part "app"
     icon: bus
     sizes: { min: 1x1, max: 2x2 }   # the sizes the editor offers; add full: true for the whole page, or use only
-                                    # full: true for a tile that always fills it (plugin API 0.25, docs/MANIFEST.md)
+                                    # full: true for a tile that always fills it (since API 0.25, docs/MANIFEST.md)
     memory: 900                     # what one tile costs of the screen's layout memory
     data: departures                # the fetch whose answer the tile gets (leave out for none)
     options:                        # what the inspector shows
@@ -408,7 +408,7 @@ came along is offered to go as well.
 | What happens | Why | Fix |
 |---|---|---|
 | The build says "No tessera-plugin.yaml above ..." | The component is not in `components/<id>/` next to the manifest. | Keep the folder layout of the template. |
-| The build says the plugin wants another plugin API | `api:` in the manifest is newer than the screen's core. | Name the lowest API whose parts you use; the core offers plugin API 0.24 now (on Tessera's dev branch; the release has an older one until the next). Or update the screen's firmware. |
+| The build says the plugin wants another plugin API | `api:` in the manifest is newer than the screen's core. | Name the lowest API whose parts you use; the core offers plugin API 0.26 now (on Tessera's dev branch; the release has an older one until the next). Or update the screen's firmware. |
 | The build says a newer API "changed a name it may use" | `api:` is from before a minor that renamed something (0.4: `Plugin::on_tick` became `on_interval`). | Move the code to the new name and raise `api` ([FIRMWARE_API.md](FIRMWARE_API.md), "Versions"). |
 | `check.py` says a key "belongs to the core" or "opens the screen" | `plugin.yaml` sets something a plugin never sets, such as `wifi:` or `http_request:`. | Leave it to the core; data comes through a `fetch` ([LIMITS.md](LIMITS.md), "plugin.yaml"). |
 | `check.py` says "provides speaker, so it makes a speaker: with id: ts_speaker" | The plugin promises a feature it does not make, or gives it another id. | Give the component the feature's id. |
