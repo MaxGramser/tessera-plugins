@@ -28,14 +28,14 @@
   "custom_card": {
    "likes": 20,
    "rating": 4.7,
-   "ratings": 37,
-   "homes": 45
+   "ratings": 38,
+   "homes": 46
   },
   "dwd_rain": {
    "likes": 1,
    "rating": 3.4,
    "ratings": 7,
-   "homes": 8
+   "homes": 9
   },
   "electricity_price": {
    "likes": 3,
@@ -53,13 +53,13 @@
    "likes": 10,
    "rating": 3,
    "ratings": 3,
-   "homes": 8
+   "homes": 9
   },
   "flip_clock": {
-   "likes": 16,
+   "likes": 17,
    "rating": 4.4,
-   "ratings": 50,
-   "homes": 48
+   "ratings": 52,
+   "homes": 49
   },
   "guition_relays": {
    "likes": 3,
@@ -71,19 +71,19 @@
    "likes": 4,
    "rating": 4.7,
    "ratings": 3,
-   "homes": 13
+   "homes": 14
   },
   "ov_departures": {
    "likes": 3,
    "rating": null,
    "ratings": 2,
-   "homes": 1
+   "homes": 2
   },
   "photo_clock": {
    "likes": 2,
    "rating": 4.5,
    "ratings": 4,
-   "homes": 12
+   "homes": 13
   },
   "photo_slideshow": {
    "likes": 3,
@@ -113,12 +113,12 @@
    "likes": 4,
    "rating": 4.6,
    "ratings": 11,
-   "homes": 20
+   "homes": 21
   },
   "status_tile": {
-   "likes": 1,
-   "rating": 4.3,
-   "ratings": 15,
+   "likes": 3,
+   "rating": 4.4,
+   "ratings": 17,
    "homes": 22
   },
   "sweden_public_transport": {
@@ -131,19 +131,19 @@
    "likes": 2,
    "rating": 3.5,
    "ratings": 4,
-   "homes": 2
+   "homes": 3
   },
   "tap_sound": {
    "likes": 2,
    "rating": 4.4,
-   "ratings": 8,
+   "ratings": 9,
    "homes": 12
   },
   "thermo_dial": {
    "likes": 2,
-   "rating": 4.4,
-   "ratings": 12,
-   "homes": 17
+   "rating": 4.5,
+   "ratings": 13,
+   "homes": 18
   },
   "timers": {
    "likes": 2,
@@ -167,7 +167,7 @@
    "likes": 12,
    "rating": 4.7,
    "ratings": 18,
-   "homes": 24
+   "homes": 25
   },
   "waste_collection": {
    "likes": 11,
@@ -195,9 +195,9 @@
   },
   "wifi_qr": {
    "likes": 4,
-   "rating": 4.4,
-   "ratings": 7,
-   "homes": 8
+   "rating": 4.5,
+   "ratings": 8,
+   "homes": 7
   },
   "world_clock": {
    "likes": 3,
