@@ -1,13 +1,18 @@
 {
  "format": 1,
- "generated": "2026-11-03T08:17:49Z",
- "plugin_api": "0.24",
+ "generated": "2026-11-14T12:23:25Z",
+ "plugin_api": "0.26",
  "blocked": [],
  "featured": [
   "ov_departures",
   "waste_collection"
  ],
  "claims": {
+  "air_quality": {
+   "repo": "https://github.com/maxgramser/tessera-plugins",
+   "repo_id": 1408945265,
+   "path": "plugins/air_quality"
+  },
   "av_wall_panel_controls": {
    "repo": "https://github.com/mrecosse/tessera-plugin-av-wall-panel-controls",
    "repo_id": 1428153427,
@@ -195,6 +200,706 @@
   }
  },
  "plugins": [
+  {
+   "id": "air_quality",
+   "repo": "https://github.com/maxgramser/tessera-plugins",
+   "repo_id": 1408945265,
+   "path": "plugins/air_quality",
+   "label": "tessera",
+   "status": "ok",
+   "release": {
+    "version": "0.1.0",
+    "sha": "d9b0e3bef9eca31396ef3176ab12edee5aa12c0e",
+    "date": "2026-11-14"
+   },
+   "manifest": {
+    "id": "air_quality",
+    "version": "0.1.0",
+    "api": "0.26",
+    "icon": "air-purifier",
+    "maintainer": "MaxGramser",
+    "license": "MIT",
+    "stage": "beta",
+    "topics": [
+     "home",
+     "weather"
+    ],
+    "requires": {
+     "esphome": "2026.6.2"
+    },
+    "boards": "any",
+    "flash_kb": 40,
+    "permissions": {
+     "ha_commands": [
+      "recorder/statistics_during_period"
+     ]
+    },
+    "answers": [
+     {
+      "command": "recorder/statistics_during_period",
+      "fields": {
+       "mean": {
+        "path": "[*][*].mean",
+        "as": "numbers"
+       },
+       "min": {
+        "path": "[*][*].min",
+        "as": "numbers"
+       },
+       "max": {
+        "path": "[*][*].max",
+        "as": "numbers"
+       }
+      }
+     }
+    ],
+    "tiles": [
+     {
+      "id": "room",
+      "name": "tile_name",
+      "icon": "air-purifier",
+      "sizes": {
+       "min": "1x1",
+       "max": "4x4"
+      },
+      "memory": 12000,
+      "example": "tile_example",
+      "from_device": true,
+      "options": [
+       {
+        "id": "room",
+        "kind": "choice",
+        "label": "opt_room",
+        "hint": "opt_room_hint",
+        "default": "living",
+        "choices": [
+         {
+          "value": "living",
+          "label": "room_living"
+         },
+         {
+          "value": "bedroom",
+          "label": "room_bedroom"
+         },
+         {
+          "value": "office",
+          "label": "room_office"
+         },
+         {
+          "value": "studio",
+          "label": "room_studio"
+         },
+         {
+          "value": "gallery",
+          "label": "room_gallery"
+         },
+         {
+          "value": "workshop",
+          "label": "room_workshop"
+         },
+         {
+          "value": "nursery",
+          "label": "room_nursery"
+         },
+         {
+          "value": "kitchen",
+          "label": "room_kitchen"
+         }
+        ]
+       },
+       {
+        "id": "co2",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "device_class": [
+         "carbon_dioxide"
+        ],
+        "label": "opt_co2"
+       },
+       {
+        "id": "pm25",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "device_class": [
+         "pm25"
+        ],
+        "label": "opt_pm25"
+       },
+       {
+        "id": "pm10",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "device_class": [
+         "pm10"
+        ],
+        "label": "opt_pm10"
+       },
+       {
+        "id": "voc",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "device_class": [
+         "volatile_organic_compounds",
+         "volatile_organic_compounds_parts"
+        ],
+        "matches": [
+         "voc_index",
+         "total_volatile_organic_component_index",
+         "voc",
+         "tvoc"
+        ],
+        "label": "opt_voc"
+       },
+       {
+        "id": "nox",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "matches": [
+         "nox_index",
+         "nitrogen_index",
+         "nox"
+        ],
+        "label": "opt_nox"
+       },
+       {
+        "id": "temperature",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "device_class": [
+         "temperature"
+        ],
+        "label": "opt_temperature"
+       },
+       {
+        "id": "humidity",
+        "kind": "entity",
+        "domains": [
+         "sensor"
+        ],
+        "attributes": [
+         "unit_of_measurement",
+         "device_class"
+        ],
+        "device_class": [
+         "humidity"
+        ],
+        "label": "opt_humidity"
+       },
+       {
+        "id": "co2_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 450,
+        "max": 5000,
+        "step": 50,
+        "unit": "ppm",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 1000,
+          "bedroom": 800,
+          "office": 800,
+          "studio": 800,
+          "gallery": 1000,
+          "workshop": 1000,
+          "nursery": 800,
+          "kitchen": 1000
+         }
+        },
+        "label": "opt_co2_max"
+       },
+       {
+        "id": "pm25_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 1,
+        "max": 150,
+        "step": 1,
+        "unit": "µg/m³",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 10,
+          "bedroom": 10,
+          "office": 10,
+          "studio": 10,
+          "gallery": 5,
+          "workshop": 10,
+          "nursery": 10,
+          "kitchen": 15
+         }
+        },
+        "label": "opt_pm25_max"
+       },
+       {
+        "id": "pm10_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 1,
+        "max": 300,
+        "step": 1,
+        "unit": "µg/m³",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 20,
+          "bedroom": 20,
+          "office": 20,
+          "studio": 20,
+          "gallery": 10,
+          "workshop": 20,
+          "nursery": 20,
+          "kitchen": 30
+         }
+        },
+        "label": "opt_pm10_max"
+       },
+       {
+        "id": "voc_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 1,
+        "max": 5000,
+        "step": 10,
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 150,
+          "bedroom": 150,
+          "office": 150,
+          "studio": 150,
+          "gallery": 150,
+          "workshop": 150,
+          "nursery": 150,
+          "kitchen": 150
+         }
+        },
+        "label": "opt_voc_max"
+       },
+       {
+        "id": "nox_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 2,
+        "max": 500,
+        "step": 1,
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 20,
+          "bedroom": 20,
+          "office": 20,
+          "studio": 20,
+          "gallery": 20,
+          "workshop": 20,
+          "nursery": 20,
+          "kitchen": 20
+         }
+        },
+        "label": "opt_nox_max"
+       },
+       {
+        "id": "temperature_min",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 0,
+        "max": 40,
+        "step": 0.5,
+        "unit": "°C",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 19,
+          "bedroom": 16,
+          "office": 20,
+          "studio": 20,
+          "gallery": 16,
+          "workshop": 15,
+          "nursery": 16,
+          "kitchen": 18
+         }
+        },
+        "label": "opt_temperature_min"
+       },
+       {
+        "id": "temperature_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 0,
+        "max": 40,
+        "step": 0.5,
+        "unit": "°C",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 24,
+          "bedroom": 20,
+          "office": 24,
+          "studio": 24,
+          "gallery": 25,
+          "workshop": 25,
+          "nursery": 20,
+          "kitchen": 25
+         }
+        },
+        "label": "opt_temperature_max"
+       },
+       {
+        "id": "humidity_min",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 40,
+          "bedroom": 40,
+          "office": 40,
+          "studio": 45,
+          "gallery": 40,
+          "workshop": 35,
+          "nursery": 40,
+          "kitchen": 40
+         }
+        },
+        "label": "opt_humidity_min"
+       },
+       {
+        "id": "humidity_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "unit": "%",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "living": 60,
+          "bedroom": 60,
+          "office": 60,
+          "studio": 55,
+          "gallery": 60,
+          "workshop": 65,
+          "nursery": 60,
+          "kitchen": 65
+         }
+        },
+        "label": "opt_humidity_max"
+       },
+       {
+        "id": "swing_max",
+        "kind": "number",
+        "optional": true,
+        "group": "group_limits",
+        "min": 1,
+        "max": 50,
+        "step": 1,
+        "unit": "%",
+        "placeholder_from": {
+         "option": "room",
+         "values": {
+          "studio": 15,
+          "gallery": 10
+         }
+        },
+        "label": "opt_swing_max"
+       }
+      ]
+     }
+    ],
+    "cards": [
+     {
+      "id": "detail",
+      "name": "card_name",
+      "wide": true
+     }
+    ]
+   },
+   "translations": {
+    "en": {
+     "_meta": {
+      "name": "English"
+     },
+     "screen": {
+      "good": "Good",
+      "fair": "Fair",
+      "poor": "Poor",
+      "choose": "Choose sensors",
+      "no_data": "No data",
+      "all_fine": "All in range",
+      "n_fine": "1 value in range | {n} values in range",
+      "more": "+{n} more",
+      "co2": "CO₂",
+      "co2_plain": "CO2",
+      "pm25": "PM2.5",
+      "pm10": "PM10",
+      "voc": "VOC",
+      "nox": "NOx",
+      "temperature": "Temperature",
+      "temperature_short": "Temp",
+      "humidity": "Humidity",
+      "humidity_short": "Humid.",
+      "swing": "Humidity swing",
+      "swing_short": "Swing",
+      "co2_high": "CO₂ high",
+      "co2_high_plain": "CO2 high",
+      "pm25_high": "Fine dust high",
+      "pm10_high": "Dust high",
+      "voc_high": "VOC high",
+      "nox_high": "NOx high",
+      "temperature_high": "Too warm",
+      "temperature_low": "Too cold",
+      "humidity_high": "Too humid",
+      "humidity_low": "Too dry",
+      "swing_high": "Humidity swings",
+      "advice_co2": "Open a window, or turn the ventilation up.",
+      "advice_pm25": "Switch on the cooker hood, put out candles, or run an air purifier.",
+      "advice_pm10": "Let the dust settle, then air the room.",
+      "advice_voc": "Air the room, and put away what smells.",
+      "advice_nox": "Switch on the cooker hood and air the room.",
+      "advice_temperature_high": "Shade the windows, or cool the room.",
+      "advice_temperature_low": "Turn the heating up a little.",
+      "advice_humidity_high": "Air the room, or run a dehumidifier.",
+      "advice_humidity_low": "Run a humidifier, or set the heating a little lower.",
+      "advice_swing": "Keep it even: air briefly, and let a humidifier hold one level.",
+      "advice_fine": "Nothing to do: the air is fine for this room.",
+      "cause_co2": "People breathing in a closed room. A lot of it makes you tired and less sharp.",
+      "cause_pm25": "Fine dust: mostly cooking, candles, a wood stove or smoke from outside.",
+      "cause_pm10": "Coarser dust that was stirred up: vacuuming, sanding, pollen.",
+      "cause_voc": "Fumes of everyday things: cleaning products, paint, glue, new furniture, cooking.",
+      "cause_nox": "Gases of burning: a gas hob, a stove, candles, or traffic outside.",
+      "cause_temperature_high": "Sun on the windows, the heating, or many people in the room.",
+      "cause_temperature_low": "The heating is low, or a window is open.",
+      "cause_humidity_high": "Showering, cooking, drying laundry, or too little fresh air.",
+      "cause_humidity_low": "Heating dries the air, most of all in winter.",
+      "cause_swing": "How far the humidity moved in 24 hours. Heating that cycles, airing and a humidifier that switches make it move.",
+      "word_high": "High",
+      "word_low": "Low",
+      "what_to_do": "What to do",
+      "tap_hint": "tap a value for more",
+      "lead_from": "Where it comes from",
+      "lead_do": "First step",
+      "lead_now": "Now",
+      "lead_day": "Last 24 hours",
+      "in_range": "In range for this room. Nothing to do.",
+      "room_living": "Living room",
+      "room_bedroom": "Bedroom",
+      "room_office": "Office",
+      "room_studio": "Studio",
+      "room_gallery": "Gallery",
+      "room_workshop": "Workshop",
+      "room_nursery": "Nursery",
+      "room_kitchen": "Kitchen",
+      "judged_as": "Judged as: {room}"
+     },
+     "app": {
+      "name": "Air quality",
+      "summary": "One verdict for the air of a room, from the sensors you choose, judged for the kind of room it is.",
+      "tile_name": "Air quality",
+      "tile_example": "Good · 92",
+      "card_name": "Air quality",
+      "opt_room": "Kind of room",
+      "opt_room_hint": "Sets what counts as good here: a bedroom wants cooler, fresher air than a workshop.",
+      "room_living": "Living room",
+      "room_bedroom": "Bedroom",
+      "room_office": "Office",
+      "room_studio": "Music studio",
+      "room_gallery": "Gallery or collection",
+      "room_workshop": "Workshop",
+      "room_nursery": "Nursery",
+      "room_kitchen": "Kitchen",
+      "opt_co2": "CO₂ sensor",
+      "opt_pm25": "PM2.5 sensor",
+      "opt_pm10": "PM10 sensor",
+      "opt_voc": "VOC sensor",
+      "opt_nox": "NOx sensor",
+      "opt_temperature": "Temperature sensor",
+      "opt_humidity": "Humidity sensor",
+      "group_limits": "Limits of your own",
+      "opt_co2_max": "CO₂ fine up to",
+      "opt_pm25_max": "PM2.5 fine up to",
+      "opt_pm10_max": "PM10 fine up to",
+      "opt_voc_max": "VOC fine up to",
+      "opt_nox_max": "NOx fine up to",
+      "opt_temperature_min": "Temperature fine from",
+      "opt_temperature_max": "Temperature fine up to",
+      "opt_humidity_min": "Humidity fine from",
+      "opt_humidity_max": "Humidity fine up to",
+      "opt_swing_max": "Humidity may move in 24 hours"
+     }
+    },
+    "nl": {
+     "_meta": {
+      "name": "Nederlands"
+     },
+     "screen": {
+      "good": "Goed",
+      "fair": "Matig",
+      "poor": "Slecht",
+      "choose": "Kies sensoren",
+      "no_data": "Geen gegevens",
+      "all_fine": "Alles in orde",
+      "n_fine": "1 waarde in orde | {n} waarden in orde",
+      "more": "+{n} meer",
+      "co2": "CO₂",
+      "co2_plain": "CO2",
+      "pm25": "PM2.5",
+      "pm10": "PM10",
+      "voc": "VOC",
+      "nox": "NOx",
+      "temperature": "Temperatuur",
+      "temperature_short": "Temp",
+      "humidity": "Luchtvochtigheid",
+      "humidity_short": "Vocht",
+      "swing": "Vochtschommeling",
+      "swing_short": "Schommel.",
+      "co2_high": "CO₂ hoog",
+      "co2_high_plain": "CO2 hoog",
+      "pm25_high": "Fijnstof hoog",
+      "pm10_high": "Stof hoog",
+      "voc_high": "VOC hoog",
+      "nox_high": "NOx hoog",
+      "temperature_high": "Te warm",
+      "temperature_low": "Te koud",
+      "humidity_high": "Te vochtig",
+      "humidity_low": "Te droog",
+      "swing_high": "Vocht schommelt",
+      "advice_co2": "Zet een raam open, of de ventilatie hoger.",
+      "advice_pm25": "Zet de afzuigkap aan, doe kaarsen uit, of zet een luchtreiniger aan.",
+      "advice_pm10": "Laat het stof neerdalen en lucht daarna de ruimte.",
+      "advice_voc": "Lucht de ruimte en berg op wat ruikt.",
+      "advice_nox": "Zet de afzuigkap aan en lucht de ruimte.",
+      "advice_temperature_high": "Doe de zonwering dicht, of koel de ruimte.",
+      "advice_temperature_low": "Zet de verwarming iets hoger.",
+      "advice_humidity_high": "Lucht de ruimte, of zet een ontvochtiger aan.",
+      "advice_humidity_low": "Zet een luchtbevochtiger aan, of de verwarming iets lager.",
+      "advice_swing": "Houd het gelijk: lucht kort, en laat een bevochtiger één stand vasthouden.",
+      "advice_fine": "Niets te doen: de lucht is goed voor deze ruimte.",
+      "cause_co2": "Mensen die ademen in een dichte ruimte. Veel ervan maakt je moe en minder scherp.",
+      "cause_pm25": "Fijnstof: vooral koken, kaarsen, een houtkachel of rook van buiten.",
+      "cause_pm10": "Grover stof dat is opgewaaid: stofzuigen, schuren, pollen.",
+      "cause_voc": "Dampen van alledaagse dingen: schoonmaakmiddel, verf, lijm, nieuwe meubels, koken.",
+      "cause_nox": "Gassen van verbranding: een gasfornuis, een kachel, kaarsen of verkeer buiten.",
+      "cause_temperature_high": "Zon op de ramen, de verwarming, of veel mensen in de ruimte.",
+      "cause_temperature_low": "De verwarming staat laag, of er staat een raam open.",
+      "cause_humidity_high": "Douchen, koken, was drogen, of te weinig frisse lucht.",
+      "cause_humidity_low": "Verwarming droogt de lucht uit, vooral in de winter.",
+      "cause_swing": "Hoe ver de luchtvochtigheid in 24 uur bewoog. Verwarming die aan- en afslaat, luchten en een bevochtiger die schakelt laten hem bewegen.",
+      "word_high": "Hoog",
+      "word_low": "Laag",
+      "what_to_do": "Wat te doen",
+      "tap_hint": "tik op een waarde voor meer",
+      "lead_from": "Waar het vandaan komt",
+      "lead_do": "Eerste stap",
+      "lead_now": "Nu",
+      "lead_day": "Laatste 24 uur",
+      "in_range": "Binnen de grenzen van deze ruimte. Niets te doen.",
+      "room_living": "Woonkamer",
+      "room_bedroom": "Slaapkamer",
+      "room_office": "Kantoor",
+      "room_studio": "Studio",
+      "room_gallery": "Galerie",
+      "room_workshop": "Werkplaats",
+      "room_nursery": "Babykamer",
+      "room_kitchen": "Keuken",
+      "judged_as": "Beoordeeld als: {room}"
+     },
+     "app": {
+      "name": "Luchtkwaliteit",
+      "summary": "Eén oordeel over de lucht in een ruimte, uit de sensoren die je kiest, beoordeeld naar het soort ruimte.",
+      "tile_name": "Luchtkwaliteit",
+      "tile_example": "Goed · 92",
+      "card_name": "Luchtkwaliteit",
+      "opt_room": "Soort ruimte",
+      "opt_room_hint": "Bepaalt wat hier goed is: een slaapkamer wil koelere, frissere lucht dan een werkplaats.",
+      "room_living": "Woonkamer",
+      "room_bedroom": "Slaapkamer",
+      "room_office": "Kantoor",
+      "room_studio": "Muziekstudio",
+      "room_gallery": "Galerie of collectie",
+      "room_workshop": "Werkplaats",
+      "room_nursery": "Babykamer",
+      "room_kitchen": "Keuken",
+      "opt_co2": "CO₂-sensor",
+      "opt_pm25": "PM2.5-sensor",
+      "opt_pm10": "PM10-sensor",
+      "opt_voc": "VOC-sensor",
+      "opt_nox": "NOx-sensor",
+      "opt_temperature": "Temperatuursensor",
+      "opt_humidity": "Vochtsensor",
+      "group_limits": "Eigen grenzen",
+      "opt_co2_max": "CO₂ goed tot",
+      "opt_pm25_max": "PM2.5 goed tot",
+      "opt_pm10_max": "PM10 goed tot",
+      "opt_voc_max": "VOC goed tot",
+      "opt_nox_max": "NOx goed tot",
+      "opt_temperature_min": "Temperatuur goed vanaf",
+      "opt_temperature_max": "Temperatuur goed tot",
+      "opt_humidity_min": "Vocht goed vanaf",
+      "opt_humidity_max": "Vocht goed tot",
+      "opt_swing_max": "Vocht mag in 24 uur bewegen"
+     }
+    }
+   },
+   "readme": {
+    "en": "# Air quality\n\nOne tile that says how the air of a room is. You choose the room's sensors (an AirGradient ONE, or any CO2, particle,\nVOC, NOx, temperature and humidity sensors Home Assistant has) and the kind of room it is. The tile gives one verdict,\nshows which value is off, and tells you a first step.\n\n- **The card is the verdict.** Green while everything is fine, yellow when a value is fair, red when one is poor.\n- **A ring with one arc for every sensor.** An arc is whole while its value is ideal and gets shorter as it goes off.\n  The number in the middle is the score of the worst value, from 100 (ideal) down to 0.\n- **The larger the tile, the more it shows.** One cell holds the verdict and the reason. Larger tiles add a cell for\n  each sensor with its value and a small scale: the mark is the value, the lit part the zone it is in.\n- **A tap opens the card** with every value. When something is off it has a key, What to do. That key, or a tap on any\n  value, opens an explanation: where it comes from, a first step, and its last 24 hours.\n\n## Set up\n\n1. Add the plugin to a screen in the Tessera app, and let the screen update.\n2. Put the Air quality tile on a page.\n3. In the tile's settings, choose the **Kind of room**. It sets what counts as good: a bedroom wants cooler, fresher\n   air than a workshop.\n4. Choose the sensors. With **Fill from a device** you pick one device (an AirGradient ONE, for example) and every\n   sensor it has is filled in. Or choose each sensor yourself: a field you leave empty does not count. One CO2 sensor\n   alone is enough.\n5. Optional: under **Limits of your own** you set where \"fine\" ends for a value. An empty field keeps the room's\n   limit, which the field shows.\n\n## How it judges\n\nEvery value gets a score: 100 is ideal, 80 is where fine ends, 60 where poor starts. The tile's verdict is that of\nthe worst value, so one poor value never hides behind five good ones. The official air quality indexes work the same\nway.\n\nWhat counts as fine, per kind of room:\n\n| Room | CO2 fine up to | CO2 poor from | PM2.5 fine / poor | Temperature fine | Humidity fine |\n|---|---|---|---|---|---|\n| Living room | 1000 ppm | 1500 ppm | 10 / 25 µg/m³ | 19 to 24 °C | 40 to 60 % |\n| Bedroom | 800 | 1000 | 10 / 25 | 16 to 20 °C | 40 to 60 % |\n| Office | 800 | 1000 | 10 / 25 | 20 to 24 °C | 40 to 60 % |\n| Music studio | 800 | 1200 | 10 / 25 | 20 to 24 °C | 45 to 55 % |\n| Gallery or collection | 1000 | 1500 | 5 / 10 | 16 to 25 °C | 40 to 60 % |\n| Workshop | 1000 | 1500 | 10 / 25 | 15 to 25 °C | 35 to 65 % |\n| Nursery | 800 | 1000 | 10 / 25 | 16 to 20 °C | 40 to 60 % |\n| Kitchen | 1000 | 1500 | 15 / 35 | 18 to 25 °C | 40 to 65 % |\n\n- **PM10** is fine up to twice the PM2.5 limit.\n- **VOC as an index** (Sensirion's, as an AirGradient gives it) is fine up to 150 and poor from 250. The index is\n  relative to the room itself: 100 is its average of the last day, so it says \"more than usual\", not how much. A VOC\n  sensor in ppb is fine up to 220, one in µg/m³ up to 300.\n- **NOx as an index** is fine up to 20.\n- **A music studio and a gallery also judge how even the humidity stayed**: how far it moved in the last 24 hours.\n  A studio is fine up to 15 points and poor from 30, a gallery fine up to 10 and poor from 20. Wood and paper suffer\n  more from humidity that moves than from one that is a little off. It needs a humidity sensor with statistics in\n  Home Assistant (every sensor with a state class has them).\n\nThe numbers follow what the World Health Organization (particles), Germany's Umweltbundesamt (CO2 below 1000 ppm,\nVOC), the WELL standard and studies of sleep and of work (CO2 below 800 ppm), the Bizot Green Protocol of museums\n(16 to 25 °C, 40 to 60 %, at most 10 points of humidity in 24 hours) and the makers of guitars and pianos (45 to\n55 %) say. Where they disagree, the tile takes the middle.\n\n## The tips\n\nThe explanation says where a value usually comes from and what to try first: open a window for CO2, the cooker hood\nfor fine dust and NOx, a humidifier for dry air. They are rules of thumb for a first step, written for a home. They\nare not medical or professional advice, and the tile is no alarm: a smoke or carbon monoxide detector stays what it\nis.\n\n## What it asks of Home Assistant\n\nThe tile reads the sensors you choose. For the last 24 hours it asks Home Assistant for the statistics of one sensor\n(`recorder/statistics_during_period`): when you open an explanation, and every ten minutes for the humidity of a\nstudio or a gallery. Nothing leaves your home.\n",
+    "nl": "# Luchtkwaliteit\n\nEén tegel die zegt hoe de lucht in een ruimte is. Je kiest de sensoren van de ruimte (een AirGradient ONE, of elke\nCO2-, fijnstof-, VOC-, NOx-, temperatuur- en vochtsensor die Home Assistant heeft) en wat voor ruimte het is. De tegel\ngeeft één oordeel, laat zien welke waarde afwijkt en noemt een eerste stap.\n\n- **De kaart is het oordeel.** Groen zolang alles goed is, geel als een waarde matig is, rood als er een slecht is.\n- **Een ring met een boog voor elke sensor.** Een boog is heel zolang zijn waarde ideaal is en wordt korter naarmate\n  hij afwijkt. Het getal in het midden is de score van de slechtste waarde, van 100 (ideaal) tot 0.\n- **Hoe groter de tegel, hoe meer hij toont.** Eén cel toont het oordeel en de reden. Grotere tegels krijgen een cel\n  per sensor met de waarde en een kleine schaal: het streepje is de waarde, het gekleurde deel de zone waarin hij valt.\n- **Een tik opent de kaart** met alle waarden. Wijkt er iets af, dan staat er een knop Wat te doen. Die knop, of een tik\n  op een waarde, opent de uitleg: waar het vandaan komt, een eerste stap, en de laatste 24 uur.\n\n## Instellen\n\n1. Voeg de plugin toe aan een scherm in de Tessera-app en laat het scherm bijwerken.\n2. Zet de tegel Luchtkwaliteit op een pagina.\n3. Kies in de instellingen van de tegel de **Soort ruimte**. Die bepaalt wat goed is: een slaapkamer wil koelere,\n   frissere lucht dan een werkplaats.\n4. Kies de sensoren. Met **Vul vanuit een apparaat** kies je één apparaat (een AirGradient ONE bijvoorbeeld) en elke\n   sensor die het heeft wordt ingevuld. Of kies elke sensor zelf: een veld dat je leeg laat telt niet mee. Eén\n   CO2-sensor is al genoeg.\n5. Als je wilt: onder **Eigen grenzen** stel je in waar \"goed\" ophoudt voor een waarde. Een leeg veld houdt de grens\n   van de ruimte, die het veld toont.\n\n## Hoe hij oordeelt\n\nElke waarde krijgt een score: 100 is ideaal, bij 80 houdt goed op, bij 60 begint slecht. Het oordeel van de tegel is\ndat van de slechtste waarde, zodat één slechte waarde nooit wegvalt tegen vijf goede. De officiële luchtindexen werken\nnet zo.\n\nWat goed is, per soort ruimte:\n\n| Ruimte | CO2 goed tot | CO2 slecht vanaf | PM2.5 goed / slecht | Temperatuur goed | Vocht goed |\n|---|---|---|---|---|---|\n| Woonkamer | 1000 ppm | 1500 ppm | 10 / 25 µg/m³ | 19 tot 24 °C | 40 tot 60 % |\n| Slaapkamer | 800 | 1000 | 10 / 25 | 16 tot 20 °C | 40 tot 60 % |\n| Kantoor | 800 | 1000 | 10 / 25 | 20 tot 24 °C | 40 tot 60 % |\n| Muziekstudio | 800 | 1200 | 10 / 25 | 20 tot 24 °C | 45 tot 55 % |\n| Galerie of collectie | 1000 | 1500 | 5 / 10 | 16 tot 25 °C | 40 tot 60 % |\n| Werkplaats | 1000 | 1500 | 10 / 25 | 15 tot 25 °C | 35 tot 65 % |\n| Babykamer | 800 | 1000 | 10 / 25 | 16 tot 20 °C | 40 tot 60 % |\n| Keuken | 1000 | 1500 | 15 / 35 | 18 tot 25 °C | 40 tot 65 % |\n\n- **PM10** is goed tot twee keer de grens van PM2.5.\n- **VOC als index** (die van Sensirion, zoals een AirGradient hem geeft) is goed tot 150 en slecht vanaf 250. De index\n  is relatief aan de ruimte zelf: 100 is het gemiddelde van de laatste dag, dus hij zegt \"meer dan normaal\", niet\n  hoeveel. Een VOC-sensor in ppb is goed tot 220, een in µg/m³ tot 300.\n- **NOx als index** is goed tot 20.\n- **Een muziekstudio en een galerie beoordelen ook hoe gelijk het vocht bleef**: hoe ver het in 24 uur bewoog. Een\n  studio is goed tot 15 punten en slecht vanaf 30, een galerie goed tot 10 en slecht vanaf 20. Hout en papier lijden\n  meer van vocht dat beweegt dan van vocht dat er net naast zit. Het heeft een vochtsensor met statistieken in Home\n  Assistant nodig (elke sensor met een state class heeft die).\n\nDe getallen volgen wat de Wereldgezondheidsorganisatie (fijnstof), het Duitse Umweltbundesamt (CO2 onder 1000 ppm,\nVOC), de WELL-standaard en onderzoek naar slaap en werk (CO2 onder 800 ppm), het Bizot Green Protocol van musea (16 tot\n25 °C, 40 tot 60 %, hooguit 10 punten vocht in 24 uur) en de bouwers van gitaren en piano's (45 tot 55 %) zeggen. Waar\nze het oneens zijn, neemt de tegel het midden.\n\n## De tips\n\nDe uitleg zegt waar een waarde meestal vandaan komt en wat je eerst kunt proberen: een raam open bij CO2, de afzuigkap\nbij fijnstof en NOx, een bevochtiger bij droge lucht. Het zijn vuistregels voor een eerste stap, geschreven voor thuis.\nHet is geen medisch of professioneel advies, en de tegel is geen alarm: een rook- of koolmonoxidemelder blijft wat hij\nis.\n\n## Wat hij aan Home Assistant vraagt\n\nDe tegel leest de sensoren die je kiest. Voor de laatste 24 uur vraagt hij Home Assistant om de statistieken van één\nsensor (`recorder/statistics_during_period`): als je een uitleg opent, en elke tien minuten voor het vocht van een\nstudio of een galerie. Niets verlaat je huis.\n"
+   },
+   "changelog": {
+    "en": "# Changelog\n\n## 0.1.0 - 2026-11-14\n\n- The first version. One tile for the air of a room: a verdict in the colour of the card, a ring with an arc for\n  every sensor, a cell for each value on larger tiles, a card with all of them, and an explanation of each value\n  with where it comes from, a first step and its last 24 hours. Eight kinds of room, limits of your own, and the\n  sensors of one device filled in at once. Needs plugin API 0.26.\n",
+    "nl": "# Changelog\n\n## 0.1.0 - 2026-11-14\n\n- De eerste versie. Eén tegel voor de lucht in een ruimte: een oordeel in de kleur van de kaart, een ring met een boog\n  per sensor, een cel per waarde op grotere tegels, een kaart met alle waarden, en uitleg per waarde met waar het\n  vandaan komt, een eerste stap en de laatste 24 uur. Acht soorten ruimtes, eigen grenzen, en de sensoren van één\n  apparaat in één keer ingevuld. Heeft plugin-API 0.26 nodig.\n"
+   },
+   "image": "store.png"
+  },
   {
    "id": "bt_proxy",
    "repo": "https://github.com/maxgramser/tessera-plugins",
@@ -4524,14 +5229,14 @@
    "label": "community",
    "status": "ok",
    "release": {
-    "version": "0.6.0",
-    "sha": "6dea9045ad3da4c62722045ed9dd5da7aef9ae8c",
-    "date": "2026-10-31",
-    "tag": "v0.6.0"
+    "version": "0.6.1",
+    "sha": "29d951b6835e57ad534f9e4c22d8385c87b25b2a",
+    "date": "2026-11-13",
+    "tag": "v0.6.1"
    },
    "manifest": {
     "id": "energidata_price",
-    "version": "0.6.0",
+    "version": "0.6.1",
     "api": "0.12",
     "icon": "flash",
     "maintainer": "Andware",
@@ -4563,7 +5268,7 @@
        "max": "9x9",
        "full": true
       },
-      "memory": 16000,
+      "memory": 8000,
       "domains": [
        "sensor"
       ],
@@ -4900,7 +5605,7 @@
     "en": "# Elpris (Energi Data Service)\n\nThe Danish electricity price now as a tile, in kr/kWh or øre/kWh, with the graph of today and tomorrow on bigger tiles\nand on a card of its own. It reads the price sensor of the **Energi Data Service** integration (HACS\n`energidataservice` by MTrab) in Home Assistant, such as one with tariffs and taxes added by the integration.\n\nIt runs on every board Tessera supports (`boards: any`), from the CYD to the 10.1-inch screens. It is built on the\n[Electricity price](https://github.com/Heronimonimo/tessera-electricity-price) plugin by Heronimonimo.\n\nTried on a Guition ESP32-4848S040, and on Tessera's bench: the CYD, the Guition, a Waveshare 4.3-inch in portrait\nand the 10.1-inch JC8012P4A1.\n\n## Set up\n\n1. Install the Energi Data Service integration in Home Assistant and set up a price sensor for your area (DK1 or DK2).\n   For the price you really pay, turn on tariffs, taxes and VAT in the integration.\n2. In Tessera, open **Plugins**, choose **Add with a link** and paste this repository's link. Tick your screens; each\n   builds once.\n3. In Layout, place the **Electricity price (Energi Data Service)** tile from the library's Plugins group, at any size\n   from 1x1 up to the whole page. A tile smaller than 2x2 shows the price with the meter bar; from 2x2 up it adds the\n   graph.\n4. In the inspector, choose your price sensor. The list holds only Energi Data Service sensors.\n5. Choose the unit, **kr/kWh** (`2.31`) or **øre/kWh** (`231`), and the number of decimals (in øre at most one).\n6. Tap a bar of the graph to see its price and time slot. Tap it again, or beside the bars, to open the card: the\n   price now, the lowest and highest still to come, the day's average and the graph.\n\n## Your tariff\n\nThe sensor gives the price p in kr/kWh. Leave **Delivery price** empty when the sensor already has tariffs, taxes and\nVAT. For a sensor without them you can type a formula in p:\n\n| Field              | Example         | Means                                   |\n|--------------------|-----------------|-----------------------------------------|\n| **Delivery price** | `(p+0.15)*1.25` | A surcharge on top, then 25% VAT        |\n|                    | `2.10`          | A fixed price                           |\n| **Feed-in price**  | `p-0.10`        | The price minus your supplier's 10 øre  |\n\nA formula has p, numbers (`0.15` or `0,15`), `+ - * /` and brackets. The numbers are in kr/kWh, also when the tile\nshows øre. A formula with a typo shows \"Check the formula\" on the screen in place of the price.\n\n## Good to know\n\n- The graph has a bar for every quarter of an hour when the sensor has quarter prices, else for every hour. Past bars\n  are grey, the bar now is the accent colour, and the bars to come are green, amber or red by their place between the\n  lowest and highest price.\n- Tomorrow's bars appear as soon as the sensor has them (Energi Data Service gets them in the early afternoon).\n- The price of now is the slot of now in today's list, not the sensor's state.\n- **Cheapest hours** marks the cheapest hours to come (up to 6) with a dark stroke over their bars: each on its own,\n  or as the cheapest stretch in a row (**Cheapest hours as**), handy for a dishwasher or a car. The card names them in\n  its day row. Only known prices count, not the forecast.\n- **Period** can show the next 24 or 48 hours from now in place of whole days. The known prices end at midnight\n  tomorrow (tomorrow's come in the early afternoon); after them the graph shows Carnot's forecast in fainter bars, when\n  the forecast is on in Energi Data Service (its options, with a free Carnot account). The card's low and high come\n  from the known prices only.\n- On the days the clock changes, the graph has 23 or 25 hours, each where it is on the clock.\n- **Electricity price** can also stand in a page's top bar (editor, \"From plugins\"): the price now of your first price\n  tile.\n"
    },
    "changelog": {
-    "en": "# Changelog\n\n## 0.6.0\n\n- New options **Cheapest hours** (0 to 6) and **Cheapest hours as**: the graph marks the cheapest hours to come with\n  a dark stroke over their bars, each on its own or as the cheapest stretch in a row. The card names them in its day\n  row (\"Cheapest 02:00–05:00\"). Only known prices count, not the forecast. Off (0) until you set it.\n\n## 0.5.0\n\n- **Next 24 hours** and **Next 48 hours** now fill the hours after the known prices with Carnot's forecast from\n  Energi Data Service, in fainter bars, so the graph always reaches 24 or 48 hours ahead. Turn on the forecast\n  (Carnot) in the integration's options to get it; without it the graph ends where the prices end, as before.\n- The card's low and high still come from the known prices only.\n\n## 0.4.0\n\n- **Period** can now show only the hours to come: the next 24 or the next 48 hours from the hour of now, without the\n  hours that have passed. The next 48 go as far as the prices do (midnight tomorrow). On the card, the low and high\n  are those of the hours the graph shows.\n\n## 0.3.0\n\n- New option **Period**: today and tomorrow (48 hours, as before) or today only (24 hours). Nothing to do: tiles\n  keep showing both days until you change it.\n\n## 0.2.0\n\n- New option **Price per**: every quarter of an hour, or each hour as the average of its quarters. The price now,\n  the low, high, average and the graph follow it. Nothing to do: tiles keep showing quarters until you change it.\n\n## 0.1.0\n\n- First version: the electricity price now from an Energi Data Service sensor, in kr/kWh or øre/kWh, with a graph of\n  today and tomorrow on bigger tiles, a card and the price in the top bar.\n- Built on the Electricity price plugin by Heronimonimo (MIT).\n"
+    "en": "# Changelog\n\n## 0.6.1\n\n- A tile takes about half the layout memory it did (8000 in place of 16000), so more tiles fit on a screen. The\n  graph and the meter's cells are each drawn in one part instead of one part per bar and per cell; they look and\n  take taps as before. Nothing to do.\n- What the top bar and the card keep of a tile's prices now lies in the screen's large memory (PSRAM) where it has\n  one, not in the memory Wi-Fi shares.\n\n## 0.6.0\n\n- New options **Cheapest hours** (0 to 6) and **Cheapest hours as**: the graph marks the cheapest hours to come with\n  a dark stroke over their bars, each on its own or as the cheapest stretch in a row. The card names them in its day\n  row (\"Cheapest 02:00–05:00\"). Only known prices count, not the forecast. Off (0) until you set it.\n\n## 0.5.0\n\n- **Next 24 hours** and **Next 48 hours** now fill the hours after the known prices with Carnot's forecast from\n  Energi Data Service, in fainter bars, so the graph always reaches 24 or 48 hours ahead. Turn on the forecast\n  (Carnot) in the integration's options to get it; without it the graph ends where the prices end, as before.\n- The card's low and high still come from the known prices only.\n\n## 0.4.0\n\n- **Period** can now show only the hours to come: the next 24 or the next 48 hours from the hour of now, without the\n  hours that have passed. The next 48 go as far as the prices do (midnight tomorrow). On the card, the low and high\n  are those of the hours the graph shows.\n\n## 0.3.0\n\n- New option **Period**: today and tomorrow (48 hours, as before) or today only (24 hours). Nothing to do: tiles\n  keep showing both days until you change it.\n\n## 0.2.0\n\n- New option **Price per**: every quarter of an hour, or each hour as the average of its quarters. The price now,\n  the low, high, average and the graph follow it. Nothing to do: tiles keep showing quarters until you change it.\n\n## 0.1.0\n\n- First version: the electricity price now from an Energi Data Service sensor, in kr/kWh or øre/kWh, with a graph of\n  today and tomorrow on bigger tiles, a card and the price in the top bar.\n- Built on the Electricity price plugin by Heronimonimo (MIT).\n"
    },
    "image": "store.png"
   },
