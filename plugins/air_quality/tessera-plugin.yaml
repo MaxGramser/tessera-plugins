@@ -1,7 +1,7 @@
 # Air quality: one verdict for the air of a room, from the sensors a person chooses (an AirGradient ONE, or any CO2,
 # particle, VOC, NOx, temperature and humidity sensors of Home Assistant), judged for the kind of room it is.
 id: air_quality
-version: 0.1.0
+version: 0.1.1
 api: "0.26"
 icon: air-purifier
 maintainer: MaxGramser
@@ -30,8 +30,9 @@ tiles:
     name: tile_name
     icon: air-purifier
     sizes: { min: 1x1, max: 4x4 }
-    # What the largest tile holds: eight cells with their scales, the ring and the words. A single cell uses a third.
-    memory: 12000
+    # What a tile keeps inside the chip on a board with PSRAM: next to nothing, since the tile, its readings and its
+    # parts live in PSRAM. A board without PSRAM adds its own share for every tile.
+    memory: 600
     example: tile_example
     # One device that measures several of these (an AirGradient ONE, an Awair, an Airthings) fills them in one go.
     from_device: true

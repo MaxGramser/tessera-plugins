@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1 - 2026-11-14
+
+- The tile said it keeps 12 KB inside the chip, so a screen with a few other tiles refused it. It keeps next to nothing there: its parts live in the larger memory beside the chip. A screen now takes it as any other tile.
+
 ## 0.1.0 - 2026-11-14
 
 - The first version. One tile for the air of a room: a verdict in the colour of the card, a ring with an arc for
