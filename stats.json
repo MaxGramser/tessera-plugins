@@ -29,7 +29,7 @@
    "likes": 20,
    "rating": 4.7,
    "ratings": 37,
-   "homes": 44
+   "homes": 45
   },
   "dwd_rain": {
    "likes": 1,
@@ -59,12 +59,12 @@
    "likes": 16,
    "rating": 4.4,
    "ratings": 50,
-   "homes": 47
+   "homes": 48
   },
   "guition_relays": {
    "likes": 3,
    "rating": 5,
-   "ratings": 16,
+   "ratings": 17,
    "homes": 15
   },
   "new_music": {
@@ -142,7 +142,7 @@
   "thermo_dial": {
    "likes": 2,
    "rating": 4.4,
-   "ratings": 11,
+   "ratings": 12,
    "homes": 17
   },
   "timers": {
@@ -197,7 +197,7 @@
    "likes": 4,
    "rating": 4.4,
    "ratings": 7,
-   "homes": 7
+   "homes": 8
   },
   "world_clock": {
    "likes": 3,
