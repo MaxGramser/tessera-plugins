@@ -12,6 +12,7 @@
 #include "esphome/components/smart_display/plugin_api.h"
 #include "esphome/components/smart_display/plugin_sound.h"
 #include "voice_popup.h"
+#include "timer_popup.h"
 
 namespace esphome::voice_assist {
 
@@ -27,7 +28,10 @@ class VoiceAssist : public Component, public tessera::Plugin {
   void on_ready() override;
   void on_interval(uint32_t now_ms) override;
   bool settings(tessera::SettingsPage &page) override;
-  void before_update() override { stop(); }
+  void before_update() override {
+    stop();
+    stop_ringing();
+  }
 
   void set_assistant(voice_assistant::VoiceAssistant *a) { assistant_ = a; }
   void set_wake_word(micro_wake_word::MicroWakeWord *w) { wake_word_ = w; }
@@ -43,6 +47,28 @@ class VoiceAssist : public Component, public tessera::Plugin {
   void popup_off();
   void set_wake_sound(tessera::Sound s) { wake_sound_ = s; }
   void set_thinking_sound(tessera::Sound s) { thinking_sound_ = s; }
+  void set_timer_alarm_on(switch_::Switch *s) { timer_alarm_on_ = s; }
+  void set_timer_sound(tessera::Sound s) { timer_sound_ = s; }
+
+  // Timers: Home Assistant's own, set by voice on this screen ("set a timer for 5 minutes"). voice_assistant keeps them
+  // and counts them down (get_timers()); plugin.yaml's on_timer_* triggers call these. That the triggers are there at
+  // all is what tells Home Assistant the screen has timers.
+  void timers_changed();
+  // A timer ran out: its popup and the ring, while Timer alarm is on.
+  void timer_finished(const voice_assistant::Timer &timer);
+  // Stops the ring and closes the timer's popup (a tap on it, or the screen's settings).
+  void stop_ringing();
+  bool has_timers() const { return assistant_ != nullptr && !assistant_->get_timers().empty(); }
+  bool ringing() const { return ringing_; }
+  // The timer that ends first, as the top bar and the tile show it: "4:59", "Pizza 4:59", "4:59 +1" for more.
+  std::string timer_line() const;
+  // Every timer waits (paused in Home Assistant).
+  bool timers_paused() const;
+  // What the timer's popup shows now.
+  TimerView timer_view() const;
+  // The icon and its colour for the timers: a bell in red while one rings, a pause while all wait, else the timer.
+  uint32_t timer_icon() const;
+  tessera::Tone timer_tone() const;
 
   // From plugin.yaml's triggers.
   void phase(Phase p);
@@ -117,6 +143,26 @@ class VoiceAssist : public Component, public tessera::Plugin {
   Phase phase_{Phase::IDLE};
   std::string heard_, answer_;
   uint32_t answered_at_{0};     // millis() of the last reply, or of the failure
+
+  // Timers. The ring is the timer sound again and again (SoundPlayer::add with a span), until a tap, the wake word or
+  // RING_MAX_MS; the popup stays after that until it is closed.
+  switch_::Switch *timer_alarm_on_{};
+  tessera::Sound timer_sound_;
+  std::vector<voice_assistant::Timer> rung_;  // the timers that ran out and show in the popup
+  TimerPopup *timer_popup_{};                 // the timer's popup that shows, or none (on_dismiss tells us)
+  bool ringing_{false};
+  bool timer_waiting_{false};                 // ran out during a question: the popup comes once it is over
+  uint32_t ring_until_{0};                    // millis() the ring stops by itself
+  uint32_t drawn_second_{0};                  // the second the top bar last drew the countdown
+  uint32_t woke_at_{0};                       // millis() the ring last kept the screen awake
+  bool had_timers_{false};                    // whether a timer ran at the last interval: one more draw when the last goes
+  void timer_popup_show_();
+  // The voice popup forgets itself when the timer's takes its place, and the reverse: a plugin's own popup that is
+  // replaced hears no on_dismiss.
+  void forget_voice_popup_();
+  void forget_timer_popup_();
+  static std::string clock_(uint32_t seconds);
+  std::string length_(uint32_t seconds) const;
 };
 
 }  // namespace esphome::voice_assist

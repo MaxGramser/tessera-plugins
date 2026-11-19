@@ -16,7 +16,15 @@
     "ask": "Ask now",
     "wake_sound": "Wake sound",
     "thinking_sound": "Thinking sound",
-    "show_popup": "Show popup"
+    "show_popup": "Show popup",
+    "timer_alarm": "Timer alarm",
+    "time_up": "Time is up",
+    "timers_up": "1 timer is up | {n} timers are up",
+    "timer_of": "Timer of {length}",
+    "tap_to_stop": "Tap to turn it off",
+    "seconds": "{n} s",
+    "minutes": "{n} min",
+    "hours": "{n} h"
   },
   "app": {
     "name": "Voice assistant",
@@ -34,6 +42,10 @@
     "setting_thinking_sound": "Thinking sound",
     "setting_thinking_sound_hint": "A soft sound, again and again, while Home Assistant works out the answer.",
     "setting_show_popup": "Show popup",
-    "setting_show_popup_hint": "A popup over the screen while it listens, thinks and answers, with what it heard and the answer as it is spoken."
+    "setting_show_popup_hint": "A popup over the screen while it listens, thinks and answers, with what it heard and the answer as it is spoken.",
+    "bar_timer": "Timer",
+    "bar_timer_example": "4:59",
+    "setting_timer_alarm": "Timer alarm",
+    "setting_timer_alarm_hint": "When a timer set by voice on this screen runs out: a popup and a ring, until you tap it or say the wake phrase. Off, timers still run in Home Assistant, silently."
   }
 }
