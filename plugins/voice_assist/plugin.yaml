@@ -1,5 +1,5 @@
 # What a screen gets when it takes this plugin: a wake word that runs on the screen itself, Home Assistant's Assist
-# pipeline for everything after it, and two settings. The microphone and the media player are the screen's
+# pipeline for everything after it, its settings, and Home Assistant's timers on the screen. The microphone and the media player are the screen's
 # (ts_microphone, ts_media_player: the features this plugin needs), so nothing here owns a bus or a pin.
 
 # The wake words, all three on the screen; Wake phrase chooses the one that listens.
@@ -62,6 +62,17 @@ voice_assistant:
     - lambda: 'id(va_plugin).ended(); id(va_plugin).session(false);'
   on_error:
     - lambda: 'id(va_plugin).failed(code, message);'
+  # Timers: Home Assistant's own ("set a timer for 5 minutes"), kept and counted down by voice_assistant itself. That
+  # these triggers are here is what tells Home Assistant the screen has timers; the plugin shows them in the top bar and
+  # on the tile, and rings when one runs out (components/voice_assist).
+  on_timer_started:
+    - lambda: 'id(va_plugin).timers_changed();'
+  on_timer_updated:
+    - lambda: 'id(va_plugin).timers_changed();'
+  on_timer_cancelled:
+    - lambda: 'id(va_plugin).timers_changed();'
+  on_timer_finished:
+    - lambda: 'id(va_plugin).timer_finished(timer);'
 
 # The settings, kept on the screen and shown in Home Assistant, on the screen's settings page and in the editor.
 switch:
@@ -107,6 +118,17 @@ switch:
     on_turn_off:
       - lambda: 'id(va_plugin).popup_off();'
 
+  # A timer that ran out: its popup over the screen and the timer sound again and again, until a tap or the wake word.
+  - platform: template
+    id: va_timer_alarm
+    name: "Timer alarm"
+    icon: mdi:timer-outline
+    optimistic: true
+    restore_mode: RESTORE_DEFAULT_ON
+    entity_category: config
+    on_turn_off:
+      - lambda: 'id(va_plugin).stop_ringing();'
+
 select:
   - platform: template
     id: va_wake_phrase
@@ -132,3 +154,4 @@ voice_assist:
   wake_sound_on: va_wake_sound
   thinking_sound_on: va_thinking_sound
   show_popup_on: va_show_popup
+  timer_alarm_on: va_timer_alarm

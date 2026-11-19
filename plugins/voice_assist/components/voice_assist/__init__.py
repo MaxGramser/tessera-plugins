@@ -3,7 +3,8 @@
 The wake word (micro_wake_word), the Assist pipeline (voice_assistant) and the settings are ESPHome components of
 plugin.yaml; this component shows what they do (on a tile, in the top bar and in a popup while a question goes on), takes a tap,
 and plays its two sounds on the screen's speaker
-(ts_speaker): sounds/wake.wav when it listens, sounds/thinking.wav again and again while Assist thinks. A sound is a
+(ts_speaker): sounds/wake.wav when it listens, sounds/thinking.wav again and again while Assist thinks, sounds/timer.wav
+again and again when a timer set by voice ran out. A sound is a
 WAV file of 16-bit samples, mono or stereo, best at the screen's own rate (48 kHz); swap the file to change it.
 register_plugin() takes the id, version and the screen's texts from the manifest and translations/ beside this folder.
 """
@@ -26,9 +27,10 @@ CONF_MEDIA_PLAYER = "media_player"
 CONF_WAKE_SOUND_ON = "wake_sound_on"
 CONF_THINKING_SOUND_ON = "thinking_sound_on"
 CONF_SHOW_POPUP_ON = "show_popup_on"
+CONF_TIMER_ALARM_ON = "timer_alarm_on"
 
 SOUNDS = Path(__file__).parent / "sounds"
-SOUND_NAMES = ("wake", "thinking")
+SOUND_NAMES = ("wake", "thinking", "timer")
 
 
 def check_sounds(config):
@@ -56,6 +58,8 @@ CONFIG_SCHEMA = cv.All(cv.Schema(
         cv.Required(CONF_THINKING_SOUND_ON): cv.use_id(switch.Switch),
         # Whether a question shows its popup (on unless someone turns it off).
         cv.Optional(CONF_SHOW_POPUP_ON): cv.use_id(switch.Switch),
+        # Whether a timer that ran out shows its popup and rings (on unless someone turns it off).
+        cv.Optional(CONF_TIMER_ALARM_ON): cv.use_id(switch.Switch),
     }
 ).extend(cv.COMPONENT_SCHEMA), check_sounds)
 
@@ -77,6 +81,9 @@ async def to_code(config):
     cg.add(var.set_thinking_sound_on(await cg.get_variable(config[CONF_THINKING_SOUND_ON])))
     if CONF_SHOW_POPUP_ON in config:
         cg.add(var.set_show_popup_on(await cg.get_variable(config[CONF_SHOW_POPUP_ON])))
+    if CONF_TIMER_ALARM_ON in config:
+        cg.add(var.set_timer_alarm_on(await cg.get_variable(config[CONF_TIMER_ALARM_ON])))
     # The sounds in flash, as the samples of their WAV files (plugin_sound.h).
     cg.add(var.set_wake_sound(smart_display.sound(config[CONF_ID], "wake", SOUNDS / "wake.wav")))
     cg.add(var.set_thinking_sound(smart_display.sound(config[CONF_ID], "thinking", SOUNDS / "thinking.wav")))
+    cg.add(var.set_timer_sound(smart_display.sound(config[CONF_ID], "timer", SOUNDS / "timer.wav")))

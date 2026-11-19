@@ -3,9 +3,10 @@
 # the answer on its media player. Speech to text, the conversation agent and text to speech are whatever Home
 # Assistant is set up with: its own, Whisper and Piper, OpenAI, Claude. It plays a sound when it starts to listen and a
 # sound while Assist thinks (components/voice_assist/sounds). It needs a microphone, a speaker and a media player, which
-# a board brings (features/audio.yaml) or a plugin.
+# a board brings (features/audio.yaml) or a plugin. Timers set by voice ("set a timer for 5 minutes") are Home
+# Assistant's own: the screen shows them in the top bar and on the tile, and rings when one runs out.
 id: voice_assist
-version: 0.4.0
+version: 0.5.0
 api: "0.19"
 icon: robot
 maintainer: MaxGramser
@@ -17,7 +18,7 @@ requires:
   psram: true
   features: [microphone, speaker, media_player]
 boards: any
-flash_kb: 420
+flash_kb: 520
 
 tiles:
   - id: assist
@@ -29,6 +30,7 @@ tiles:
 
 bar_items:
   - { id: busy, label: bar_busy, icon: robot, example: bar_example }
+  - { id: timer, label: bar_timer, icon: timer-outline, example: bar_timer_example }
 
 # The settings of plugin.yaml, also in the plugin's details on the screen's Plugins tab (their names as ids).
 settings:
@@ -37,3 +39,4 @@ settings:
   - { key: wake_sound, label: setting_wake_sound, hint: setting_wake_sound_hint }
   - { key: thinking_sound, label: setting_thinking_sound, hint: setting_thinking_sound_hint }
   - { key: show_popup, label: setting_show_popup, hint: setting_show_popup_hint }
+  - { key: timer_alarm, label: setting_timer_alarm, hint: setting_timer_alarm_hint }
