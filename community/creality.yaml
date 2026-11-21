@@ -1,0 +1,3 @@
+repo: https://github.com/willobarboza/plugins_tessera
+path: plugins/creality   # the folder with tessera-plugin.yaml
+maintainer: willobarboza # the owner of the repository, who opens the pull request
