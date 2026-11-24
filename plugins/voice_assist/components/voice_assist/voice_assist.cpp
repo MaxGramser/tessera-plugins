@@ -23,6 +23,9 @@ static constexpr uint32_t ICON_RINGING = 0xF009E;     // bell-ring
 // The ring: the timer sound every RING_PERIOD_MS, for at most RING_MAX_MS, and the screen kept awake every
 // KEEP_AWAKE_MS while it rings (a popup goes when the screen goes dark, and the ring with it).
 static constexpr uint32_t RING_PERIOD_MS = 1500, RING_MAX_MS = 5 * 60 * 1000, KEEP_AWAKE_MS = 10000;
+// The ring's claim on the speaker: the role VOICE, as a question's, with an id of its own beside the wake word's and the
+// session's (0), so a question that starts takes the speaker over from it.
+static constexpr uint32_t RING_CLAIM = 1;
 // How long a reply or a failure stays on the tile after it was spoken.
 static constexpr uint32_t REPLY_SHOWN_MS = 20000;
 // How long the popup stays after the answer was spoken or a failure, to read it again (its close key or a tap closes it
@@ -197,16 +200,16 @@ void VoiceAssist::loop() {
   const bool asking = busy() || phase_ == Phase::LISTENING || phase_ == Phase::THINKING || phase_ == Phase::ANSWERING;
   if (timer_waiting_ && !asking) {
     timer_waiting_ = false;
-    ring_until_ = now + RING_MAX_MS;
-    timer_popup_show_();
+    ring_start_();
   }
-  // The ring: the timer sound again and again, evenly spaced, until it is answered or RING_MAX_MS ran out.
+  // The ring: the timer sound again and again, evenly spaced, until it is answered or RING_MAX_MS ran out; only while
+  // it holds the speaker (a doorbell or a call may have it).
   if (ringing_ && !timer_waiting_) {
     if ((int32_t) (now - ring_until_) >= 0) {
       ringing_ = false;
-      if (sounds_.playing(timer_sound_)) sounds_.stop();
+      ring_release_();
       tessera::refresh();
-    } else if (!sounds_.playing()) {
+    } else if (ring_holds_ && !sounds_.playing()) {
       sounds_.add(timer_sound_, RING_PERIOD_MS);
     }
   }
@@ -237,10 +240,13 @@ void VoiceAssist::loop() {
 
 void VoiceAssist::listening_() {
   // The wake word or a tap while a timer rings is the answer to the ring: it stops, and the question's popup takes the
-  // timer's place (or the timer's goes, when the question shows none).
-  const bool timer_shown = timer_popup_ != nullptr;
-  forget_timer_popup_();
-  if (timer_shown && !is_on(show_popup_on_)) tessera::close_popup(this);
+  // timer's place (or the timer's goes, when the question shows none). A timer that ran out during the question waits
+  // on through a follow-up (Assist listens again after an answer that asks back) and rings once it is all over.
+  if (!timer_waiting_) {
+    const bool timer_shown = timer_popup_ != nullptr;
+    forget_timer_popup_();
+    if (timer_shown && !is_on(show_popup_on_)) tessera::close_popup(this);
+  }
   if (phase_ != Phase::LISTENING && is_on(wake_sound_on_)) sounds_.play(wake_sound_);
   phase_ = Phase::LISTENING;
   heard_.clear();
@@ -258,7 +264,9 @@ void VoiceAssist::popup_off() {
 
 void VoiceAssist::popup_show_() {
   if (popup_ != nullptr || !is_on(show_popup_on_)) return;
-  forget_timer_popup_();
+  // A timer's popup that shows goes for this one, and hears no on_dismiss; a timer that waits for the question to end
+  // has none yet and waits on.
+  if (timer_popup_ != nullptr) forget_timer_popup_();
   tessera::show_popup(this, [this]() {
     popup_ = new VoicePopup([this]() { return view(); },
                             // A tap on it stops what runs; once it is done, it closes.
@@ -459,14 +467,32 @@ void VoiceAssist::timer_finished(const voice_assistant::Timer &timer) {
   if (!ringing_ && timer_popup_ == nullptr && !timer_waiting_) rung_.clear();
   rung_.push_back(timer);
   ringing_ = true;
-  ring_until_ = millis() + RING_MAX_MS;
-  woke_at_ = 0;
   // During a question it waits: no ring over the answer, no popup over the question's.
   if (busy() || phase_ == Phase::LISTENING || phase_ == Phase::THINKING || phase_ == Phase::ANSWERING) {
     timer_waiting_ = true;
     return;
   }
+  ring_start_();
+}
+
+void VoiceAssist::ring_start_() {
+  using tessera::audio::Role;
+  using tessera::audio::Side;
+  ring_until_ = millis() + RING_MAX_MS;
+  woke_at_ = 0;
+  // The speaker, as a question holds it: music pauses, and stays paused after, as after a question. A question that
+  // starts (the wake word answers the ring) or a doorbell (its alert closes the popup) takes it back: silence from then.
+  ring_holds_ = tessera::audio::claim(Side::OUT, Role::VOICE, RING_CLAIM, [this]() {
+    ring_holds_ = false;
+    if (sounds_.playing(timer_sound_)) sounds_.stop();
+  });
   timer_popup_show_();
+}
+
+void VoiceAssist::ring_release_() {
+  if (sounds_.playing(timer_sound_)) sounds_.stop();
+  ring_holds_ = false;
+  tessera::audio::release(tessera::audio::Side::OUT, tessera::audio::Role::VOICE, RING_CLAIM);
 }
 
 void VoiceAssist::timer_popup_show_() {
@@ -501,7 +527,7 @@ void VoiceAssist::forget_timer_popup_() {
   timer_popup_ = nullptr;
   ringing_ = false;
   timer_waiting_ = false;
-  if (sounds_.playing(timer_sound_)) sounds_.stop();
+  ring_release_();
   rung_.clear();
 }
 

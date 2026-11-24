@@ -31,10 +31,11 @@ Houd de bovenbalk vast, dan **Instellingen**, **Plugins**, **Spraakassistent**:
 - **Wekgeluid**: een kort geluid als het scherm begint te luisteren, na de wekzin of een tik.
 - **Denkgeluid**: een zacht geluid, steeds opnieuw, zolang Home Assistant het antwoord bedenkt.
 - **Popup tonen**: een popup over het scherm terwijl het luistert, nadenkt en antwoordt (aan, tenzij je hem uitzet). Zie hieronder.
+- **Timeralarm**: een popup en een belgeluid als een timer afloopt die je met je stem zette (aan, tenzij je hem uitzet). Zie Timers.
 - **Nu vragen**: stelt meteen een vraag.
 
 De instellingen zijn ook entiteiten van het scherm in Home Assistant ("Wake word", "Wake phrase", "Wake sound",
-"Thinking sound"), en de editor toont ze in de details van de plugin op het tabblad Plugins van het scherm. De eigen schakelaar **Microfoon** van het
+"Thinking sound", "Show popup", "Timer alarm"), en de editor toont ze in de details van de plugin op het tabblad Plugins van het scherm. De eigen schakelaar **Microfoon** van het
 scherm, op een bord dat er een heeft, zet hem ook voor de assistent uit.
 
 ## De popup
@@ -50,10 +51,34 @@ De woorden van het antwoord komen in één keer van Home Assistant, aan het eind
 een ESPHome-scherm geen antwoord in stukjes terwijl het wordt geschreven. De popup laat ze zien in het tempo van
 spreken, gelijk met de speaker.
 
+## Timers
+
+Zeg "zet een timer voor 5 minuten", "zet een pizzatimer voor 10 minuten", "hoeveel tijd heeft de timer nog", "voeg 2
+minuten toe aan de timer" of "annuleer de timer". De timers zijn van Home Assistant zelf; het scherm vertelt Home
+Assistant dat het ze kan bijhouden, en Home Assistant meldt het als er een start, verandert of afloopt. Het zijn de
+timers van Assist, met je stem gezet, niet de timerhelpers van Home Assistant (entiteiten `timer.*`): die toont de
+plugin Timers.
+
+- **Bovenbalk**: zet **Spraaktimer** in de bovenbalk van een pagina (Bovenbalk, Toevoegen, Uit plugins). Hij toont wat
+  er over is van de timer die het eerst afloopt ("4:59", "Pizza 4:59", "+1" voor nog een), een pauzeteken als ze
+  allemaal gepauzeerd zijn, en een rode bel als er een afgaat.
+- **Tegel**: de tegel van de assistent toont hetzelfde zolang er geen vraag loopt.
+- **Als hij afloopt**: er komt een popup met de naam van de timer over het scherm, ook als het scherm donker was, en het
+  timergeluid klinkt steeds opnieuw. Een tik op de popup, of de wekzin, zet het uit; het klinkt hoogstens 5 minuten, en
+  het scherm blijft zolang aan. Een timer die afloopt tijdens een vraag wacht tot het antwoord is uitgesproken, en ook
+  een vervolgvraag als Assist iets terugvraagt.
+- **Muziek** op het scherm pauzeert zolang hij afgaat, en blijft daarna gepauzeerd, net als bij een vraag.
+- **Een deurbel** neemt het scherm over: zijn melding sluit de popup van de timer, en het belgeluid stopt mee.
+- **Timeralarm** (een instelling, aan tenzij je hem uitzet): de popup en het belgeluid. Uit lopen de timers in Home
+  Assistant gewoon door, zonder geluid.
+
+Een timer hoort bij het scherm waarop hij gezet is: vraag dat scherm hoe lang hij nog loopt.
+
 ## De geluiden
 
-Het zijn twee bestanden in `components/voice_assist/sounds/`: `wake.wav` en `thinking.wav` (het scherm speelt het
-opnieuw zodra het afgelopen is, dus de lengte bepaalt het ritme). Elk is een WAV-bestand met 16-bit samples, mono, op 48 kHz zoals de luidspreker van het
+Het zijn drie bestanden in `components/voice_assist/sounds/`: `wake.wav`, `thinking.wav` (het scherm speelt het
+opnieuw zodra het afgelopen is, dus de lengte bepaalt het ritme) en `timer.wav` (elke 1,5 seconde opnieuw zolang een
+timer afgaat). Elk is een WAV-bestand met 16-bit samples, mono, op 48 kHz zoals de luidspreker van het
 scherm. Een eigen plugin die je van deze maakt kan ze vervangen; de build zegt het als een bestand niet zo'n WAV is.
 
 ## Privacy

@@ -85,8 +85,9 @@ class VoiceAssist : public Component, public tessera::Plugin {
 
   // The microphone and the speaker through the screen's audio owner (plugin API 0.19, tessera::audio, the role VOICE):
   // the wake word holds the microphone while it listens, and a session holds the speaker too, so music pauses for it and
-  // a doorbell's ring takes both. listen(): the wake word should listen (the setting on, Home Assistant connected) or
-  // not; session(): a session starts (on_listening) or ends (on_end).
+  // a doorbell's ring takes both. A timer's ring holds the speaker as well, with a claim of its own (ring_start_()).
+  // listen(): the wake word should listen (the setting on, Home Assistant connected) or not; session(): a session starts
+  // (on_listening) or ends (on_end).
   void listen(bool on);
   void session(bool on);
 
@@ -151,11 +152,16 @@ class VoiceAssist : public Component, public tessera::Plugin {
   std::vector<voice_assistant::Timer> rung_;  // the timers that ran out and show in the popup
   TimerPopup *timer_popup_{};                 // the timer's popup that shows, or none (on_dismiss tells us)
   bool ringing_{false};
+  bool ring_holds_{false};                    // the ring holds the speaker: only then the timer sound plays
   bool timer_waiting_{false};                 // ran out during a question: the popup comes once it is over
   uint32_t ring_until_{0};                    // millis() the ring stops by itself
   uint32_t drawn_second_{0};                  // the second the top bar last drew the countdown
   uint32_t woke_at_{0};                       // millis() the ring last kept the screen awake
   bool had_timers_{false};                    // whether a timer ran at the last interval: one more draw when the last goes
+  // The ring starts (or starts again for one more timer): RING_MAX_MS from now, the speaker claimed, the popup shown.
+  // ring_release_() stops the timer sound and gives the speaker back.
+  void ring_start_();
+  void ring_release_();
   void timer_popup_show_();
   // The voice popup forgets itself when the timer's takes its place, and the reverse: a plugin's own popup that is
   // replaced hears no on_dismiss.

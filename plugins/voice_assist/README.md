@@ -54,14 +54,18 @@ step with the speaker.
 
 Say "set a timer for 5 minutes", "set a pizza timer for 10 minutes", "how long is left on the timer", "add 2 minutes to
 the timer" or "cancel the timer". Timers are Home Assistant's own; the screen tells Home Assistant it can hold them, and
-Home Assistant tells it when one starts, changes and runs out.
+Home Assistant tells it when one starts, changes and runs out. They are Assist's timers, set by voice, not Home
+Assistant's timer helpers (`timer.*` entities): those show with the Timers plugin.
 
-- **Top bar**: add **Timer** to a page's top bar in the editor (**Edit top bar**, **+**, **From plugins**). It shows what is left of the timer that
+- **Top bar**: add **Voice timer** to a page's top bar in the editor (**Edit top bar**, **+**, **From plugins**). It shows what is left of the timer that
   ends first ("4:59", "Pizza 4:59", "+1" for one more), a pause sign while all wait, and a red bell while one rings.
 - **Tile**: the assistant's tile shows the same while no question goes on.
 - **When it runs out**: a popup with the timer's name comes over the screen, also when it was dark, and the timer sound
   rings again and again. A tap on the popup, or the wake phrase, stops it; it rings at most 5 minutes, and the screen
-  stays awake while it rings. A timer that runs out during a question waits until the answer was spoken.
+  stays awake while it rings. A timer that runs out during a question waits until the answer was spoken, and through
+  the follow-up when Assist asks back.
+- **Music** on the screen pauses while it rings, and stays paused after, as it does for a question.
+- **A doorbell** takes the screen over: its alert closes the timer's popup, and the ring stops with it.
 - **Timer alarm** (a setting, on unless you turn it off): the popup and the ring. Off, timers still run in Home
   Assistant, silently.
 

@@ -43,7 +43,7 @@
     "setting_thinking_sound_hint": "A soft sound, again and again, while Home Assistant works out the answer.",
     "setting_show_popup": "Show popup",
     "setting_show_popup_hint": "A popup over the screen while it listens, thinks and answers, with what it heard and the answer as it is spoken.",
-    "bar_timer": "Timer",
+    "bar_timer": "Voice timer",
     "bar_timer_example": "4:59",
     "setting_timer_alarm": "Timer alarm",
     "setting_timer_alarm_hint": "When a timer set by voice on this screen runs out: a popup and a ring, until you tap it or say the wake phrase. Off, timers still run in Home Assistant, silently."

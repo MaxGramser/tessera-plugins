@@ -68,6 +68,8 @@ class TimerPopup : public tessera::Popup {
     tessera::ui::set_color(line_, theme::INK);
     tessera::ui::set_color(hint_, theme::INK_SOFT);
     tessera::ui::set_fill(fill_, tessera::Tone::ALERT, theme::ACCENT);
+    const lv_color_t alert = tessera::ui::tone_color(tessera::Tone::ALERT, theme::ACCENT);
+    for (lv_obj_t *ripple : ripples_) lv_obj_set_style_border_color(ripple, alert, 0);
     show(true);
   }
   void on_tap() override {
