@@ -1,6 +1,6 @@
 {
  "abi": "6578ffe7a1a33388",
- "built": "2026-11-24T07:23:32Z",
+ "built": "2026-11-24T07:46:16Z",
  "emscripten": "6.0.10",
  "format": 1,
  "modules": {
@@ -223,5 +223,5 @@
    "0.4.0": "world_clock has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
   }
  },
- "tessera": "905447962b6b3e8c77f8c910cc3ee2ce294cbee1"
+ "tessera": "521ebf655ea780e38b2935ad8ade9e21d8b1ce22"
 }
