@@ -1,7 +1,7 @@
 # Air quality: one verdict for the air of a room, from the sensors a person chooses (an AirGradient ONE, or any CO2,
 # particle, VOC, NOx, temperature and humidity sensors of Home Assistant), judged for the kind of room it is.
 id: air_quality
-version: 0.1.1
+version: 0.1.2
 api: "0.26"
 icon: air-purifier
 maintainer: MaxGramser
@@ -62,6 +62,9 @@ tiles:
       - { id: co2_max, kind: number, optional: true, group: group_limits, min: 450, max: 5000, step: 50, unit: "ppm", placeholder_from: { option: room, values: { living: 1000, bedroom: 800, office: 800, studio: 800, gallery: 1000, workshop: 1000, nursery: 800, kitchen: 1000 } }, label: opt_co2_max }
       - { id: pm25_max, kind: number, optional: true, group: group_limits, min: 1, max: 150, step: 1, unit: "µg/m³", placeholder_from: { option: room, values: { living: 10, bedroom: 10, office: 10, studio: 10, gallery: 5, workshop: 10, nursery: 10, kitchen: 15 } }, label: opt_pm25_max }
       - { id: pm10_max, kind: number, optional: true, group: group_limits, min: 1, max: 300, step: 1, unit: "µg/m³", placeholder_from: { option: room, values: { living: 20, bedroom: 20, office: 20, studio: 20, gallery: 10, workshop: 20, nursery: 20, kitchen: 30 } }, label: opt_pm10_max }
+      # Where a VOC sensor's scale starts: at or below it the air counts as ideal. A Sensirion index starts at 100;
+      # a sensor that says 0 for clean air (and has no unit) starts at 0. Empty: the sensor's own scale decides.
+      - { id: voc_min, kind: number, optional: true, group: group_limits, min: 0, max: 5000, step: 1, label: opt_voc_min, hint: opt_voc_min_hint }
       - { id: voc_max, kind: number, optional: true, group: group_limits, min: 1, max: 5000, step: 10, placeholder_from: { option: room, values: { living: 150, bedroom: 150, office: 150, studio: 150, gallery: 150, workshop: 150, nursery: 150, kitchen: 150 } }, label: opt_voc_max }
       - { id: nox_max, kind: number, optional: true, group: group_limits, min: 2, max: 500, step: 1, placeholder_from: { option: room, values: { living: 20, bedroom: 20, office: 20, studio: 20, gallery: 20, workshop: 20, nursery: 20, kitchen: 20 } }, label: opt_nox_max }
       - { id: temperature_min, kind: number, optional: true, group: group_limits, min: 0, max: 40, step: 0.5, unit: "°C", placeholder_from: { option: room, values: { living: 19, bedroom: 16, office: 20, studio: 20, gallery: 16, workshop: 15, nursery: 16, kitchen: 18 } }, label: opt_temperature_min }

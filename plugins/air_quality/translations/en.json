@@ -101,6 +101,8 @@
     "opt_co2_max": "CO₂ fine up to",
     "opt_pm25_max": "PM2.5 fine up to",
     "opt_pm10_max": "PM10 fine up to",
+    "opt_voc_min": "VOC fine from",
+    "opt_voc_min_hint": "Where the VOC scale starts. Below it the air counts as ideal, not as too low. Empty: 100 for an index, 0 for ppb or µg/m³. Set 0 for a sensor that says 0 for clean air and has no unit, such as Amazon's Air Quality Monitor.",
     "opt_voc_max": "VOC fine up to",
     "opt_nox_max": "NOx fine up to",
     "opt_temperature_min": "Temperature fine from",
