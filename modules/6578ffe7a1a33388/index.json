@@ -1,6 +1,6 @@
 {
  "abi": "6578ffe7a1a33388",
- "built": "2026-11-24T23:32:47Z",
+ "built": "2026-11-26T02:55:44Z",
  "emscripten": "6.0.10",
  "format": 1,
  "modules": {
@@ -189,7 +189,8 @@
   },
   "ora": {
    "1.0.1": "it does not compile for the browser: /tmp/tmpec7st6x9/0bdd5681937380d8/components/ora/ora.cpp:188:7: error: use of undeclared identifier 'ESP_LOGV'",
-   "1.1.0": "it does not compile for the browser: /tmp/tmp51s0rsnc/60db2dfb677e0412/components/ora/ora.cpp:195:7: error: use of undeclared identifier 'ESP_LOGV'"
+   "1.1.0": "it does not compile for the browser: /tmp/tmp51s0rsnc/60db2dfb677e0412/components/ora/ora.cpp:195:7: error: use of undeclared identifier 'ESP_LOGV'",
+   "1.1.1": "it does not compile for the browser: /tmp/tmpb_q9_g3g/975eb390e854a80f/components/ora/ora.cpp:195:7: error: use of undeclared identifier 'ESP_LOGV'"
   },
   "pollen": {
    "1.2.2": "pollen has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
@@ -231,5 +232,5 @@
    "0.4.0": "world_clock has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
   }
  },
- "tessera": "8517841445b670145c1ffad05720deac5dc8815c"
+ "tessera": "38608f9f9113bb6c634a9b1296b42f3a4c696b81"
 }
