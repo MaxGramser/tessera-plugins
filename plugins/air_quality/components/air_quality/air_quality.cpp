@@ -103,7 +103,8 @@ static void judge(Reading &r, const Band &b, float v) {
 
 // A band with a person's own limits in place of the room's: `low` and `high` are where fine ends (NAN: the room's).
 // The rest of the scale keeps its shape: a one-sided scale stretches with its limit, a two-sided one moves its ends
-// along.
+// along. On a one-sided scale `low` is where the scale starts instead: at or below it a value is ideal (a VOC sensor
+// that says 0 for clean air, where the Sensirion index says 100). The scale then stretches from there.
 static Band tuned(Band b, float low, float high) {
   if (b.two) {
     if (std::isfinite(low) && std::isfinite(high) && low >= high) return b;
@@ -115,11 +116,23 @@ static Band tuned(Band b, float low, float high) {
       const float d = high - b.fair_hi;
       b.fair_hi = high, b.poor_hi += d, b.end_hi += d;
     }
-  } else if (std::isfinite(high) && high > b.fair_lo && b.fair_hi > b.fair_lo) {
-    const float k = (high - b.fair_lo) / (b.fair_hi - b.fair_lo);
-    b.poor_hi = b.fair_lo + (b.poor_hi - b.fair_lo) * k;
-    b.end_hi = b.fair_lo + (b.end_hi - b.fair_lo) * k;
-    b.fair_hi = high;
+  } else {
+    const bool has_low = std::isfinite(low) && low >= 0, has_high = std::isfinite(high);
+    if (has_low && has_high && low >= high) return b;
+    if (has_low) {
+      if (low < b.fair_hi) {
+        b.fair_lo = low;
+      } else if (has_high) {  // a start above where fine ended: the scale moves up with it, and the limit stretches it
+        const float d = low - b.fair_lo;
+        b.fair_lo = low, b.fair_hi += d, b.poor_hi += d, b.end_hi += d;
+      }
+    }
+    if (has_high && high > b.fair_lo && b.fair_hi > b.fair_lo) {
+      const float k = (high - b.fair_lo) / (b.fair_hi - b.fair_lo);
+      b.poor_hi = b.fair_lo + (b.poor_hi - b.fair_lo) * k;
+      b.end_hi = b.fair_lo + (b.end_hi - b.fair_lo) * k;
+      b.fair_hi = high;
+    }
   }
   return b;
 }
@@ -1122,11 +1135,12 @@ class RoomTile : public tessera::Tile, public HistoryListener {
     air.room(c.options["room"] | "living");
     for (int i = 0; i < MEASURES; ++i)
       if (i != SWING) snprintf(air.entity[i], sizeof(air.entity[i]), "%s", c.options[KEY[i]] | "");
-    // A person's own limits: where fine ends, in the sensor's unit. An option left empty is not there.
+    // A person's own limits: where fine ends, in the sensor's unit, and where a VOC sensor's scale starts. An option
+    // left empty is not there.
     for (int i = 0; i < MEASURES; ++i) {
       const std::string key = KEY[i];
       air.high[i] = c.options[key + "_max"] | NAN;
-      if (i == TEMP || i == HUM) air.low[i] = c.options[key + "_min"] | NAN;
+      if (i == TEMP || i == HUM || i == VOC) air.low[i] = c.options[key + "_min"] | NAN;
     }
     air.choose();
     if (air.r[SWING].chosen) plugin_->listen(this);

@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2 - 2026-11-26
+
+- Nieuwe grens **VOC goed vanaf**: waar de schaal van een VOC-sensor begint. Daarmee past er naast de Sensirion-index,
+  waarvoor de tegel ze leest, ook een VOC-sensor zonder eenheid die vanaf 0 telt bij schone lucht, zoals Amazons Air
+  Quality Monitor (0 tot 100, hoger is slechter). Zet hem op 0, en dan **VOC goed tot** in de getallen van die sensor
+  zelf. Zolang het veld leeg blijft verandert er niets.
+
 ## 0.1.1 - 2026-11-14
 
 - De tegel gaf op dat hij 12 KB in de chip houdt, waardoor een scherm met een paar andere tegels hem weigerde. Hij houdt daar bijna niets: zijn onderdelen staan in het grotere geheugen naast de chip. Een scherm neemt hem nu als elke andere tegel.

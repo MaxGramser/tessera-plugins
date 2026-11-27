@@ -22,7 +22,9 @@ geeft één oordeel, laat zien welke waarde afwijkt en noemt een eerste stap.
    sensor die het heeft wordt ingevuld. Of kies elke sensor zelf: een veld dat je leeg laat telt niet mee. Eén
    CO2-sensor is al genoeg.
 5. Als je wilt: onder **Eigen grenzen** stel je in waar "goed" ophoudt voor een waarde. Een leeg veld houdt de grens
-   van de ruimte, die het veld toont.
+   van de ruimte, die het veld toont. **VOC goed vanaf** zet waar de schaal van een VOC-sensor begint (daaronder is
+   ideaal, nooit te laag): zet hem op 0 voor een sensor zonder eenheid die 0 zegt bij schone lucht (Amazons Air
+   Quality Monitor geeft 0 tot 100, hoger is slechter), en dan **VOC goed tot** in de getallen van die sensor zelf.
 
 ## Hoe hij oordeelt
 

@@ -22,7 +22,9 @@ shows which value is off, and tells you a first step.
    sensor it has is filled in. Or choose each sensor yourself: a field you leave empty does not count. One CO2 sensor
    alone is enough.
 5. Optional: under **Limits of your own** you set where "fine" ends for a value. An empty field keeps the room's
-   limit, which the field shows.
+   limit, which the field shows. **VOC fine from** sets where a VOC sensor's scale starts (below it is ideal, never
+   too low): set it to 0 for a sensor that says 0 for clean air and has no unit (Amazon's Air Quality Monitor gives
+   0 to 100, higher is worse), and then **VOC fine up to** in that sensor's own numbers.
 
 ## How it judges
 

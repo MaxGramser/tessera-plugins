@@ -101,6 +101,8 @@
     "opt_co2_max": "CO₂ goed tot",
     "opt_pm25_max": "PM2.5 goed tot",
     "opt_pm10_max": "PM10 goed tot",
+    "opt_voc_min": "VOC goed vanaf",
+    "opt_voc_min_hint": "Waar de VOC-schaal begint. Daaronder telt de lucht als ideaal, niet als te laag. Leeg: 100 voor een index, 0 voor ppb of µg/m³. Zet 0 voor een sensor zonder eenheid die 0 zegt bij schone lucht, zoals Amazons Air Quality Monitor.",
     "opt_voc_max": "VOC goed tot",
     "opt_nox_max": "NOx goed tot",
     "opt_temperature_min": "Temperatuur goed vanaf",
