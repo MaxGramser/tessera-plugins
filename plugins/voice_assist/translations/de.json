@@ -1,0 +1,51 @@
+{
+  "_meta": {
+    "name": "Deutsch"
+  },
+  "screen": {
+    "name": "Sprachassistent",
+    "listening": "Hört zu …",
+    "thinking": "Denkt nach …",
+    "answering": "Antwortet",
+    "failed": "Das hat nicht geklappt",
+    "away": "Home Assistant ist nicht erreichbar",
+    "say_phrase": "Sag „{phrase}“",
+    "tap_to_ask": "Tippen zum Fragen",
+    "wake_word": "Weckwort",
+    "wake_phrase": "Weckwort-Satz",
+    "ask": "Jetzt fragen",
+    "wake_sound": "Weckton",
+    "thinking_sound": "Denkton",
+    "show_popup": "Popup zeigen",
+    "timer_alarm": "Timer-Alarm",
+    "time_up": "Zeit ist um",
+    "timers_up": "1 Timer ist abgelaufen | {n} Timer sind abgelaufen",
+    "timer_of": "Timer über {length}",
+    "tap_to_stop": "Tippen zum Ausschalten",
+    "seconds": "{n} Sek.",
+    "minutes": "{n} Min.",
+    "hours": "{n} Std."
+  },
+  "app": {
+    "name": "Sprachassistent",
+    "summary": "Mit Assist von Home Assistant am Bildschirm reden: Weckwort auf dem Bildschirm selbst, die Antwort aus seinem Lautsprecher.",
+    "tile_name": "Assistent",
+    "tile_example": "Sag „Okay Nabu“",
+    "bar_busy": "Assistent",
+    "bar_example": "Hört zu …",
+    "bar_timer": "Sprach-Timer",
+    "bar_timer_example": "4:59",
+    "setting_wake_word": "Weckwort",
+    "setting_wake_word_hint": "Ob der Bildschirm auf sein Weckwort hört. Aus: Ein Tipp auf die Kachel des Assistenten fragt trotzdem.",
+    "setting_wake_phrase": "Weckwort-Satz",
+    "setting_wake_phrase_hint": "Was du sagst, um eine Frage zu beginnen. Der Bildschirm erkennt es selbst, bis dahin verlässt nichts das Gerät.",
+    "setting_wake_sound": "Weckton",
+    "setting_wake_sound_hint": "Ein kurzer Ton, wenn der Bildschirm zuzuhören beginnt, nach dem Weckwort oder einem Tipp.",
+    "setting_thinking_sound": "Denkton",
+    "setting_thinking_sound_hint": "Ein leiser Ton, immer wieder, solange Home Assistant die Antwort sucht.",
+    "setting_show_popup": "Popup zeigen",
+    "setting_show_popup_hint": "Ein Popup über dem Bildschirm, solange er zuhört, nachdenkt und antwortet, mit dem Gehörten und der Antwort, während sie gesprochen wird.",
+    "setting_timer_alarm": "Timer-Alarm",
+    "setting_timer_alarm_hint": "Wenn ein Timer, der per Sprache an diesem Bildschirm gestellt wurde, abläuft: ein Popup und ein Klingeln, bis du tippst oder das Weckwort sagst. Aus: Die Timer laufen in Home Assistant trotzdem, nur still."
+  }
+}

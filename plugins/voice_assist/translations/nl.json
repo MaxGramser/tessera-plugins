@@ -16,7 +16,15 @@
     "ask": "Nu vragen",
     "wake_sound": "Wekgeluid",
     "thinking_sound": "Denkgeluid",
-    "show_popup": "Popup tonen"
+    "show_popup": "Popup tonen",
+    "timer_alarm": "Timeralarm",
+    "time_up": "De tijd is om",
+    "timers_up": "1 timer is afgelopen | {n} timers zijn afgelopen",
+    "timer_of": "Timer van {length}",
+    "tap_to_stop": "Tik om uit te zetten",
+    "seconds": "{n} s",
+    "minutes": "{n} min",
+    "hours": "{n} u"
   },
   "app": {
     "name": "Spraakassistent",
@@ -34,6 +42,10 @@
     "setting_thinking_sound": "Denkgeluid",
     "setting_thinking_sound_hint": "Een zacht geluid, steeds opnieuw, zolang Home Assistant het antwoord bedenkt.",
     "setting_show_popup": "Popup tonen",
-    "setting_show_popup_hint": "Een popup over het scherm terwijl het luistert, nadenkt en antwoordt, met wat het hoorde en het antwoord terwijl het wordt uitgesproken."
+    "setting_show_popup_hint": "Een popup over het scherm terwijl het luistert, nadenkt en antwoordt, met wat het hoorde en het antwoord terwijl het wordt uitgesproken.",
+    "bar_timer": "Spraaktimer",
+    "bar_timer_example": "4:59",
+    "setting_timer_alarm": "Timeralarm",
+    "setting_timer_alarm_hint": "Als een timer die je met je stem op dit scherm hebt gezet afloopt: een popup en een belsignaal, tot je erop tikt of de wekzin zegt. Uit lopen timers nog steeds in Home Assistant, maar stil."
   }
 }

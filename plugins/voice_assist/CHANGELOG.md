@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5.0 - 2026-11-24
+- Timers by voice: "set a timer for 5 minutes", "how long is left on the timer", "cancel the timer". They are Home Assistant's own timers; the screen now tells Home Assistant it can hold them (ESPHome's on_timer triggers).
+- What is left of the timer that ends first shows in the top bar (a new item, Voice timer) and on the assistant's tile, with a pause sign while it waits.
+- A timer that runs out shows a popup with its name and rings (components/voice_assist/sounds/timer.wav) until a tap on it or the wake phrase, at most 5 minutes; the screen stays awake while it rings. A timer that runs out during a question waits until the answer was spoken, and through a follow-up. Music on the screen pauses while it rings and stays paused after, as for a question; a doorbell's alert closes the popup and stops the ring.
+- A new setting, Timer alarm, turns the popup and the ring off.
+- German texts on the screen and in the editor (translations/de.json); the timers in Dutch too, on the screen, in the README and in the changelog.
+
 ## 0.4.0 - 2026-10-25
 - The voice assistant takes its turn with the screen's other sounds. A doorbell's ring stops the wake word while someone is at the door and lets it listen again after; a question pauses music that plays, and the music stays paused after the answer, as it does for a ring.
 - Needs Tessera with plugin API 0.19 (dev); update the screen with it.

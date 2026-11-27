@@ -1,5 +1,12 @@
 # Wijzigingen
 
+## 0.5.0 - 2026-11-24
+- Timers met je stem: "zet een timer voor 5 minuten", "hoeveel tijd heeft de timer nog", "annuleer de timer". Het zijn de eigen timers van Home Assistant; het scherm vertelt Home Assistant nu dat het ze kan bijhouden (de on_timer-triggers van ESPHome).
+- Wat er over is van de timer die het eerst afloopt, staat in de bovenbalk (een nieuw item, Spraaktimer) en op de tegel van de assistent, met een pauzeteken als hij gepauzeerd is.
+- Een timer die afloopt toont een popup met zijn naam en laat een belgeluid horen (components/voice_assist/sounds/timer.wav) tot je op de popup tikt of de wekzin zegt, hoogstens 5 minuten; zolang blijft het scherm aan. Een timer die afloopt tijdens een vraag wacht tot het antwoord is uitgesproken, en ook een vervolgvraag. Muziek op het scherm pauzeert zolang hij afgaat en blijft daarna gepauzeerd, net als bij een vraag; de melding van een deurbel sluit de popup en stopt het belgeluid.
+- Een nieuwe instelling, Timeralarm, zet de popup en het belgeluid uit.
+- Duitse teksten op het scherm en in de editor (translations/de.json), en de timers ook in het Nederlands, op het scherm, in de README en hier.
+
 ## 0.4.0 - 2026-10-25
 - De spraakassistent wacht zijn beurt af met de andere geluiden van het scherm. Een deurbel stopt het wekwoord zolang er iemand voor de deur staat en laat het daarna weer luisteren; een vraag pauzeert muziek die speelt, en de muziek blijft na het antwoord gepauzeerd, net als na de deurbel.
 - Heeft Tessera met plugin-API 0.19 (dev) nodig; werk het scherm daarmee bij.
