@@ -1,0 +1,224 @@
+{
+ "abi": "9182a7c07718cd2c",
+ "built": "2026-11-28T08:03:33Z",
+ "emscripten": "6.0.10",
+ "format": 1,
+ "modules": {
+  "air_quality": {
+   "0.1.1": {
+    "bytes": 116804,
+    "sha256": "e435b72804559529fed629a972120da7b43935b3ed6c39a4b4776d2b1f73f341"
+   }
+  },
+  "av_wall_panel_controls": {
+   "0.1.1": {
+    "bytes": 61963,
+    "sha256": "159e4996d1ed5d3eee760816e460e3d1eda3d67e1e18fd7db831fcf370d1b00f"
+   }
+  },
+  "cinema": {
+   "0.2.0": {
+    "bytes": 41985,
+    "sha256": "5791a790d72fb70ab153b0ee6a287b9184ae300a96df92ac481824e2e1ed788f"
+   }
+  },
+  "code_lock": {
+   "0.6.0": {
+    "bytes": 37737,
+    "sha256": "3a70cab1ce39addc146d023113e375893816c589601cab058b7d9d07e85ca5c6"
+   }
+  },
+  "creality": {
+   "0.1.0": {
+    "bytes": 50151,
+    "sha256": "5d79adec44e160d9324c4c1247624e7ef23dd7ad95a75347f075178ea72ab250"
+   }
+  },
+  "custom_card": {
+   "0.9.1": {
+    "bytes": 82530,
+    "sha256": "9b64f8df30bbf9249b8a757e7ded682fc7e8e83fd64a367488233347b647ce32"
+   }
+  },
+  "dwd_rain": {
+   "1.1.4": {
+    "bytes": 29145,
+    "sha256": "a4d655bee5a9270fb2a436b25dcc7f5ecda07d7d45e6091ee003a03675541350"
+   }
+  },
+  "electricity_price": {
+   "0.13.1": {
+    "bytes": 90425,
+    "sha256": "af249f80791255bff1d09f633892f0557a95ce4c0bede2bf599e4ac454638cd5"
+   }
+  },
+  "energidata_price": {
+   "0.6.1": {
+    "bytes": 78366,
+    "sha256": "c6d4ac81187b0cb850f9afea45eef12de9c10c46ee6bca808c47f7f6ae0d6e98"
+   }
+  },
+  "energy_flow": {
+   "2.0.0": {
+    "bytes": 51958,
+    "sha256": "d34e090a594817c2e5fadc83fc6b2b7795952275e2a056321ce947a6e3057793"
+   }
+  },
+  "film_stasera": {
+   "0.3.0": {
+    "bytes": 56736,
+    "sha256": "e20405cebdc3b4f955a328580cd96cc089b933dae72f87495780d0177d95858e"
+   }
+  },
+  "flip_clock": {
+   "0.1.0": {
+    "bytes": 13761,
+    "sha256": "8d365f40e5b69886cc6f9bdebac27782696703d1b175368dc23e23e345b151fb"
+   }
+  },
+  "ha_task_list": {
+   "0.4.0": {
+    "bytes": 61297,
+    "sha256": "90e22e0598fd7bd82a121fab6116b72e12c8759256d09b72180c73e74f2a40f2"
+   }
+  },
+  "jellyfin": {
+   "0.1.3": {
+    "bytes": 78418,
+    "sha256": "7abb03182332553cbb270f2a93966e91222b52218d111e34d3eea12e48cf7a47"
+   }
+  },
+  "new_music": {
+   "0.2.0": {
+    "bytes": 59055,
+    "sha256": "2e4f67f8d5a0790a4a4ace867ca279169bca85f0f5b907c458327a5b9f8c27d5"
+   }
+  },
+  "ov_departures": {
+   "1.2.4": {
+    "bytes": 40558,
+    "sha256": "fba65ca5138a9b904170bb83599fad952eb82cfcdb42b2e57ef01c9e7e47d659"
+   }
+  },
+  "photo_clock": {
+   "0.1.0": {
+    "bytes": 11660,
+    "sha256": "804b7b0ecef164fd2c4f340a1762eaa7c499b6bed070c5bd37992780ecbc4849"
+   }
+  },
+  "photo_slideshow": {
+   "0.5.0": {
+    "bytes": 44145,
+    "sha256": "9a0acbc2322ba7636873111f72e87ea23e252b31fb7c8e25c0490306ba32ae43"
+   }
+  },
+  "picture_frame": {
+   "0.2.0": {
+    "bytes": 17829,
+    "sha256": "44fc8789c83da9ce727c51dad4d53a532f5fd4ba26d3cf2533654f1bf475dd97"
+   }
+  },
+  "plane_radar": {
+   "0.4.0": {
+    "bytes": 96222,
+    "sha256": "a305417706f740270e696d368760c7daa66ff812d95a8d9b20f02e0ddfa0e060"
+   }
+  },
+  "select_buttons": {
+   "0.1.1": {
+    "bytes": 32087,
+    "sha256": "7d43a27356c84691241e9f4c2a1d792804880edf7b78235f934d12cd8c947260"
+   }
+  },
+  "status_tile": {
+   "1.2.2": {
+    "bytes": 37700,
+    "sha256": "e296c346a023ab8f582e3d0f10e12e77a1d200930d5b08e25d01bd391358cdf1"
+   }
+  },
+  "sweden_public_transport": {
+   "0.2.2": {
+    "bytes": 45477,
+    "sha256": "a92f22fec0043384114b192514c6aeae0a9409df06887d8e406a409468a71b4c"
+   }
+  },
+  "swiss_departures": {
+   "1.1.0": {
+    "bytes": 101927,
+    "sha256": "8d8d837ce2081632e5302feb9ce1d7a8133461a6f86a6abed7446e867ce7f11e"
+   }
+  },
+  "thermo_dial": {
+   "0.3.1": {
+    "bytes": 49114,
+    "sha256": "500317d7593182ed68ffd5d11eb8c52d86f85ff6e9e7d65526db49640299b9c5"
+   }
+  },
+  "toothbrush": {
+   "0.4.0": {
+    "bytes": 57290,
+    "sha256": "bfd6374df636d64d84f6057ed65125477b43b795b0e3c88e468287c245ab33f3"
+   }
+  },
+  "vinyl_deck": {
+   "0.1.0": {
+    "bytes": 21421,
+    "sha256": "ba8464c8dfaeca7d9fc251408c2f972f1455b0bf1c0300b5c0e15c6b09d0465c"
+   }
+  }
+ },
+ "skipped": {
+  "bt_proxy": {
+   "0.2.0": "bt_proxy needs or brings hardware (bluetooth): it shows on a screen only."
+  },
+  "buienradar": {
+   "0.6.0": "buienradar has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
+  },
+  "guition_relays": {
+   "0.1.0": "guition_relays draws nothing: no tile, card, top bar item or screensaver."
+  },
+  "ora": {
+   "1.1.1": "it does not compile for the browser: /tmp/tmpvh_c4n0a/975eb390e854a80f/components/ora/ora.cpp:195:7: error: use of undeclared identifier 'ESP_LOGV'"
+  },
+  "pollen": {
+   "1.2.2": "pollen has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
+  },
+  "scmt": {
+   "1.0.0": "scmt has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
+  },
+  "screen_camera": {
+   "0.7.3": "screen_camera needs or brings hardware (camera, camera_sensor): it shows on a screen only."
+  },
+  "tankerkoenig": {
+   "1.1.7": "tankerkoenig has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
+  },
+  "tap_sound": {
+   "0.2.1": "tap_sound needs or brings hardware (speaker): it shows on a screen only."
+  },
+  "timers": {
+   "0.4.0": "timers has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
+  },
+  "voice_assist": {
+   "0.4.0": "voice_assist needs or brings hardware (media_player, microphone, speaker): it shows on a screen only."
+  },
+  "waste_collection": {
+   "1.0.7": "waste_collection has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
+  },
+  "waste_overview": {
+   "1.2.4": "waste_overview has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
+  },
+  "waze_traveltime": {
+   "0.2.2": "waze_traveltime has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
+  },
+  "weather_warnings": {
+   "1.3.1": "weather_warnings has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
+  },
+  "wifi_qr": {
+   "0.1.1": "wifi_qr has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
+  },
+  "world_clock": {
+   "0.4.0": "world_clock has ESPHome entities of its own in plugin.yaml: not shown in the browser yet."
+  }
+ },
+ "tessera": "96746c2456653eb2bebd4eec5e598609d7b9f4be"
+}
