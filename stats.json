@@ -11,13 +11,13 @@
    "likes": 0,
    "rating": 4.3,
    "ratings": 3,
-   "homes": 11
+   "homes": 12
   },
   "bt_proxy": {
    "likes": 2,
    "rating": 4.7,
    "ratings": 18,
-   "homes": 22
+   "homes": 23
   },
   "buienradar": {
    "likes": 6,
@@ -46,7 +46,7 @@
   "custom_card": {
    "likes": 29,
    "rating": 4.7,
-   "ratings": 99,
+   "ratings": 101,
    "homes": 82
   },
   "dwd_rain": {
@@ -59,7 +59,7 @@
    "likes": 6,
    "rating": 4.6,
    "ratings": 14,
-   "homes": 11
+   "homes": 12
   },
   "energidata_price": {
    "likes": 5,
@@ -74,9 +74,9 @@
    "homes": 31
   },
   "flip_clock": {
-   "likes": 31,
+   "likes": 32,
    "rating": 4.6,
-   "ratings": 134,
+   "ratings": 135,
    "homes": 75
   },
   "guition_relays": {
@@ -107,7 +107,7 @@
    "likes": 3,
    "rating": 4.3,
    "ratings": 3,
-   "homes": 16
+   "homes": 17
   },
   "ov_departures": {
    "likes": 4,
@@ -155,18 +155,18 @@
    "likes": 11,
    "rating": 4.6,
    "ratings": 38,
-   "homes": 59
+   "homes": 61
   },
   "select_buttons": {
    "likes": 1,
    "rating": null,
    "ratings": 0,
-   "homes": 11
+   "homes": 12
   },
   "status_tile": {
    "likes": 9,
    "rating": 4.6,
-   "ratings": 49,
+   "ratings": 50,
    "homes": 53
   },
   "sweden_public_transport": {
@@ -179,7 +179,7 @@
    "likes": 0,
    "rating": null,
    "ratings": 1,
-   "homes": 1
+   "homes": 2
   },
   "tankerkoenig": {
    "likes": 5,
@@ -195,8 +195,8 @@
   },
   "thermo_dial": {
    "likes": 11,
-   "rating": 4.5,
-   "ratings": 37,
+   "rating": 4.6,
+   "ratings": 40,
    "homes": 42
   },
   "timers": {
@@ -220,14 +220,14 @@
   "voice_assist": {
    "likes": 15,
    "rating": 4.5,
-   "ratings": 45,
+   "ratings": 46,
    "homes": 42
   },
   "waste_collection": {
-   "likes": 17,
-   "rating": 4.4,
-   "ratings": 59,
-   "homes": 50
+   "likes": 18,
+   "rating": 4.5,
+   "ratings": 60,
+   "homes": 51
   },
   "waste_overview": {
    "likes": 5,
@@ -251,7 +251,7 @@
    "likes": 7,
    "rating": 4.6,
    "ratings": 19,
-   "homes": 15
+   "homes": 16
   },
   "world_clock": {
    "likes": 4,
